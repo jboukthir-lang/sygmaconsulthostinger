@@ -1,0 +1,99 @@
+# ========================================
+# IGNORE ALL ROOT FILES - Keep only web/
+# ========================================
+
+# All SQL files in root
+/*.sql
+
+# All Markdown files in root (except README.md)
+/*_*.md
+/ADMIN*.md
+/APPLY*.md
+/BOOKING*.md
+/COMPLETE*.md
+/COMPREHENSIVE*.md
+/CONTACT*.md
+/CREATE*.md
+/DETAILED*.md
+/DYNAMIC*.md
+/FINAL*.md
+/FIXES*.md
+/FIX*.md
+/GOOGLE*.md
+/HOW*.md
+/INSERT*.md
+/INTEGRATION*.md
+/LOGO*.md
+/MOBILE*.md
+/PHASE*.md
+/PROJECT*.md
+/QUICK*.md
+/RAPPORT*.md
+/RESUME*.md
+/SETUP*.md
+/SIMPLE*.md
+/START*.md
+/STRIPE*.md
+/SYSTEM*.md
+/TRANSLATIONS*.md
+/TRANSLATION*.md
+/USERS*.md
+/VERCEL*.md
+/WHAT*.md
+/implementation*.md
+/sygma*.md
+/*.md
+!README.md
+
+# All TXT files in root
+/*.txt
+
+# Arabic files in root
+/*.md
+
+# Root package.json (keep only web/package.json)
+/package.json
+/vercel.json
+
+# ========================================
+# Standard ignores
+# ========================================
+
+# Dependencies
+web/node_modules/
+node_modules/
+
+# Next.js build
+web/.next/
+web/out/
+.next/
+out/
+
+# Env files
+web/.env*.local
+web/.env
+.env*.local
+.env
+
+# Sensitive files
+*.pem
+*.key
+.DS_Store
+
+# Logs
+*.log
+
+# Vercel
+web/.vercel
+.vercel
+
+# Typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Claude Code
+.claude/
+
+# System files
+NUL
+Thumbs.db

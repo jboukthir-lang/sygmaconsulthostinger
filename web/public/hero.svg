@@ -1,0 +1,60 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Gradient -->
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#001F3F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#003366;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#D4AF37;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#D4AF37;stop-opacity:0.05" />
+    </linearGradient>
+  </defs>
+
+  <!-- Base Background -->
+  <rect width="1200" height="800" fill="url(#grad1)"/>
+
+  <!-- Overlay Pattern -->
+  <rect width="1200" height="800" fill="url(#grad2)"/>
+
+  <!-- Geometric Shapes -->
+  <circle cx="150" cy="150" r="80" fill="#D4AF37" opacity="0.1"/>
+  <circle cx="1050" cy="650" r="120" fill="#D4AF37" opacity="0.08"/>
+  <rect x="800" y="100" width="200" height="200" fill="#D4AF37" opacity="0.05" rx="20"/>
+
+  <!-- Grid Pattern -->
+  <line x1="0" y1="200" x2="1200" y2="200" stroke="#D4AF37" stroke-width="1" opacity="0.1"/>
+  <line x1="0" y1="400" x2="1200" y2="400" stroke="#D4AF37" stroke-width="1" opacity="0.1"/>
+  <line x1="0" y1="600" x2="1200" y2="600" stroke="#D4AF37" stroke-width="1" opacity="0.1"/>
+  <line x1="400" y1="0" x2="400" y2="800" stroke="#D4AF37" stroke-width="1" opacity="0.1"/>
+  <line x1="800" y1="0" x2="800" y2="800" stroke="#D4AF37" stroke-width="1" opacity="0.1"/>
+
+  <!-- Central Logo/Icon -->
+  <g transform="translate(500, 300)">
+    <!-- Shield shape representing security/consulting -->
+    <path d="M 0 0 L 80 -20 L 160 0 L 160 120 Q 160 180 80 220 Q 0 180 0 120 Z"
+          fill="none" stroke="#D4AF37" stroke-width="3" opacity="0.6"/>
+
+    <!-- Inner S letter -->
+    <path d="M 80 40 C 100 40 120 50 120 65 C 120 75 110 82 95 85 C 110 88 120 95 120 110 C 120 125 100 135 80 135 C 60 135 40 125 40 110"
+          stroke="#D4AF37" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.8"/>
+  </g>
+
+  <!-- Professional Text Overlay -->
+  <text x="600" y="550" font-family="Arial, sans-serif" font-size="48" font-weight="bold"
+        fill="#FFFFFF" text-anchor="middle" opacity="0.9">
+    DIGITAL TRANSFORMATION
+  </text>
+  <text x="600" y="600" font-family="Arial, sans-serif" font-size="32" font-weight="300"
+        fill="#D4AF37" text-anchor="middle" opacity="0.8">
+    Paris • Tunis • Excellence
+  </text>
+
+  <!-- Decorative Elements -->
+  <circle cx="100" cy="700" r="30" fill="#D4AF37" opacity="0.15"/>
+  <circle cx="1100" cy="100" r="40" fill="#D4AF37" opacity="0.12"/>
+
+  <!-- Abstract lines -->
+  <path d="M 200 100 Q 400 150 600 100 T 1000 100" stroke="#D4AF37" stroke-width="2" fill="none" opacity="0.2"/>
+  <path d="M 150 700 Q 350 650 550 700 T 950 700" stroke="#D4AF37" stroke-width="2" fill="none" opacity="0.2"/>
+</svg>

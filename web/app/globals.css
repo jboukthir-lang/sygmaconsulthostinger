@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+:root {
+  /* Sygma Consult Design System */
+  
+  /* Primary: Deep Trust (Navy Blue) */
+  --color-primary: #001F3F;
+  --color-primary-light: #003366;
+  
+  /* Secondary: Luxury Accent (Muted Gold) */
+  --color-secondary: #D4AF37;
+  --color-secondary-light: #F4C430;
+  
+  /* Background Surfaces */
+  --background: #ffffff;
+  --background-alt: #F8F9FA; /* Ghost White */
+  
+  /* Text Colors */
+  --foreground: #171717; /* Charcoal */
+  --foreground-muted: #4A4A4A;
+  
+  /* Status */
+  --color-success: #2ECC71;
+  --color-error: #E74C3C;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  --color-primary: var(--color-primary);
+  --color-primary-light: var(--color-primary-light);
+  
+  --color-secondary: var(--color-secondary);
+  --color-secondary-light: var(--color-secondary-light);
+  
+  --color-success: var(--color-success);
+  --color-error: var(--color-error);
+
+  /* Fonts */
+  --font-sans: var(--font-montserrat), var(--font-alexandria), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-alexandria), ui-serif, Georgia, serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}

@@ -1,0 +1,11 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="64" height="64" rx="12" fill="#001F3F"/>
+
+  <!-- Golden S -->
+  <path d="M32 18 C38 18 44 22 44 28 C44 32 41 35 37 36 C41 37 44 40 44 45 C44 51 38 56 32 56 C26 56 20 52 20 46"
+        stroke="#D4AF37" stroke-width="4" stroke-linecap="round" fill="none"/>
+
+  <!-- Small accent -->
+  <circle cx="50" cy="14" r="3" fill="#D4AF37"/>
+</svg>
