@@ -1,0 +1,68 @@
+# ==========================================
+
+# HOSTINGER ENVIRONMENT VARIABLES
+
+# نسخ ولصق - جاهز للاستخدام
+
+# ==========================================
+
+# --- SUPABASE DATABASE ---
+
+NEXT_PUBLIC_SUPABASE_URL=https://ldbsacdpkinbpcguvgai.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkYnNhY2Rwa2luYnBjZ3V2Z2FpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4OTUwNzgsImV4cCI6MjA4MTQ3MTA3OH0.Qib8uCPcd6CJypKa_oNEDThIQNfTluH2eJE0nsewwug
+
+# --- SITE URL ---
+
+NEXT_PUBLIC_URL=https://sygma-consult.com
+
+# --- SMTP EMAIL SETTINGS ---
+
+SMTP_HOST=smtp.hostinger.com
+SMTP_PORT=465
+SMTP_USER=contact@sygma-consult.com
+SMTP_PASSWORD=JamelGZK446uj%
+ADMIN_EMAIL=contact@sygma-consult.com
+
+# ==========================================
+
+# OPTIONAL (إذا كنت تستخدمها)
+
+# ==========================================
+
+# --- STRIPE (للدفع) ---
+
+# NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_
+
+# STRIPE_SECRET_KEY=sk_test_
+
+# --- GROQ AI (للذكاء الاصطناعي) ---
+
+# GROQ_API_KEY=gsk_
+
+# --- GOOGLE CALENDAR (للمواعيد) ---
+
+# GOOGLE_CLIENT_ID=
+
+# GOOGLE_CLIENT_SECRET=
+
+# GOOGLE_CALENDAR_ID=
+
+# ==========================================
+
+# INSTRUCTIONS / التعليمات
+
+# ==========================================
+
+# 1. في Hostinger، اضغط "Ajouter" في قسم Variables d'environnement
+
+# 2. انسخ كل سطر (اسم المتغير = القيمة)
+
+# 3. الصق في Hostinger
+
+# - Key: اسم المتغير (مثل: NEXT_PUBLIC_SUPABASE_URL)
+
+# - Value: القيمة (مثل: https://ldbsacdpkinbpcguvgai.supabase.co)
+
+# 4. كرر لكل متغير
+
+# ==========================================
