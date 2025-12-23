@@ -120,12 +120,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
+    <html lang="fr" suppressHydrationWarning>
       <head>
         <StructuredData />
       </head>
       <body
         className={`${alexandria.variable} ${montserrat.variable} antialiased font-sans flex flex-col min-h-screen`}
+        suppressHydrationWarning
       >
         <AuthProvider>
           <LanguageProvider>
