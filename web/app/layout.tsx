@@ -15,7 +15,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://sygmaconsult.vercel.app'),
+  metadataBase: new URL('https://sygmaconsult.com'),
   title: {
     default: 'Sygma Consult | Transformation Digitale & Conseil Stratégique',
     template: '%s | Sygma Consult'

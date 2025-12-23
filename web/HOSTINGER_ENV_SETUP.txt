@@ -1,67 +1,56 @@
 # ==========================================
-
-# HOSTINGER ENVIRONMENT VARIABLES
-
-# نسخ ولصق - جاهز للاستخدام
-
+# دليل إعداد المتغيرات في HOSTINGER
 # ==========================================
 
-# --- SUPABASE DATABASE ---
+# الخطوة 1: انسخ القيم أدناه وأضفها في لوحة تحكم Hostinger
+# (Hosting -> Manage -> Advanced -> Environment Variables)
 
+# ------------------------------
+# 1. إعدادات SUPABASE (قاعدة البيانات)
+# ------------------------------
+# احصل عليها من: Supabase Dashboard -> Project Settings -> API
 NEXT_PUBLIC_SUPABASE_URL=https://ldbsacdpkinbpcguvgai.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkYnNhY2Rwa2luYnBjZ3V2Z2FpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4OTUwNzgsImV4cCI6MjA4MTQ3MTA3OH0.Qib8uCPcd6CJypKa_oNEDThIQNfTluH2eJE0nsewwug
 
-# --- SITE URL ---
+# ------------------------------
+# 2. إعدادات الموقع
+# ------------------------------
+NEXT_PUBLIC_URL=https://sygmaconsult.com
 
-NEXT_PUBLIC_URL=https://sygma-consult.com
-
-# --- SMTP EMAIL SETTINGS ---
-
+# ------------------------------
+# 3. إعدادات البريد الإلكتروني (EMAIL)
+# ------------------------------
+# احصل عليها من: Hostinger -> Emails -> Manage -> Configuration Settings
+# (تأكد من إنشاء حساب بريد إلكتروني أولاً)
 SMTP_HOST=smtp.hostinger.com
 SMTP_PORT=465
-SMTP_USER=contact@sygma-consult.com
+SMTP_USER=contact@sygmaconsult.com
 SMTP_PASSWORD=JamelGZK446uj%
-ADMIN_EMAIL=contact@sygma-consult.com
+ADMIN_EMAIL=contact@sygmaconsult.com
+
+# ------------------------------
+# 4. إعدادات GOOGLE (للدخول والمواعيد)
+# ------------------------------
+# احصل عليها من: Google Cloud Console -> APIs & Services -> Credentials
+# رابط سريع: https://console.cloud.google.com/apis/credentials
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# (اختياري) لربط التقويم مباشرة
+GOOGLE_CALENDAR_ID=primary
+
+# ------------------------------
+# 5. إعدادات الدفع (STRIPE) - اختياري حالياً
+# ------------------------------
+# NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+# STRIPE_SECRET_KEY=
+# STRIPE_WEBHOOK_SECRET=
 
 # ==========================================
-
-# OPTIONAL (إذا كنت تستخدمها)
-
+# ملاحظات هامة:
+# 1. لا تستخدم علامات < > أبداً.
+# 2. بعد إضافة المتغيرات، قد تحتاج لعمل "Redeploy" أو مسح الكاش لتعمل.
 # ==========================================
-
-# --- STRIPE (للدفع) ---
-
-# NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_
-
-# STRIPE_SECRET_KEY=sk_test_
-
-# --- GROQ AI (للذكاء الاصطناعي) ---
-
-# GROQ_API_KEY=gsk_
-
-# --- GOOGLE CALENDAR (للمواعيد) ---
-
-# GOOGLE_CLIENT_ID=
-
-# GOOGLE_CLIENT_SECRET=
-
-# GOOGLE_CALENDAR_ID=
-
-# ==========================================
-
-# INSTRUCTIONS / التعليمات
-
-# ==========================================
-
-# 1. في Hostinger، اضغط "Ajouter" في قسم Variables d'environnement
-
-# 2. انسخ كل سطر (اسم المتغير = القيمة)
-
-# 3. الصق في Hostinger
-
-# - Key: اسم المتغير (مثل: NEXT_PUBLIC_SUPABASE_URL)
-
-# - Value: القيمة (مثل: https://ldbsacdpkinbpcguvgai.supabase.co)
 
 # 4. كرر لكل متغير
 

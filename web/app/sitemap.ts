@@ -1,82 +1,62 @@
-import { MetadataRoute } from 'next'
+import { MetadataRoute } from 'next';
+import { supabase } from '@/lib/supabase';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://sygmaconsult.vercel.app'
-    const currentDate = new Date()
+// Helper to get all posts for sitemap
+async function getBlogPosts() {
+    try {
+        const { data } = await supabase
+            .from('posts')
+            .select('slug, updated_at')
+            .eq('published', true);
+        return data || [];
+    } catch (error) {
+        console.error('Sitemap error:', error);
+        return [];
+    }
+}
 
-    // Homepage - Highest priority
-    const homepage = [{
-        url: baseUrl,
-        lastModified: currentDate,
-        changeFrequency: 'daily' as const,
-        priority: 1.0,
-    }]
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+    const baseUrl = 'https://sygmaconsult.com';
+    const posts = await getBlogPosts();
 
-    // Main pages - High priority
-    const mainPages = [
-        '/services',
-        '/about',
-        '/contact',
-        '/book',
-    ].map((route) => ({
-        url: `${baseUrl}${route}`,
-        lastModified: currentDate,
+    const blogUrls = posts.map((post) => ({
+        url: `${baseUrl}/insights/${post.slug}`,
+        lastModified: new Date(post.updated_at),
         changeFrequency: 'weekly' as const,
-        priority: 0.9,
-    }))
-
-    // Service pages - Very high priority (our main content)
-    const services = [
-        'strategic',
-        'financial-legal',
-        'visa',
-        'corporate',
-        'hr-training',
-        'compliance',
-        'digital',
-        'real-estate',
-    ].map((slug) => ({
-        url: `${baseUrl}/services/${slug}`,
-        lastModified: currentDate,
-        changeFrequency: 'weekly' as const,
-        priority: 0.95,
-    }))
-
-    // Secondary pages - Medium priority
-    const secondaryPages = [
-        '/insights',
-        '/careers',
-        '/appointments',
-    ].map((route) => ({
-        url: `${baseUrl}${route}`,
-        lastModified: currentDate,
-        changeFrequency: 'monthly' as const,
         priority: 0.7,
-    }))
+    }));
 
-    // Legal pages - Lower priority
-    const legalPages = [
-        '/legal',
-        '/privacy',
-        '/terms',
-    ].map((route) => ({
-        url: `${baseUrl}${route}`,
-        lastModified: currentDate,
-        changeFrequency: 'yearly' as const,
-        priority: 0.3,
-    }))
-
-    // Auth pages - Low priority
-    const authPages = [
-        '/login',
-        '/signup',
-        '/reset-password',
-    ].map((route) => ({
-        url: `${baseUrl}${route}`,
-        lastModified: currentDate,
-        changeFrequency: 'yearly' as const,
-        priority: 0.2,
-    }))
-
-    return [...homepage, ...mainPages, ...services, ...secondaryPages, ...legalPages, ...authPages]
+    return [
+        {
+            url: baseUrl,
+            lastModified: new Date(),
+            changeFrequency: 'yearly',
+            priority: 1,
+        },
+        {
+            url: `${baseUrl}/services`,
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.8,
+        },
+        {
+            url: `${baseUrl}/insights`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.8,
+        },
+        {
+            url: `${baseUrl}/contact`,
+            lastModified: new Date(),
+            changeFrequency: 'yearly',
+            priority: 0.5,
+        },
+        {
+            url: `${baseUrl}/book`,
+            lastModified: new Date(),
+            changeFrequency: 'yearly',
+            priority: 0.9,
+        },
+        ...blogUrls,
+    ];
 }

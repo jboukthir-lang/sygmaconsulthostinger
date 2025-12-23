@@ -26,11 +26,7 @@ export default function AdminSidebar() {
       href: '/admin/consultations',
       icon: Briefcase,
     },
-    {
-      title: t('admin.bookings', language),
-      href: '/admin/bookings',
-      icon: Calendar,
-    },
+
     {
       title: language === 'ar' ? 'التقويم والمواعيد' : language === 'fr' ? 'Calendrier' : 'Calendar',
       href: '/admin/calendar',
@@ -165,11 +161,10 @@ export default function AdminSidebar() {
                   <Link
                     href={item.href}
                     onClick={() => setIsOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                      isActive
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
                         ? 'bg-[#D4AF37] text-[#001F3F] font-semibold'
                         : 'text-blue-100 hover:bg-white/10'
-                    }`}
+                      }`}
                   >
                     <Icon className="h-5 w-5" />
                     <span className="text-sm">{item.title}</span>
