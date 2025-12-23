@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle, Calendar, Clock, MapPin, Video, Download, Loader2 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+
 import Header from '@/components/Header';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -45,17 +45,10 @@ export default function BookingSuccessPage() {
 
   const fetchBooking = async () => {
     try {
-      const { data, error } = await supabase
-        .from('bookings')
-        .select('*')
-        .eq('id', bookingId)
-        .single();
-
-      if (error) throw error;
-
-      if (data) {
-        setBooking(data);
-      }
+      const res = await fetch(`/api/booking?id=${bookingId}`);
+      if (!res.ok) throw new Error('Failed to fetch');
+      const data = await res.json();
+      setBooking(data);
     } catch (error) {
       console.error('Error fetching booking:', error);
     } finally {
@@ -102,8 +95,8 @@ export default function BookingSuccessPage() {
               {language === 'ar'
                 ? 'تم تأكيد استشارتك'
                 : language === 'fr'
-                ? 'Votre consultation est confirmée'
-                : 'Your consultation has been confirmed'}
+                  ? 'Votre consultation est confirmée'
+                  : 'Your consultation has been confirmed'}
             </p>
           </div>
 
@@ -156,13 +149,13 @@ export default function BookingSuccessPage() {
                       ? language === 'ar'
                         ? 'عبر الإنترنت (فيديو)'
                         : language === 'fr'
-                        ? 'En ligne (Vidéo)'
-                        : 'Online (Video Call)'
+                          ? 'En ligne (Vidéo)'
+                          : 'Online (Video Call)'
                       : language === 'ar'
-                      ? 'حضوري'
-                      : language === 'fr'
-                      ? 'En personne'
-                      : 'In-Person'}
+                        ? 'حضوري'
+                        : language === 'fr'
+                          ? 'En personne'
+                          : 'In-Person'}
                   </p>
                   {booking.location && !booking.is_online && (
                     <p className="text-sm text-gray-600 mt-1">{booking.location}</p>
@@ -214,8 +207,8 @@ export default function BookingSuccessPage() {
                   {language === 'ar'
                     ? 'ستتلقى بريداً إلكترونياً للتأكيد مع جميع التفاصيل'
                     : language === 'fr'
-                    ? 'Vous recevrez un e-mail de confirmation avec tous les détails'
-                    : 'You\'ll receive a confirmation email with all the details'}
+                      ? 'Vous recevrez un e-mail de confirmation avec tous les détails'
+                      : 'You\'ll receive a confirmation email with all the details'}
                 </span>
               </li>
               <li className="flex items-start gap-3">
@@ -224,8 +217,8 @@ export default function BookingSuccessPage() {
                   {language === 'ar'
                     ? 'سنرسل لك تذكيراً قبل 24 ساعة من موعدك'
                     : language === 'fr'
-                    ? 'Nous vous enverrons un rappel 24 heures avant votre consultation'
-                    : 'We\'ll send you a reminder 24 hours before your consultation'}
+                      ? 'Nous vous enverrons un rappel 24 heures avant votre consultation'
+                      : 'We\'ll send you a reminder 24 hours before your consultation'}
                 </span>
               </li>
               <li className="flex items-start gap-3">
@@ -234,8 +227,8 @@ export default function BookingSuccessPage() {
                   {language === 'ar'
                     ? 'يمكنك عرض وإدارة حجزك من ملفك الشخصي'
                     : language === 'fr'
-                    ? 'Vous pouvez consulter et gérer votre réservation depuis votre profil'
-                    : 'You can view and manage your booking in your profile'}
+                      ? 'Vous pouvez consulter et gérer votre réservation depuis votre profil'
+                      : 'You can view and manage your booking in your profile'}
                 </span>
               </li>
             </ul>

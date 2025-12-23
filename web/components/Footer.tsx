@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Facebook, Linkedin, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+
 
 interface SiteSettings {
     company_name: string;
@@ -25,28 +25,14 @@ interface SiteSettings {
     instagram_url?: string;
 }
 
+import settingsData from '@/data/settings.json';
+
 export default function Footer() {
     const { t, language } = useLanguage();
-    const [settings, setSettings] = useState<SiteSettings | null>(null);
+    const [settings, setSettings] = useState<SiteSettings | null>(settingsData);
 
-    useEffect(() => {
-        fetchSiteSettings();
-    }, []);
+    // No effect needed as we load from JSON
 
-    async function fetchSiteSettings() {
-        try {
-            const { data, error } = await supabase
-                .from('site_settings')
-                .select('*')
-                .eq('key', 'main')
-                .single();
-
-            if (error) throw error;
-            setSettings(data);
-        } catch (error) {
-            console.error('Error fetching site settings:', error);
-        }
-    }
 
     // Get description based on language
     const getDescription = () => {

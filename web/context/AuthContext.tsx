@@ -13,7 +13,7 @@ import {
   onAuthStateChanged
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { supabase } from '@/lib/supabase';
+
 import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
@@ -29,11 +29,11 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
-  signInWithGoogle: async () => {},
-  signInWithEmail: async () => {},
-  signUpWithEmail: async () => {},
-  resetPassword: async () => {},
-  signOut: async () => {},
+  signInWithGoogle: async () => { },
+  signInWithEmail: async () => { },
+  signUpWithEmail: async () => { },
+  resetPassword: async () => { },
+  signOut: async () => { },
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -43,58 +43,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Save or update user profile in Supabase
-  async function syncUserProfile(firebaseUser: User) {
-    try {
-      // Check if profile exists
-      const { data: existingProfile } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('user_id', firebaseUser.uid)
-        .single();
-
-      if (!existingProfile) {
-        // Create new profile
-        console.log('🆕 Creating new user profile for:', firebaseUser.email);
-        const { error: insertError } = await supabase.from('user_profiles').insert({
-          user_id: firebaseUser.uid,
-          email: firebaseUser.email || '',
-          full_name: firebaseUser.displayName || '',
-          photo_url: firebaseUser.photoURL || '',
-          phone: firebaseUser.phoneNumber || '',
-          created_at: new Date().toISOString(),
-        });
-
-        if (insertError) {
-          console.error('❌ Error creating user profile:', insertError);
-          throw insertError;
-        }
-
-        console.log('✅ User profile created successfully');
-
-        // Send welcome notification
-        await supabase.from('notifications').insert({
-          user_id: firebaseUser.uid,
-          title: 'Welcome to Sygma Consult',
-          message: 'Thank you for creating your account. Explore our services and book your first consultation!',
-          type: 'system',
-          link: '/',
-        });
-      }
-    } catch (error) {
-      console.error('Error syncing user profile:', error);
-    }
-  }
+  // Sync to Supabase removed
+  // async function syncUserProfile(firebaseUser: User) { ... }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
-
-      if (firebaseUser) {
-        // Sync user profile to Supabase
-        await syncUserProfile(firebaseUser);
-      }
-
       setLoading(false);
     });
 
@@ -129,8 +83,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         displayName: name,
       });
 
-      // Sync to Supabase
-      await syncUserProfile(userCredential.user);
     } catch (error) {
       console.error('Error signing up with email:', error);
       throw error;

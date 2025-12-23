@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { Calendar, Clock, Video, MapPin, XCircle, DollarSign, User, MessageSquare } from 'lucide-react';
@@ -38,44 +38,21 @@ export default function ProfileBookingsPage() {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   useEffect(() => {
-    if (user) {
-      fetchBookings();
-
-      // Real-time subscription
-      const channel = supabase
-        .channel('profile_bookings')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'bookings',
-            filter: `email=eq.${user.email}`,
-          },
-          () => {
-            fetchBookings();
-          }
-        )
-        .subscribe();
-
-      return () => {
-        supabase.removeChannel(channel);
-      };
+    if (user && user.email) {
+      fetchBookings(user.email);
     }
   }, [user]);
 
-  async function fetchBookings() {
+  async function fetchBookings(email: string) {
     try {
-      if (!user?.email) return;
+      const res = await fetch(`/api/user/bookings?email=${email}`);
+      const data = await res.json();
 
-      const { data, error } = await supabase
-        .from('bookings')
-        .select('*')
-        .eq('email', user.email)
-        .order('date', { ascending: false });
-
-      if (error) throw error;
-      setBookings(data || []);
+      if (Array.isArray(data)) {
+        setBookings(data);
+      } else {
+        setBookings([]);
+      }
     } catch (error) {
       console.error('Error fetching bookings:', error);
     } finally {
@@ -87,13 +64,15 @@ export default function ProfileBookingsPage() {
     if (!confirm(t('bookings.confirmCancel', language))) return;
 
     try {
-      const { error } = await supabase
-        .from('bookings')
-        .update({ status: 'cancelled' })
-        .eq('id', id);
+      const res = await fetch('/api/booking', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status: 'cancelled' }),
+      });
 
-      if (error) throw error;
-      fetchBookings();
+      if (!res.ok) throw new Error('Failed to cancel');
+
+      if (user?.email) fetchBookings(user.email);
     } catch (error) {
       console.error('Error cancelling booking:', error);
     }
@@ -144,8 +123,8 @@ export default function ProfileBookingsPage() {
         <button
           onClick={() => setFilter('all')}
           className={`px-4 py-2 rounded-lg transition-colors ${filter === 'all'
-              ? 'bg-[#001F3F] text-white'
-              : 'text-gray-600 hover:bg-gray-100'
+            ? 'bg-[#001F3F] text-white'
+            : 'text-gray-600 hover:bg-gray-100'
             }`}
         >
           {t('bookings.all', language)} ({bookings.length})
@@ -153,8 +132,8 @@ export default function ProfileBookingsPage() {
         <button
           onClick={() => setFilter('upcoming')}
           className={`px-4 py-2 rounded-lg transition-colors ${filter === 'upcoming'
-              ? 'bg-[#001F3F] text-white'
-              : 'text-gray-600 hover:bg-gray-100'
+            ? 'bg-[#001F3F] text-white'
+            : 'text-gray-600 hover:bg-gray-100'
             }`}
         >
           {t('bookings.upcoming', language)}
@@ -162,8 +141,8 @@ export default function ProfileBookingsPage() {
         <button
           onClick={() => setFilter('past')}
           className={`px-4 py-2 rounded-lg transition-colors ${filter === 'past'
-              ? 'bg-[#001F3F] text-white'
-              : 'text-gray-600 hover:bg-gray-100'
+            ? 'bg-[#001F3F] text-white'
+            : 'text-gray-600 hover:bg-gray-100'
             }`}
         >
           {t('bookings.past', language)}
@@ -193,10 +172,10 @@ export default function ProfileBookingsPage() {
                       <h3 className="text-lg font-bold text-[#001F3F]">{booking.topic}</h3>
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${booking.status === 'confirmed'
-                            ? 'bg-green-100 text-green-700'
-                            : booking.status === 'pending'
-                              ? 'bg-yellow-100 text-yellow-700'
-                              : 'bg-red-100 text-red-700'
+                          ? 'bg-green-100 text-green-700'
+                          : booking.status === 'pending'
+                            ? 'bg-yellow-100 text-yellow-700'
+                            : 'bg-red-100 text-red-700'
                           }`}
                       >
                         {booking.status}
@@ -204,10 +183,10 @@ export default function ProfileBookingsPage() {
                       {booking.payment_status && (
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-semibold ${booking.payment_status === 'paid'
-                              ? 'bg-green-100 text-green-700'
-                              : booking.payment_status === 'pending'
-                                ? 'bg-yellow-100 text-yellow-700'
-                                : 'bg-red-100 text-red-700'
+                            ? 'bg-green-100 text-green-700'
+                            : booking.payment_status === 'pending'
+                              ? 'bg-yellow-100 text-yellow-700'
+                              : 'bg-red-100 text-red-700'
                             }`}
                         >
                           {booking.payment_status}
@@ -372,10 +351,10 @@ export default function ProfileBookingsPage() {
                   <p className="text-sm text-gray-600 mb-1">{t('consultations.status', language)}</p>
                   <span
                     className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${selectedBooking.status === 'confirmed'
-                        ? 'bg-green-100 text-green-700'
-                        : selectedBooking.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-700'
-                          : 'bg-red-100 text-red-700'
+                      ? 'bg-green-100 text-green-700'
+                      : selectedBooking.status === 'pending'
+                        ? 'bg-yellow-100 text-yellow-700'
+                        : 'bg-red-100 text-red-700'
                       }`}
                   >
                     {selectedBooking.status}

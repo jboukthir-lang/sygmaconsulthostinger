@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, ReactNode } from 'react';
+import homeContent from '@/data/home.json';
 
 type Language = 'en' | 'fr' | 'ar';
 
@@ -51,6 +52,7 @@ type Translations = {
     };
     contact: {
         title: string;
+        subtitle: string;
         address_paris: string;
         address_tunis: string;
         phone: string;
@@ -237,15 +239,7 @@ const translations: Record<Language, Translations> = {
             signIn: 'Sign In',
             signOut: 'Sign Out'
         },
-        hero: {
-            badge: 'Premium Consulting Services',
-            title_start: 'Your Strategic Partner in',
-            paris: 'Paris',
-            tunis: 'Tunis',
-            subtitle: 'Empowering businesses and individuals with world-class digital transformation, legal compliance, and strategic financial growth solutions.',
-            cta_book: 'Book a Consultation',
-            cta_services: 'Explore Services'
-        },
+        hero: homeContent.en.hero,
         about: {
             title_start: 'Bridging Opportunities Between',
             europe: 'Europe',
@@ -291,6 +285,7 @@ const translations: Record<Language, Translations> = {
         },
         contact: {
             title: "Get in Touch",
+            subtitle: "We are here to help you grow.",
             address_paris: "Paris",
             address_tunis: "Tunis",
             phone: "Phone & WhatsApp",
@@ -513,15 +508,7 @@ const translations: Record<Language, Translations> = {
             signIn: 'Se connecter',
             signOut: 'Se déconnecter'
         },
-        hero: {
-            badge: 'Services de Conseil Premium',
-            title_start: 'Votre Partenaire Stratégique à',
-            paris: 'Paris',
-            tunis: 'Tunis',
-            subtitle: 'Accompagner les entreprises et les particuliers avec des solutions de transformation numérique, de conformité juridique et de croissance financière.',
-            cta_book: 'Prendre Rendez-vous',
-            cta_services: 'Nos Services'
-        },
+        hero: homeContent.fr.hero,
         about: {
             title_start: 'Créer des Opportunités entre',
             europe: 'l\'Europe',
@@ -567,6 +554,7 @@ const translations: Record<Language, Translations> = {
         },
         contact: {
             title: "Contactez-nous",
+            subtitle: "Nous sommes là pour vous aider à grandir.",
             address_paris: "Paris",
             address_tunis: "Tunis",
             phone: "Téléphone & WhatsApp",
@@ -789,15 +777,7 @@ const translations: Record<Language, Translations> = {
             signIn: 'تسجيل الدخول',
             signOut: 'تسجيل الخروج'
         },
-        hero: {
-            badge: 'خدمات استشارية متميزة',
-            title_start: 'شريكك الاستراتيجي في',
-            paris: 'باريس',
-            tunis: 'تونس',
-            subtitle: 'تمكين الشركات والأفراد من خلال حلول التحول الرقمي، الامتثال القانوني، والنمو المالي الاستراتيجي.',
-            cta_book: 'احجز موعد',
-            cta_services: 'اكتشف خدماتنا'
-        },
+        hero: homeContent.ar.hero,
         about: {
             title_start: 'ربط الفرص بين',
             europe: 'أوروبا',
@@ -844,6 +824,7 @@ const translations: Record<Language, Translations> = {
         },
         contact: {
             title: "تواصل معنا",
+            subtitle: "نحن هنا لمساعدتكم على النمو.",
             address_paris: "باريس",
             address_tunis: "تونس",
             phone: "الهاتف و واتساب",

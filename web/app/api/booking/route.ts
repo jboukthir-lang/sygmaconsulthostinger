@@ -1,7 +1,47 @@
 import { NextResponse } from 'next/server';
-import { supabase, type Booking } from '@/lib/supabase';
+import { saveBooking, updateBooking, getBookingById } from '@/lib/local-storage';
 import { sendBookingConfirmation, sendBookingNotification } from '@/lib/smtp-email';
 import { createCalendarEvent } from '@/lib/google-calendar';
+
+export async function GET(req: Request) {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+        return NextResponse.json({ error: 'Booking ID is required' }, { status: 400 });
+    }
+
+    const booking = await getBookingById(id);
+
+    if (!booking) {
+        return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(booking);
+}
+
+export async function PATCH(req: Request) {
+    try {
+        const body = await req.json();
+        const { id, status } = body;
+
+        if (!id || !status) {
+            return NextResponse.json({ error: 'ID and status required' }, { status: 400 });
+        }
+
+        // In a real app, verify user owns this booking
+
+        const updated = await updateBooking(id, { status });
+
+        if (!updated) {
+            return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
+        }
+
+        return NextResponse.json(updated);
+    } catch (error) {
+        return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
+    }
+}
 
 export async function POST(req: Request) {
     try {
@@ -42,15 +82,15 @@ export async function POST(req: Request) {
             formattedDate = `${year}-${month}-${day}`;
         }
 
-        // Save to Supabase with enhanced fields
-        const bookingData: any = {
+        // Save to Local File
+        const bookingData = {
             name,
             email,
             topic,
             date: formattedDate,
             time,
             user_id: user_id || null,
-            status: 'pending',
+            status: 'pending' as const,
             duration,
             appointment_type,
             appointment_type_id: appointment_type_id || null,
@@ -58,38 +98,22 @@ export async function POST(req: Request) {
             is_online,
             notes: notes || '',
             price: price || 0,
-            payment_status: payment_status || (price > 0 ? 'pending' : 'free')
+            payment_status: (payment_status || (price > 0 ? 'pending' : 'free')) as any
         };
 
-        const { data, error } = await supabase
-            .from('bookings')
-            .insert([bookingData])
-            .select()
-            .single();
-
-        if (error) {
-            console.error('Supabase Error:', error);
-            return NextResponse.json(
-                { error: 'Failed to save booking', details: error.message },
-                { status: 500 }
-            );
-        }
-
-        console.log('Booking saved successfully:', data);
+        const data = await saveBooking(bookingData);
+        console.log('Booking saved locally:', data);
 
         // Create Google Calendar event
-        let calendarData = null;
+        let calendarData: any = null;
         try {
-            calendarData = await createCalendarEvent(data);
+            calendarData = await createCalendarEvent(data as any);
             if (calendarData) {
                 // Update booking with calendar event ID and meet link
-                await supabase
-                    .from('bookings')
-                    .update({
-                        calendar_event_id: calendarData.eventId,
-                        meet_link: calendarData.meetLink
-                    })
-                    .eq('id', data.id);
+                await updateBooking(data.id, {
+                    calendar_event_id: calendarData.eventId,
+                    meet_link: calendarData.meetLink
+                });
 
                 console.log('Calendar event created:', calendarData.eventId);
 
@@ -103,7 +127,7 @@ export async function POST(req: Request) {
 
         // Send confirmation email to client
         try {
-            await sendBookingConfirmation(data);
+            await sendBookingConfirmation(data as any);
             console.log('Confirmation email sent to client');
         } catch (emailError) {
             console.error('Failed to send confirmation email:', emailError);
@@ -112,7 +136,7 @@ export async function POST(req: Request) {
 
         // Send notification email to admin
         try {
-            await sendBookingNotification(data);
+            await sendBookingNotification(data as any);
             console.log('Notification email sent to admin');
         } catch (emailError) {
             console.error('Failed to send notification email:', emailError);
@@ -136,3 +160,4 @@ export async function POST(req: Request) {
         );
     }
 }
+

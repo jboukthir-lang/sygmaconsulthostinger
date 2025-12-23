@@ -45,7 +45,7 @@ export default function ContactPage() {
 
             <div className="bg-[#001F3F] text-white py-20 text-center">
                 <h1 className="text-4xl font-serif font-bold">{t.nav.contact}</h1>
-                <p className="text-blue-200 mt-4">We are here to help you grow.</p>
+                <p className="text-blue-200 mt-4">{t.contact.subtitle}</p>
             </div>
 
             <div className="container mx-auto px-4 py-16 -mt-10">
@@ -60,7 +60,7 @@ export default function ContactPage() {
                                     <MapPin className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-gray-900">{t.contact.address_paris} Office</h3>
+                                    <h3 className="font-bold text-gray-900">{t.contact.address_paris}</h3>
                                     <p className="text-gray-600">6 rue Paul Verlaine, 93130 Noisy-le-Sec</p>
                                 </div>
                             </div>
@@ -69,7 +69,7 @@ export default function ContactPage() {
                                     <MapPin className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-gray-900">{t.contact.address_tunis} Office</h3>
+                                    <h3 className="font-bold text-gray-900">{t.contact.address_tunis}</h3>
                                     <p className="text-gray-600">Les Berges du Lac II, 1053 Tunis</p>
                                 </div>
                             </div>

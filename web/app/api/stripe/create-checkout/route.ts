@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe, formatAmountForStripe, isStripeConfigured } from '@/lib/stripe';
-import { supabase } from '@/lib/supabase';
+import { getBookingById, updateBooking } from '@/lib/local-storage';
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,15 +21,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Fetch booking details from database
-    const { data: booking, error } = await supabase
-      .from('bookings')
-      .select('*')
-      .eq('id', bookingId)
-      .single();
+    // Fetch booking details from local storage
+    const booking = await getBookingById(bookingId);
 
-    if (error || !booking) {
-      console.error('Error fetching booking:', error);
+    if (!booking) {
       return NextResponse.json(
         { error: 'Booking not found' },
         { status: 404 }
@@ -89,14 +84,10 @@ export async function POST(req: NextRequest) {
     });
 
     // Update booking with Stripe session ID
-    await supabase
-      .from('bookings')
-      .update({
-        stripe_session_id: session.id,
-        payment_status: 'pending',
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', bookingId);
+    await updateBooking(bookingId, {
+      stripe_session_id: session.id,
+      payment_status: 'pending'
+    });
 
     return NextResponse.json({ url: session.url, sessionId: session.id });
   } catch (error: any) {

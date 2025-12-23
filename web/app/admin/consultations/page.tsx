@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+
 import {
   Briefcase,
   Search,
@@ -55,50 +55,19 @@ export default function AdminConsultationsPage() {
 
   useEffect(() => {
     fetchConsultations();
-    fetchAdmins();
-
-    // Real-time subscription
-    const channel = supabase
-      .channel('admin_consultations')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'bookings',
-        },
-        () => {
-          fetchConsultations();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    // fetchAdmins(); // Disabled as we don't have local admins yet
   }, []);
 
   async function fetchAdmins() {
-    try {
-      const { data, error } = await supabase
-        .from('admin_users')
-        .select('user_id, email, role');
-      if (!error && data) setAdmins(data);
-    } catch (err) {
-      console.error('Error fetching admins:', err);
-    }
+    // Disabled
   }
 
   async function fetchConsultations() {
     try {
-      const { data, error } = await supabase
-        .from('bookings')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const res = await fetch('/api/admin/bookings');
+      const data = await res.json();
 
-      if (error) throw error;
-
-      const transformedData = (data || []).map(booking => ({
+      const transformedData = (Array.isArray(data) ? data : []).map((booking: any) => ({
         id: booking.id,
         client_name: booking.name,
         client_email: booking.email,
@@ -108,11 +77,11 @@ export default function AdminConsultationsPage() {
         date: booking.date,
         time: booking.time,
         duration: booking.duration || 60,
-        fee: booking.fee || 0,
+        fee: booking.price || 0, // Mapped from price to fee
         notes: booking.notes || '',
         internal_notes: booking.internal_notes || '',
         meet_link: booking.meet_link || '',
-        created_at: booking.created_at,
+        created_at: booking.created_at || new Date().toISOString(),
       }));
 
       setConsultations(transformedData);
@@ -126,18 +95,22 @@ export default function AdminConsultationsPage() {
   async function updateConsultation(id: string, updates: Partial<Consultation>) {
     setIsSaving(true);
     try {
-      // Map back to DB fields if necessary (status, notes, etc.)
+      // Map back to DB fields
       const dbUpdates: any = { ...updates };
       if (updates.client_name) dbUpdates.name = updates.client_name;
       if (updates.client_email) dbUpdates.email = updates.client_email;
       if (updates.service_type) dbUpdates.topic = updates.service_type;
+      if (updates.fee !== undefined) dbUpdates.price = updates.fee;
 
-      const { error } = await supabase
-        .from('bookings')
-        .update(dbUpdates)
-        .eq('id', id);
+      // If we are just updating status or other direct fields, they will pass through
 
-      if (error) throw error;
+      const res = await fetch('/api/admin/bookings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, ...dbUpdates }),
+      });
+
+      if (!res.ok) throw new Error('Failed to update');
 
       // Update local state for immediate feedback
       setConsultations(prev => prev.map(c => c.id === id ? { ...c, ...updates } : c));
@@ -158,12 +131,11 @@ export default function AdminConsultationsPage() {
     }
 
     try {
-      const { error } = await supabase
-        .from('bookings')
-        .delete()
-        .eq('id', id);
+      const res = await fetch(`/api/admin/bookings?id=${id}`, {
+        method: 'DELETE',
+      });
 
-      if (error) throw error;
+      if (!res.ok) throw new Error('Failed to delete');
 
       // Remove from local state
       setConsultations(prev => prev.filter(c => c.id !== id));

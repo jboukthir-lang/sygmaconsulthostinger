@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe, formatAmountFromStripe, isStripeConfigured } from '@/lib/stripe';
-import { supabase } from '@/lib/supabase';
+import { updateBooking, getBookingById } from '@/lib/local-storage';
 import Stripe from 'stripe';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
         break;
 
       case 'payment_intent.succeeded':
-        await handlePaymentSucceeded(event.data.object as Stripe.PaymentIntent);
+        // Optional: logic for payment intent success if separate from checkout
         break;
 
       case 'payment_intent.payment_failed':
@@ -82,135 +82,43 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
   console.log(`Processing payment for booking: ${bookingId}`);
 
   // Update booking status
-  const { data: booking, error: updateError } = await supabase
-    .from('bookings')
-    .update({
-      payment_status: 'paid',
-      status: 'confirmed',
-      stripe_payment_id: session.payment_intent as string,
-      stripe_session_id: session.id,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', bookingId)
-    .select()
-    .single();
-
-  if (updateError) {
-    console.error('Error updating booking:', updateError);
-    throw updateError;
-  }
-
-  console.log(`✅ Booking ${bookingId} marked as paid and confirmed`);
-
-  // Send confirmation email (implement your email sending logic)
-  // await sendBookingConfirmation(booking);
-
-  // Create notification for user
-  if (booking.user_id) {
-    await supabase.from('notifications').insert({
-      user_id: booking.user_id,
-      title: 'Payment Successful',
-      message: `Your payment of €${formatAmountFromStripe(session.amount_total || 0)} has been processed successfully. Your consultation is confirmed for ${booking.date} at ${booking.time}.`,
-      type: 'success',
-      link: `/profile/bookings/${bookingId}`,
-    });
-  }
-
-  // Create notification for admin
-  await supabase.from('notifications').insert({
-    title: 'New Paid Booking',
-    message: `${booking.name} has completed payment for "${booking.topic}" on ${booking.date} at ${booking.time}`,
-    type: 'booking',
-    link: `/admin/bookings`,
+  await updateBooking(bookingId, {
+    payment_status: 'paid',
+    status: 'confirmed',
+    stripe_payment_id: session.payment_intent as string,
+    stripe_session_id: session.id,
   });
 
-  console.log(`✅ Notifications created for booking ${bookingId}`);
-}
-
-async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
-  const bookingId = paymentIntent.metadata.booking_id;
-
-  if (!bookingId) {
-    console.error('No booking ID in payment intent metadata');
-    return;
-  }
-
-  console.log(`Payment succeeded for booking: ${bookingId}, amount: ${formatAmountFromStripe(paymentIntent.amount)}`);
-
-  // Additional logging or processing if needed
+  console.log(`✅ Booking ${bookingId} marked as paid and confirmed`);
 }
 
 async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
   const bookingId = paymentIntent.metadata.booking_id;
 
   if (!bookingId) {
-    console.error('No booking ID in payment intent metadata');
     return;
   }
 
   console.log(`Payment failed for booking: ${bookingId}`);
 
   // Update booking status
-  await supabase
-    .from('bookings')
-    .update({
-      payment_status: 'failed',
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', bookingId);
-
-  // Notify user of failed payment
-  const { data: booking } = await supabase
-    .from('bookings')
-    .select('user_id, name')
-    .eq('id', bookingId)
-    .single();
-
-  if (booking?.user_id) {
-    await supabase.from('notifications').insert({
-      user_id: booking.user_id,
-      title: 'Payment Failed',
-      message: 'Your payment could not be processed. Please try booking again or contact support.',
-      type: 'error',
-      link: `/book`,
-    });
-  }
+  await updateBooking(bookingId, {
+    payment_status: 'failed'
+  });
 }
 
 async function handleRefund(charge: Stripe.Charge) {
   const bookingId = charge.metadata?.booking_id;
 
   if (!bookingId) {
-    console.error('No booking ID in charge metadata');
     return;
   }
 
   console.log(`Refund issued for booking: ${bookingId}`);
 
   // Update booking status
-  await supabase
-    .from('bookings')
-    .update({
-      payment_status: 'refunded',
-      status: 'cancelled',
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', bookingId);
-
-  // Notify user
-  const { data: booking } = await supabase
-    .from('bookings')
-    .select('user_id, price')
-    .eq('id', bookingId)
-    .single();
-
-  if (booking?.user_id) {
-    await supabase.from('notifications').insert({
-      user_id: booking.user_id,
-      title: 'Refund Processed',
-      message: `Your booking has been cancelled and €${booking.price} has been refunded to your account.`,
-      type: 'info',
-      link: `/profile/bookings`,
-    });
-  }
+  await updateBooking(bookingId, {
+    payment_status: 'refunded',
+    status: 'cancelled'
+  });
 }

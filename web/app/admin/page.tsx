@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import StatsCard from '@/components/admin/StatsCard';
 import { Calendar, MessageSquare, Users, TrendingUp, Clock, CheckCircle, FileText } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+
 import Link from 'next/link';
 
 interface Stats {
@@ -36,57 +36,51 @@ export default function AdminDashboard() {
 
   async function fetchStats() {
     try {
-      // Fetch bookings count
-      const { count: bookingsCount } = await supabase
-        .from('bookings')
-        .select('*', { count: 'exact', head: true });
+      // Fetch local bookings
+      let bookingsCount = 0;
+      let pendingCount = 0;
+      let recentBookings = [];
 
-      const { count: pendingCount } = await supabase
-        .from('bookings')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'pending');
+      try {
+        const res = await fetch('/api/admin/bookings');
+        const bookings = await res.json();
+        if (Array.isArray(bookings)) {
+          bookingsCount = bookings.length;
+          pendingCount = bookings.filter((b: any) => b.status === 'pending').length;
+          recentBookings = bookings.slice(0, 5);
+        }
+      } catch (e) {
+        console.error('Failed to fetch local bookings stats', e);
+      }
 
-      // Fetch contacts count
-      const { count: contactsCount } = await supabase
-        .from('contacts')
-        .select('*', { count: 'exact', head: true });
+      // Fetch local messages
+      let totalMessages = 0;
+      let newMessages = 0;
+      try {
+        const res = await fetch('/api/admin/messages');
+        const messages = await res.json();
+        if (Array.isArray(messages)) {
+          totalMessages = messages.length;
+          newMessages = messages.filter((m: any) => m.status === 'new').length;
+        }
+      } catch (e) {
+        console.error('Failed to fetch local messages stats', e);
+      }
 
-      const { count: newContactsCount } = await supabase
-        .from('contacts')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'new');
-
-      // Fetch user profiles count
-      const { count: usersCount } = await supabase
-        .from('user_profiles')
-        .select('*', { count: 'exact', head: true });
-
-      // Fetch posts count
-      const { count: postsCount } = await supabase
-        .from('posts')
-        .select('*', { count: 'exact', head: true });
-
-      const { count: publishedCount } = await supabase
-        .from('posts')
-        .select('*', { count: 'exact', head: true })
-        .eq('published', true);
-
-      // Fetch recent bookings
-      const { data: recentBookings } = await supabase
-        .from('bookings')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(5);
+      // Mock other stats as we removed Supabase
+      const usersCount = 0;
+      const postsCount = 0;
+      const publishedCount = 0;
 
       setStats({
-        totalBookings: bookingsCount || 0,
-        pendingBookings: pendingCount || 0,
-        totalMessages: contactsCount || 0,
-        newMessages: newContactsCount || 0,
-        totalUsers: usersCount || 0,
-        totalPosts: postsCount || 0,
-        publishedPosts: publishedCount || 0,
-        recentActivity: recentBookings || [],
+        totalBookings: bookingsCount,
+        pendingBookings: pendingCount,
+        totalMessages,
+        newMessages,
+        totalUsers: usersCount,
+        totalPosts: postsCount,
+        publishedPosts: publishedCount,
+        recentActivity: recentBookings,
       });
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -173,10 +167,10 @@ export default function AdminDashboard() {
                     <p className="text-sm font-medium text-gray-900">{new Date(booking.date).toLocaleDateString()}</p>
                     <span
                       className={`text-xs px-2 py-1 rounded-full ${booking.status === 'confirmed'
-                          ? 'bg-green-100 text-green-700'
-                          : booking.status === 'pending'
-                            ? 'bg-yellow-100 text-yellow-700'
-                            : 'bg-red-100 text-red-700'
+                        ? 'bg-green-100 text-green-700'
+                        : booking.status === 'pending'
+                          ? 'bg-yellow-100 text-yellow-700'
+                          : 'bg-red-100 text-red-700'
                         }`}
                     >
                       {booking.status}

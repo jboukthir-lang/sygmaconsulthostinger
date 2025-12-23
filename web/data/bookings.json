@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Sygma Admin",
+    "email": "admin@sygma-consult.com",
+    "topic": "Atelier",
+    "date": "2025-12-24",
+    "time": "10:00",
+    "user_id": "gBdso0ADJgRAzBaMpWne34JhMjI3",
+    "status": "pending",
+    "duration": 120,
+    "appointment_type": "consultation",
+    "appointment_type_id": "c786abed-a880-4607-8546-7044d3668ff3",
+    "specialization": "Atelier",
+    "is_online": true,
+    "notes": "",
+    "price": 100,
+    "payment_status": "pending",
+    "id": "ee18d828-3822-440b-a4bf-f266fea98d55",
+    "created_at": "2025-12-23T22:16:11.667Z",
+    "updated_at": "2025-12-23T22:16:57.180Z",
+    "stripe_session_id": "cs_live_a1c6AlMf6C2lhoy6dUlBETE09sINFPtB4IqrVWZcROozVfTLEICv5ZtWQ0"
+  }
+]

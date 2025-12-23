@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import DataTable from '@/components/admin/DataTable';
-import { supabase } from '@/lib/supabase';
 import { Eye, Mail, CheckCheck } from 'lucide-react';
 
 interface Contact {
@@ -12,7 +11,7 @@ interface Contact {
   subject: string;
   message: string;
   status: string;
-  created_at: string;
+  createdAt: string;
 }
 
 export default function AdminContactsPage() {
@@ -22,37 +21,17 @@ export default function AdminContactsPage() {
 
   useEffect(() => {
     fetchContacts();
-
-    // Real-time subscription
-    const channel = supabase
-      .channel('admin_contacts')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'contacts',
-        },
-        () => {
-          fetchContacts();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, []);
 
   async function fetchContacts() {
     try {
-      const { data, error } = await supabase
-        .from('contacts')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setContacts(data || []);
+      const res = await fetch('/api/admin/messages');
+      const data = await res.json();
+      // Ensure data is sorted by date desc
+      if (Array.isArray(data)) {
+        data.sort((a: Contact, b: Contact) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        setContacts(data);
+      }
     } catch (error) {
       console.error('Error fetching contacts:', error);
     } finally {
@@ -62,13 +41,15 @@ export default function AdminContactsPage() {
 
   async function markAsRead(id: string) {
     try {
-      const { error } = await supabase
-        .from('contacts')
-        .update({ status: 'read' })
-        .eq('id', id);
+      const res = await fetch('/api/admin/messages', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status: 'read' }),
+      });
 
-      if (error) throw error;
-      fetchContacts();
+      if (res.ok) {
+        fetchContacts();
+      }
     } catch (error) {
       console.error('Error updating contact:', error);
     }
@@ -91,19 +72,18 @@ export default function AdminContactsPage() {
     },
     {
       header: 'Date',
-      accessor: (row: Contact) => new Date(row.created_at).toLocaleDateString(),
+      accessor: (row: Contact) => new Date(row.createdAt).toLocaleDateString(),
     },
     {
       header: 'Status',
       accessor: (row: Contact) => (
         <span
-          className={`px-3 py-1 rounded-full text-xs font-semibold ${
-            row.status === 'new'
+          className={`px-3 py-1 rounded-full text-xs font-semibold ${row.status === 'new'
               ? 'bg-blue-100 text-blue-700'
               : row.status === 'read'
-              ? 'bg-gray-100 text-gray-700'
-              : 'bg-green-100 text-green-700'
-          }`}
+                ? 'bg-gray-100 text-gray-700'
+                : 'bg-green-100 text-green-700'
+            }`}
         >
           {row.status}
         </span>
@@ -196,7 +176,7 @@ export default function AdminContactsPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600 mb-1">Received</p>
-                <p className="text-sm">{new Date(selectedContact.created_at).toLocaleString()}</p>
+                <p className="text-sm">{new Date(selectedContact.createdAt).toLocaleString()}</p>
               </div>
 
               <div className="flex gap-3 pt-4 border-t">

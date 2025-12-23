@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/lib/supabase';
+import settingsData from '@/data/settings.json';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import { Bell, Search, Loader2, ShieldAlert, X, Calendar, MessageSquare, Info, Filter } from 'lucide-react';
 import Link from 'next/link';
@@ -40,55 +40,25 @@ export default function AdminLayout({
       router.push('/login?redirect=/admin');
     } else if (user) {
       checkAdminStatus();
-      fetchNotifications();
-
-      // Realtime subscription for notifications
-      const channel = supabase
-        .channel('admin_notifications')
-        .on(
-          'postgres_changes',
-          { event: 'INSERT', schema: 'public', table: 'notifications' },
-          (payload) => {
-            console.log('🔔 New notification received:', payload);
-            const newNotif = payload.new as AdminNotification;
-            setNotifications(prev => [newNotif, ...prev]);
-            setUnreadCount(prev => prev + 1);
-
-            // Show browser notification if permitted
-            if (Notification.permission === 'granted') {
-              new Notification(newNotif.title, { body: newNotif.message });
-            }
-          }
-        )
-        .subscribe();
-
-      return () => {
-        supabase.removeChannel(channel);
-      };
+      // fetchNotifications(); // Notifications disabled for now
     }
   }, [user, loading, router]);
 
   async function checkAdminStatus() {
-    if (!user) return;
+    if (!user || !user.email) return;
 
     try {
-      console.log('🔐 Checking admin status for user:', user.uid, user.email);
+      // Check if user email is in admin_emails list from settings
+      const adminEmails = settingsData.admin_emails || [];
+      const isUserAdmin = adminEmails.includes(user.email);
 
-      const { data, error } = await supabase
-        .from('admin_users')
-        .select('role, permissions')
-        .eq('user_id', user.uid)
-        .single();
-
-      console.log('🛡️ Admin check result:', { data, error });
-
-      if (error || !data) {
-        console.warn('❌ User is NOT admin:', error?.message || 'No data found');
-        setIsAdmin(false);
-      } else {
-        console.log('✅ User IS admin:', data.role);
+      if (isUserAdmin) {
+        console.log('✅ User IS admin');
         setIsAdmin(true);
-        setAdminRole(data.role);
+        setAdminRole('admin');
+      } else {
+        console.warn('❌ User is NOT admin');
+        setIsAdmin(false);
       }
     } catch (error) {
       console.error('❌ Error checking admin status:', error);
@@ -97,56 +67,15 @@ export default function AdminLayout({
   }
 
   async function fetchNotifications() {
-    setNotifLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('notifications')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(20);
-
-      if (error) throw error;
-      setNotifications(data || []);
-      setUnreadCount(data?.filter(n => !n.is_read).length || 0);
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-    } finally {
-      setNotifLoading(false);
-    }
+    // Disabled
   }
 
   async function markAsRead(id: string) {
-    try {
-      const { error } = await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('id', id);
-
-      if (error) throw error;
-
-      setNotifications(prev =>
-        prev.map(n => n.id === id ? { ...n, is_read: true } : n)
-      );
-      setUnreadCount(prev => Math.max(0, prev - 1));
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
-    }
+    // Disabled
   }
 
   async function markAllAsRead() {
-    try {
-      const { error } = await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('is_read', false);
-
-      if (error) throw error;
-
-      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
-      setUnreadCount(0);
-    } catch (error) {
-      console.error('Error marking all notifications as read:', error);
-    }
+    // Disabled
   }
 
   const getNotifIcon = (type: string) => {

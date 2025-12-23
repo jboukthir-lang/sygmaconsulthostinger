@@ -1,0 +1,35 @@
+{
+    "en": {
+        "hero": {
+            "badge": "Premium Consulting Services",
+            "title_start": "Your Strategic Partner in",
+            "paris": "Paris",
+            "tunis": "Tunis",
+            "subtitle": "Empowering businesses and individuals with world-class digital transformation, legal compliance, and strategic financial growth solutions.",
+            "cta_book": "Book a Consultation",
+            "cta_services": "Explore Services"
+        }
+    },
+    "fr": {
+        "hero": {
+            "badge": "Services de Conseil Premium",
+            "title_start": "Votre Partenaire Stratégique à",
+            "paris": "Paris",
+            "tunis": "Tunis",
+            "subtitle": "Accompagner les entreprises et les particuliers avec des solutions de transformation numérique, de conformité juridique et de croissance financière.",
+            "cta_book": "Prendre Rendez-vous",
+            "cta_services": "Nos Services"
+        }
+    },
+    "ar": {
+        "hero": {
+            "badge": "خدمات استشارية متميزة",
+            "title_start": "شريكك الاستراتيجي في",
+            "paris": "باريس",
+            "tunis": "تونس",
+            "subtitle": "تمكين الشركات والأفراد من خلال حلول التحول الرقمي، الامتثال القانوني، والنمو المالي الاستراتيجي.",
+            "cta_book": "احجز موعد",
+            "cta_services": "اكتشف خدماتنا"
+        }
+    }
+}

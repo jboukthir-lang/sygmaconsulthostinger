@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase, type Contact } from '@/lib/supabase';
+import { saveMessage } from '@/lib/local-storage';
 import { sendContactNotification, sendContactAutoReply } from '@/lib/smtp-email';
 
 export async function POST(request: Request) {
@@ -15,30 +15,15 @@ export async function POST(request: Request) {
             );
         }
 
-        // Save to Supabase
-        const contactData: Contact = {
+        // Save to Local File
+        const data = await saveMessage({
             name,
             email,
             subject: subject || 'General Inquiry',
-            message,
-            status: 'new'
-        };
+            message
+        });
 
-        const { data, error } = await supabase
-            .from('contacts')
-            .insert([contactData])
-            .select()
-            .single();
-
-        if (error) {
-            console.error('Supabase Error:', error);
-            return NextResponse.json(
-                { error: 'Failed to save contact message' },
-                { status: 500 }
-            );
-        }
-
-        console.log('Contact saved successfully:', data);
+        console.log('Contact saved locally:', data);
 
         // Send notification email to admin
         try {

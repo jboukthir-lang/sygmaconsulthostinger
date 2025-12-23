@@ -1,0 +1,23 @@
+{
+    "company_name": "Sygma Consult",
+    "phone_primary": "+33 7 52 03 47 86",
+    "email_primary": "contact@sygma-consult.com",
+    "linkedin_url": "https://www.linkedin.com/company/sygma-consult",
+    "twitter_url": "https://twitter.com/sygmaconsult",
+    "facebook_url": "https://www.facebook.com/sygmaconsult",
+    "instagram_url": "https://www.instagram.com/sygmaconsult",
+    "address_paris_en": "6 rue Paul Verlaine, 93130 Noisy-le-Sec",
+    "address_paris_fr": "6 rue Paul Verlaine, 93130 Noisy-le-Sec",
+    "address_paris_ar": "6 شارع بول فيرلين، 93130 نوازي لو سيك",
+    "address_tunis_en": "Les Berges du Lac II, 1053 Tunis",
+    "address_tunis_fr": "Les Berges du Lac II, 1053 Tunis",
+    "address_tunis_ar": "ضفاف البحيرة 2، 1053 تونس",
+    "company_description_en": "Your trusted strategic associate for digital transformation and growth in Paris and Tunis.",
+    "company_description_fr": "Votre partenaire stratégique de confiance pour la transformation numérique et la croissance à Paris et Tunis.",
+    "company_description_ar": "شريكك الاستراتيجي الموثوق للتحول الرقمي والنمو في باريس وتونس.",
+    "admin_emails": [
+        "contact@sygma-consult.com",
+        "admin@sygman-consult.com",
+        "jboukthir.contact@gmail.com"
+    ]
+}
