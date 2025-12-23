@@ -34,6 +34,9 @@ export default function Header() {
                             className="h-12 w-auto"
                             priority
                         />
+                        <span className="hidden sm:inline-block font-serif text-xl font-bold text-[#001F3F]">
+                            SYGMA<span className="text-[#D4AF37]">CONSULT</span>
+                        </span>
                     </Link>
 
                     <nav className="hidden md:flex gap-8 text-sm font-medium text-[#4A4A4A]">
