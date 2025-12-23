@@ -1748,6 +1748,186 @@ export const translations = {
       en: 'Failed to upload file. Please try again.',
     },
   },
+
+  // Service Details
+  serviceDetails: {
+    "strategic": {
+      title: {
+        fr: "Développement de Marché",
+        ar: "تطوير الأسواق",
+        en: "Market Development"
+      },
+      subtitle: {
+        fr: "Pénétrez de Nouveaux Marchés avec Confiance",
+        ar: "ادخل أسواقاً جديدة بثقة",
+        en: "Penetrate New Markets with Confidence"
+      },
+      description: {
+        fr: "Notre service 'Développement et Pénétration de Marché' offre des stratégies de croissance ambitieuses pour les entreprises souhaitant s'étendre en France ou en Afrique du Nord. Nous analysons la dynamique du marché, identifions les opportunités clés et créons une feuille de route pour un succès durable.",
+        ar: "يقدم خبراؤنا استراتيجيات نمو طموحة للشركات التي تتطلع إلى التوسع في فرنسا أو شمال إفريقيا. نقوم بتحليل ديناميكيات السوق وتحديد الفرص الرئيسية وإنشاء خارطة طريق للنجاح المستدام.",
+        en: "Our Market Development service provides ambitious growth strategies for businesses looking to expand into France or North Africa. We analyze market dynamics, identify key opportunities, and create a roadmap for sustainable success."
+      },
+      features: {
+        fr: ["Stratégie d'entrée sur le marché", "Analyse concurrentielle", "Modélisation de la croissance", "Développement de partenariats"],
+        ar: ["استراتيجية دخول السوق", "تحليل المنافسين", "نمذجة النمو", "تطوير الشراكات"],
+        en: ["Market Entry Strategy", "Competitive Analysis", "Growth Modeling", "Partnership Development"]
+      }
+    },
+    "financial-legal": {
+      title: {
+        fr: "Affaires et Fiscalité",
+        ar: "الأعمال والضرائب",
+        en: "Business & Tax"
+      },
+      subtitle: {
+        fr: "Optimisation et Conformité",
+        ar: "التحسين والامتثال",
+        en: "Optimization and Compliance"
+      },
+      description: {
+        fr: "Nous fournissons un soutien complet pour les fusions et acquisitions, la conformité fiscale et la restructuration d'entreprise. Nos experts veillent à ce que vos stratégies financières et fiscales soient optimisées pour les juridictions françaises et tunisiennes.",
+        ar: "نقدم دعماً شاملاً لعمليات الدمج والاستحواذ والامتثال الضريبي وإعادة هيكلة الشركات. يضمن خبراؤنا تحسين استراتيجياتك المالية والضريبية لكل من الولايات القضائية الفرنسية والتونسية.",
+        en: "We provide comprehensive support for M&A, tax compliance, and corporate restructuring. Our experts ensure your financial and tax strategies are optimized for both French and Tunisian jurisdictions."
+      },
+      features: {
+        fr: ["Optimisation Fiscale", "Conformité Droit du Travail", "Restructuration d'Entreprise", "Audits Contractuels"],
+        ar: ["التحسين الضريبي", "الامتثال لقانون العمل", "إعادة هيكلة الشركات", "التدقيق التعاقدي"],
+        en: ["Tax Optimization", "Labor Law Compliance", "Corporate Restructuring", "Contractual Audits"]
+      }
+    },
+    "visa": {
+      title: {
+        fr: "Procédures Visa",
+        ar: "إجراءات التأشيرة",
+        en: "Visa Procedures"
+      },
+      subtitle: {
+        fr: "Faciliter Votre Mobilité",
+        ar: "تسهيل تنقلك",
+        en: "Facilitating Your Mobility"
+      },
+      description: {
+        fr: "Nous facilitons toutes les procédures d'obtention de visas, que ce soit à des fins professionnelles ou personnelles. De la préparation des documents à la soumission aux autorités compétentes, nous offrons un accompagnement complet.",
+        ar: "نحن نسهل جميع إجراءات الحصول على التأشيرات، سواء للأغراض المهنية أو الشخصية. من إعداد المستندات إلى تقديمها للسلطات المختصة، نقدم مرافقة كاملة لضمان عملية سلسة.",
+        en: "We facilitate all procedures for obtaining visas, whether for professional or personal purposes. From document preparation to submission to competent authorities, we provide full accompaniment to ensure a smooth process."
+      },
+      features: {
+        fr: ["Visas Professionnels (Passeport Talent)", "Visas Personnels & Familiaux", "Revue & Soumission de Dossier", "Renouvellement de Titre de Séjour"],
+        ar: ["التأشيرات المهنية (جواز الموهبة)", "التأشيرات الشخصية والعائلية", "مراجعة وتقديم الطلبات", "تجديد تصاريح الإقامة"],
+        en: ["Professional Visas (Talent Passport)", "Personal & Family Visas", "Application Review & Submission", "Residency Permit Renewals"]
+      }
+    },
+    "corporate": {
+      title: {
+        fr: "Formalités d'Entreprise",
+        ar: "إجراءات الشركات",
+        en: "Company Formalities"
+      },
+      subtitle: {
+        fr: "Gestion Administrative & Juridique",
+        ar: "الإدارة الإدارية والقانونية",
+        en: "Administrative & Legal Management"
+      },
+      description: {
+        fr: "Nous gérons les aspects administratifs et juridiques du cycle de vie de votre entreprise. Que vous créiez une nouvelle entité, modifiiez les statuts ou procédiez à une dissolution, nous assurons une conformité totale.",
+        ar: "ندير الجوانب الإدارية والقانونية لدورة حياة شركتك. سواء كنت تنشئ كياناً جديداً، أو تعدل القوانين الأساسية، أو تخضع للحل، فإننا نضمن الامتثال الكامل.",
+        en: "We manage the administrative and legal aspects of your company lifecycle. Whether you are incorporating a new entity, modifying statutes, or undergoing dissolution, we ensure full compliance."
+      },
+      features: {
+        fr: ["Création de Société (SAS, SARL...)", "Modification des Statuts", "Secrétariat Juridique", "Liquidation & Dissolution"],
+        ar: ["تأسيس الشركات", "تعديل النظام الأساسي", "السكرتارية القانونية", "التصفية والحل"],
+        en: ["Company Incorporation", "Statute Modification", "Legal Secretariat", "Liquidation & Dissolution"]
+      }
+    },
+    "hr-training": {
+      title: {
+        fr: "Coaching & Formation",
+        ar: "التدريب والتوجيه",
+        en: "Coaching & Training"
+      },
+      subtitle: {
+        fr: "Développer le Capital Humain",
+        ar: "تطوير رأس المال البشري",
+        en: "Developing Human Capital"
+      },
+      description: {
+        fr: "Dédié au développement des ressources humaines. Nos programmes se concentrent sur l'amélioration des compétences, le coaching de leadership et l'atteinte des objectifs professionnels.",
+        ar: "مخصص لتنمية الموارد البشرية للأفراد والشركات. تركز برامجنا على تعزيز المهارات، وتوجيه القيادة، وتحقيق الأهداف المهنية.",
+        en: "Dedicated to human resources development. Our programs focus on skill enhancement, leadership coaching, and achieving professional goals."
+      },
+      features: {
+        fr: ["Coaching Exécutif", "Ateliers de Leadership", "Soft Skills", "Développement de Carrière"],
+        ar: ["التوجيه التنفيذي", "ورش عمل القيادة", "المهارات الشخصية", "التطوير الوظيفي"],
+        en: ["Executive Coaching", "Team Leadership Workshops", "Soft Skills Training", "Career Development"]
+      }
+    },
+    "compliance": {
+      title: {
+        fr: "Conformité & Risque",
+        ar: "الامتثال والمخاطر",
+        en: "Compliance & Risk"
+      },
+      subtitle: {
+        fr: "Protéger Vos Actifs",
+        ar: "حماية أصولك",
+        en: "Protecting Your Assets"
+      },
+      description: {
+        fr: "Dans un environnement réglementaire en constante évolution, la conformité n'est pas optionnelle. Nous vous aidons à construire des systèmes résilients qui résistent à l'examen.",
+        ar: "في بيئة تنظيمية دائمة التغير، الامتثال ليس اختيارياً. نساعدك على بناء أنظمة مرنة تصمد أمام التدقيق وتحمي سمعتك.",
+        en: "In an ever-changing regulatory environment, compliance is not optional. We help you build resilient systems that withstand scrutiny."
+      },
+      features: {
+        fr: ["Conformité RGPD", "Lutte contre le Blanchiment (AML)", "Audits Internes", "Sécurité des Données"],
+        ar: ["الامتثال للائحة حماية البيانات", "مكافحة غسيل الأموال", "التدقيق الداخلي", "أمن البيانات"],
+        en: ["GDPR Compliance", "Anti-Money Laundering (AML)", "Internal Audits", "Data Security Protocols"]
+      }
+    },
+    "digital": {
+      title: {
+        fr: "Transformation Digitale",
+        ar: "التحول الرقمي",
+        en: "Digital Transformation"
+      },
+      subtitle: {
+        fr: "Pérennisez Votre Entreprise",
+        ar: "مستقبل عملك",
+        en: "Future-Proofing Your Business"
+      },
+      description: {
+        fr: "Exploitez la puissance de l'IA et de la technologie moderne. Nous vous guidons à travers la transition numérique pour rester compétitif.",
+        ar: "استفد من قوة الذكاء الاصطناعي والتكنولوجيا الحديثة. نوجهك خلال الانتقال الرقمي لضمان بقاء عملك قادراً على المنافسة.",
+        en: "Leverage the power of AI and modern technology. We guide you through the digital transition to ensure your business stays competitive."
+      },
+      features: {
+        fr: ["Stratégie IA", "Migration Cloud", "Automatisation des Processus", "Expérience Client Digitale"],
+        ar: ["استراتيجية الذكاء الاصطناعي", "الانتقال السحابي", "أتمتة العمليات", "التجربة الرقمية للعملاء"],
+        en: ["AI Integration Strategy", "Cloud Migration", "Process Automation", "Digital Customer Experience"]
+      }
+    },
+    "real-estate": {
+      title: {
+        fr: "Droit Immobilier",
+        ar: "القانون العقاري",
+        en: "Real Estate Law"
+      },
+      subtitle: {
+        fr: "Sécuriser Vos Transactions",
+        ar: "تأمين معاملاتك",
+        en: "Securing Your Transactions"
+      },
+      description: {
+        fr: "Accompagnement juridique complet pour les transactions immobilières (achat/vente) et les projets de construction. Nous assurons que vos actifs sont protégés.",
+        ar: "مرافقة قانونية شاملة للمعاملات العقارية (بيع/شراء) ومشاريع البناء. نضمن حماية أصولك وسير مشاريعك بسلاسة.",
+        en: "Comprehensive legal accompaniment for real estate transactions (buying/selling) and construction projects. We ensure your assets are protected."
+      },
+      features: {
+        fr: ["Support Acquisition", "Contrats de Construction", "Baux Commerciaux", "Contentieux Immobilier"],
+        ar: ["دعم الاستحواذ", "عقود البناء", "عقود الإيجار", "النزاعات العقارية"],
+        en: ["Property Acquisition Support", "Construction Contracts", "Lease Agreements", "Real Estate Litigation"]
+      }
+    }
+  },
 };
 
 // Helper function to get translation

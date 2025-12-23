@@ -5,7 +5,7 @@ const servicesData: Record<string, { title: string; subtitle: string; descriptio
     "strategic": {
         title: "Market Development",
         subtitle: "Penetrate New Markets with Confidence",
-        description: "Our 'Développement et Pénétration de Marché' service provides ambitious growth strategies for businesses looking to expand into France or North Africa. We analyze market dynamics, identify key opportunities, and create a roadmap for sustainable success.",
+        description: "Our Market Development service provides ambitious growth strategies for businesses looking to expand into France or North Africa. We analyze market dynamics, identify key opportunities, and create a roadmap for sustainable success.",
         features: ["Market Entry Strategy", "Competitive Analysis", "Growth Modeling", "Partnership Development"]
     },
     "financial-legal": {

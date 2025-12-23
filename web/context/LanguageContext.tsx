@@ -403,7 +403,7 @@ const translations: Record<Language, Translations> = {
             "strategic": {
                 title: "Market Development",
                 subtitle: "Penetrate New Markets with Confidence",
-                description: "Our 'Développement et Pénétration de Marché' service provides ambitious growth strategies for businesses looking to expand into France or North Africa. We analyze market dynamics, identify key opportunities, and create a roadmap for sustainable success.",
+                description: "Our Market Development service provides ambitious growth strategies for businesses looking to expand into France or North Africa. We analyze market dynamics, identify key opportunities, and create a roadmap for sustainable success.",
                 features: ["Market Entry Strategy", "Competitive Analysis", "Growth Modeling", "Partnership Development"]
             },
             "financial-legal": {
@@ -416,7 +416,7 @@ const translations: Record<Language, Translations> = {
                 title: "Visa Procedures",
                 subtitle: "Facilitating Your Mobility",
                 description: "We facilitate all procedures for obtaining visas, whether for professional or personal purposes. From document preparation to submission to competent authorities, we provide full accompaniment to ensure a smooth process.",
-                features: ["Professional Visas (Passeport Talent)", "Personal & Family Visas", "Application Review & Submission", "Residency Permit Renewals"]
+                features: ["Professional Visas (Talent Passport)", "Personal & Family Visas", "Application Review & Submission", "Residency Permit Renewals"]
             },
             "corporate": {
                 title: "Company Formalities",
@@ -444,7 +444,7 @@ const translations: Record<Language, Translations> = {
             },
             "real-estate": {
                 title: "Real Estate Law",
-                subtitle: "Droit Immobilier",
+                subtitle: "Securing Your Transactions",
                 description: "Comprehensive legal accompaniment for real estate transactions (buying/selling) and construction projects. We ensure your assets are protected and your projects proceed smoothly.",
                 features: ["Property Acquisition Support", "Construction Contracts", "Lease Agreements", "Real Estate Litigation"]
             }
@@ -954,52 +954,52 @@ const translations: Record<Language, Translations> = {
         },
         serviceDetails: {
             "strategic": {
-                title: "تطوير السوق",
+                title: "تطوير الأسواق",
                 subtitle: "ادخل أسواقاً جديدة بثقة",
-                description: "تقدم خدمتنا 'تطوير واختراق السوق' استراتيجيات نمو طموحة للشركات التي تتطلع إلى التوسع في فرنسا أو شمال إفريقيا. نقوم بتحليل ديناميكيات السوق وتحديد الفرص الرئيسية وإنشاء خارطة طريق لتحقيق نجاح مستدام.",
-                features: ["استراتيجية دخول السوق", "التحليل التنافسي", "نمذجة النمو", "تطوير الشراكات"]
+                description: "يقدم خبراؤنا استراتيجيات نمو طموحة للشركات التي تتطلع إلى التوسع في فرنسا أو شمال إفريقيا. نقوم بتحليل ديناميكيات السوق وتحديد الفرص الرئيسية وإنشاء خارطة طريق للنجاح المستدام.",
+                features: ["استراتيجية دخول السوق", "تحليل المنافسين", "نمذجة النمو", "تطوير الشراكات"]
             },
             "financial-legal": {
                 title: "الأعمال والضرائب",
                 subtitle: "الشؤون والضرائب",
                 description: "نحن نقدم دعماً شاملاً لعمليات الدمج والاستحواذ والامتثال الضريبي وإعادة هيكلة الشركات. يضمن خبراؤنا تحسين استراتيجياتك المالية والضريبية لكل من الولايات القضائية الفرنسية والتونسية.",
-                features: ["التحسين الضريبي", "الامتثال لقانون العمل", "إعادة هيكلة الشركات", "الرقابة التعاقدية"]
+                features: ["التحسين الضريبي", "الامتثال لقانون العمل", "إعادة هيكلة الشركات", "التدقيق التعاقدي"]
             },
             "visa": {
                 title: "إجراءات التأشيرة",
                 subtitle: "تسهيل تنقلك",
-                description: "نحن نسهل جميع الإجراءات للحصول على التأشيرات، سواء لأغراض مهنية أو شخصية. من إعداد المستندات إلى تقديمها إلى السلطات المختصة، نقدم مرافقة كاملة لضمان عملية سلسة.",
-                features: ["تأشيرات مهنية (جواز سفر المواهب)", "تأشيرات شخصية وعائلية", "مراجعة وتقديم الطلب", "تجديد تصريح الإقامة"]
+                description: "نحن نسهل جميع إجراءات الحصول على التأشيرات، سواء للأغراض المهنية أو الشخصية. من إعداد المستندات إلى تقديمها للسلطات المختصة، نقدم مرافقة كاملة لضمان عملية سلسة.",
+                features: ["التأشيرات المهنية (جواز الموهبة)", "التأشيرات الشخصية والعائلية", "مراجعة وتقديم الطلبات", "تجديد تصاريح الإقامة"]
             },
             "corporate": {
                 title: "إجراءات الشركات",
                 subtitle: "الإدارة الإدارية والقانونية",
-                description: "نحن ندير الجوانب الإدارية والقانونية لدورة حياة شركتك. سواء كنت تؤسس كياناً جديداً، أو تعدل القوانين، أو تخضع للحل، فإننا نضمن الامتثال الكامل لجميع الالتزامات الإدارية.",
-                features: ["تأسيس الشركات (SAS, SARL, SUARL)", "تعديل النظام الأساسي", "السكرتارية القانونية", "التصفية والحل"]
+                description: "ندير الجوانب الإدارية والقانونية لدورة حياة شركتك. سواء كنت تنشئ كياناً جديداً، أو تعدل القوانين الأساسية، أو تخضع للحل، فإننا نضمن الامتثال الكامل.",
+                features: ["تأسيس الشركات", "تعديل النظام الأساسي", "السكرتارية القانونية", "التصفية والحل"]
             },
             "hr-training": {
-                title: "التدريب والكوتشينغ",
+                title: "التدريب والتوجيه",
                 subtitle: "تطوير رأس المال البشري",
-                description: "مخصص لتنمية الموارد البشرية للأفراد والشركات. تركز برامجنا على تعزيز المهارات، والتوجيه القيادي، وتحقيق الأهداف المهنية.",
-                features: ["التوجيه التنفيذي", "ورش عمل قيادة الفريق", "تدريب المهارات الشخصية", "التطوير الوظيفي"]
+                description: "مخصص لتنمية الموارد البشرية للأفراد والشركات. تركز برامجنا على تعزيز المهارات، وتوجيه القيادة، وتحقيق الأهداف المهنية.",
+                features: ["التوجيه التنفيذي", "ورش عمل القيادة", "المهارات الشخصية", "التطوير الوظيفي"]
             },
             "compliance": {
                 title: "الامتثال والمخاطر",
                 subtitle: "حماية أصولك",
-                description: "في بيئة تنظيمية متغيرة باستمرار، الامتثال ليس اختيارياً. نحن نساعدك على بناء أنظمة مرنة تصمد أمام التدقيق وتحمي سمعتك.",
-                features: ["الامتثال لـ GDPR", "مكافحة غسيل الأموال (AML)", "المدقيق الداخلي", "بروتوكولات أمان البيانات"]
+                description: "في بيئة تنظيمية دائمة التغير، الامتثال ليس اختيارياً. نساعدك على بناء أنظمة مرنة تصمد أمام التدقيق وتحمي سمعتك.",
+                features: ["الامتثال للائحة حماية البيانات", "مكافحة غسيل الأموال", "التدقيق الداخلي", "أمن البيانات"]
             },
             "digital": {
                 title: "التحول الرقمي",
-                subtitle: "تأمين مستقبل عملك",
-                description: "استفد من قوة الذكاء الاصطناعي والتكنولوجيا الحديثة. نحن نرشدك خلال الانتقال الرقمي، مما يضمن بقاء عملك تنافسياً في العصر الرقمي.",
-                features: ["استراتيجية تكامل الذكاء الاصطناعي", "الانتقال السحابي", "أتمتة العمليات", "تجربة العملاء الرقمية"]
+                subtitle: "مستقبل عملك",
+                description: "استفد من قوة الذكاء الاصطناعي والتكنولوجيا الحديثة. نوجهك خلال الانتقال الرقمي لضمان بقاء عملك قادراً على المنافسة.",
+                features: ["استراتيجية الذكاء الاصطناعي", "الانتقال السحابي", "أتمتة العمليات", "التجربة الرقمية للعملاء"]
             },
             "real-estate": {
                 title: "القانون العقاري",
-                subtitle: "قانون العقارات",
-                description: "مرافقة قانونية شاملة للمعاملات العقارية (الشراء / البيع) ومشاريع البناء. نحن نضمن حماية أصولك وسير مشاريعك بسلاسة.",
-                features: ["دعم الاستحواذ العقاري", "عقود البناء", "اتفاقيات الإيجار", "التقاضي العقاري"]
+                subtitle: "تأمين معاملاتك",
+                description: "مرافقة قانونية شاملة للمعاملات العقارية (بيع/شراء) ومشاريع البناء. نضمن حماية أصولك وسير مشاريعك بسلاسة.",
+                features: ["دعم الاستحواذ", "عقود البناء", "عقود الإيجار", "النزاعات العقارية"]
             }
         },
         login: {

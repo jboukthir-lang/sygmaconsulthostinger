@@ -35,7 +35,7 @@ export default function ServicesPage() {
                         {t.servicesPage.cta_desc}
                     </p>
                     <a
-                        href="/book"
+                        href="/booking"
                         className="inline-flex items-center justify-center px-8 py-3 bg-[#D4AF37] text-white font-bold rounded-lg hover:bg-[#C5A028] transition-colors shadow-lg shadow-[#D4AF37]/20"
                     >
                         {t.servicesPage.cta_button}
