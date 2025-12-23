@@ -4,9 +4,23 @@ import { useEffect, useState } from 'react';
 import Header from "@/components/Header";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
-import { supabase, Post } from "@/lib/supabase";
 import { Calendar, Clock, Tag, Loader2 } from "lucide-react";
 import Image from "next/image";
+
+interface Post {
+    id: string;
+    title_en: string;
+    title_fr: string;
+    title_ar: string;
+    slug: string;
+    excerpt_en: string;
+    excerpt_fr: string;
+    excerpt_ar: string;
+    category: string;
+    featured_image?: string;
+    published_at?: string;
+    reading_time: number;
+}
 
 export default function InsightsPage() {
     const { t, language } = useLanguage();
@@ -21,13 +35,9 @@ export default function InsightsPage() {
     const fetchPosts = async () => {
         try {
             setLoading(true);
-            const { data, error } = await supabase
-                .from('posts')
-                .select('*')
-                .eq('published', true)
-                .order('published_at', { ascending: false });
-
-            if (error) throw error;
+            const response = await fetch('/api/posts');
+            if (!response.ok) throw new Error('Failed to fetch posts');
+            const data = await response.json();
             setPosts(data || []);
         } catch (error) {
             console.error('Error fetching posts:', error);
@@ -102,11 +112,10 @@ export default function InsightsPage() {
                             <button
                                 key={category}
                                 onClick={() => setSelectedCategory(category)}
-                                className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${
-                                    selectedCategory === category
+                                className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${selectedCategory === category
                                         ? 'bg-[#001F3F] text-white'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
                                 {category === 'all' ? t.insights.all_posts : category}
                             </button>

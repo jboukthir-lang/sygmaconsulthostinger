@@ -143,9 +143,9 @@ export default function Footer() {
                     <p className="text-xs text-gray-500">
                         © {new Date().getFullYear()} Sygma Consult. {t.footer.rights}
                     </p>
-                    <div className="flex gap-6 text-xs text-gray-500">
-                        <Link href="/terms" className="hover:text-white">{t.footer.terms}</Link>
-                        <Link href="/legal" className="hover:text-white">{t.footer.legal}</Link>
+                    <div className="flex gap-8 text-sm text-gray-500">
+                        <Link href="/terms" className="hover:text-white py-2">{t.footer.terms}</Link>
+                        <Link href="/legal" className="hover:text-white py-2">{t.footer.legal}</Link>
                     </div>
                 </div>
             </div>

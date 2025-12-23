@@ -49,39 +49,10 @@ export default function Services() {
     }, [language]);
 
     async function loadServices() {
-        try {
-            const { data, error } = await supabase
-                .from('services')
-                .select('*')
-                .eq('is_active', true)
-                .order('display_order', { ascending: true });
-
-            if (error) {
-                console.error('Error loading services:', error);
-                // Fallback to hardcoded services if database fails
-                useFallbackServices();
-                return;
-            }
-
-            if (data && data.length > 0) {
-                // Map database services to component format
-                const mappedServices = data.map((service: ServiceFromDB) => ({
-                    title: language === 'ar' ? service.title_ar : language === 'fr' ? service.title_fr : service.title_en,
-                    description: language === 'ar' ? service.description_ar : language === 'fr' ? service.description_fr : service.description_en,
-                    icon: iconMap[service.icon] || Briefcase,
-                    href: service.href,
-                }));
-                setServices(mappedServices);
-            } else {
-                // No services in database, use fallback
-                useFallbackServices();
-            }
-        } catch (error) {
-            console.error('Error loading services:', error);
-            useFallbackServices();
-        } finally {
-            setLoading(false);
-        }
+        // Temporarily using fallback services - will be replaced with MySQL API
+        console.log('Using fallback services');
+        useFallbackServices();
+        setLoading(false);
     }
 
     function useFallbackServices() {

@@ -25,16 +25,16 @@ export default function Header() {
         <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="flex h-20 items-center justify-between">
-                    <Link className="flex items-center gap-3" href="/">
+                    <Link className="flex items-center gap-2" href="/">
                         <Image
                             src="/logo.png"
                             alt="Sygma Consult"
-                            width={150}
-                            height={150}
-                            className="h-12 w-auto"
+                            width={120}
+                            height={120}
+                            className="h-10 md:h-12 w-auto"
                             priority
                         />
-                        <span className="hidden sm:inline-block font-serif text-xl font-bold text-[#001F3F]">
+                        <span className="hidden sm:inline-block font-serif text-lg md:text-xl font-bold text-[#001F3F]">
                             SYGMA<span className="text-[#D4AF37]">CONSULT</span>
                         </span>
                     </Link>
@@ -49,11 +49,11 @@ export default function Header() {
 
                     <div className="flex items-center gap-4">
                         <Link
-                            className="hidden md:inline-flex items-center justify-center rounded-lg border border-[#001F3F] bg-transparent px-6 py-2 text-sm font-medium text-[#001F3F] shadow-sm transition-colors hover:bg-[#F8F9FA] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#001F3F]"
+                            className="hidden lg:inline-flex items-center justify-center rounded-lg border border-[#001F3F] bg-transparent px-4 lg:px-6 py-2 text-sm font-medium text-[#001F3F] shadow-sm transition-colors hover:bg-[#F8F9FA] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#001F3F]"
                             href="/contact"
                         >
                             <Phone className="mr-2 h-4 w-4" />
-                            {t.nav.contact}
+                            <span className="hidden lg:inline">{t.nav.contact}</span>
                         </Link>
 
                         {/* Language Switcher */}
@@ -101,7 +101,7 @@ export default function Header() {
                         )}
 
                         <Link
-                            className="inline-flex items-center justify-center rounded-lg bg-[#D4AF37] px-6 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-[#C5A028] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#D4AF37]"
+                            className="hidden md:inline-flex items-center justify-center rounded-lg bg-[#D4AF37] px-6 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-[#C5A028] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#D4AF37]"
                             href="/booking"
                         >
                             {t.nav.book}

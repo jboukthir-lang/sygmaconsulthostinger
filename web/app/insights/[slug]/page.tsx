@@ -4,11 +4,39 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Header from "@/components/Header";
 import { useLanguage } from "@/context/LanguageContext";
-import { supabase, Post } from "@/lib/supabase";
 import { Calendar, Clock, Tag, ArrowLeft, Share2, Loader2, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import Head from 'next/head';
+
+interface Post {
+    id: string;
+    title_en: string;
+    title_fr: string;
+    title_ar: string;
+    slug: string;
+    excerpt_en: string;
+    excerpt_fr: string;
+    excerpt_ar: string;
+    content_en: string;
+    content_fr: string;
+    content_ar: string;
+    category: string;
+    tags?: string[];
+    featured_image?: string;
+    published_at?: string;
+    updated_at?: string;
+    reading_time: number;
+    author_name: string;
+    views?: number;
+    seo_title_en?: string;
+    seo_title_fr?: string;
+    seo_title_ar?: string;
+    seo_description_en?: string;
+    seo_description_fr?: string;
+    seo_description_ar?: string;
+    seo_keywords?: string[];
+}
 
 export default function PostDetailPage() {
     const { slug } = useParams();
@@ -29,34 +57,20 @@ export default function PostDetailPage() {
             setLoading(true);
 
             // Fetch the post by slug
-            const { data: postData, error: postError } = await supabase
-                .from('posts')
-                .select('*')
-                .eq('slug', slug)
-                .eq('published', true)
-                .single();
+            const response = await fetch(`/api/posts/${slug}`);
+            if (!response.ok) throw new Error('Post not found');
 
-            if (postError) throw postError;
+            const postData = await response.json();
+            setPost(postData);
 
-            if (postData) {
-                setPost(postData);
-
-                // Increment views
-                await supabase
-                    .from('posts')
-                    .update({ views: (postData.views || 0) + 1 })
-                    .eq('id', postData.id);
-
-                // Fetch related posts (same category, excluding current post)
-                const { data: relatedData } = await supabase
-                    .from('posts')
-                    .select('*')
-                    .eq('category', postData.category)
-                    .eq('published', true)
-                    .neq('id', postData.id)
-                    .limit(3);
-
-                setRelatedPosts(relatedData || []);
+            // Fetch related posts (same category, excluding current post)
+            const allPostsResponse = await fetch('/api/posts');
+            if (allPostsResponse.ok) {
+                const allPosts = await allPostsResponse.json();
+                const related = allPosts
+                    .filter((p: Post) => p.category === postData.category && p.id !== postData.id)
+                    .slice(0, 3);
+                setRelatedPosts(related);
             }
         } catch (error) {
             console.error('Error fetching post:', error);
