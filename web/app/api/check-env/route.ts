@@ -9,14 +9,24 @@ export async function GET() {
 
   // Check SMTP from DB
   let dbSmtpConfigured = !!(process.env.SMTP_HOST && process.env.SMTP_PORT && process.env.SMTP_USER && process.env.SMTP_PASSWORD);
+  let dbCheckError = null;
+  let dbData = null;
+
   if (!dbSmtpConfigured) {
     try {
-      const { data } = await supabaseAdmin.from('site_settings').select('key, value');
-      const hasHost = data?.some((d: any) => d.key === 'SMTP_HOST' && d.value !== 'REPLACE_ME');
-      const hasUser = data?.some((d: any) => d.key === 'SMTP_USER' && d.value !== 'REPLACE_ME');
-      const hasPass = data?.some((d: any) => d.key === 'SMTP_PASSWORD' && d.value !== 'REPLACE_ME');
-      dbSmtpConfigured = !!(hasHost && hasUser && hasPass);
-    } catch (e) {
+      const { data, error } = await supabaseAdmin.from('site_settings').select('key, value');
+      if (error) {
+        dbCheckError = error.message;
+        console.error('Error fetching from site_settings:', error);
+      } else {
+        dbData = data;
+        const hasHost = data?.some((d: any) => d.key === 'SMTP_HOST' && d.value !== 'REPLACE_ME');
+        const hasUser = data?.some((d: any) => d.key === 'SMTP_USER' && d.value !== 'REPLACE_ME');
+        const hasPass = data?.some((d: any) => d.key === 'SMTP_PASSWORD' && d.value !== 'REPLACE_ME');
+        dbSmtpConfigured = !!(hasHost && hasUser && hasPass);
+      }
+    } catch (e: any) {
+      dbCheckError = e.message || 'Unknown error';
       console.error('Error checking SMTP from DB:', e);
     }
   }
@@ -74,7 +84,7 @@ export async function GET() {
   return NextResponse.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    deploymentVersion: '1.0.1-db-fallback', // Added to verify refresh
+    deploymentVersion: '1.0.2-db-diagnostics', // Updated to verify refresh
     environment: process.env.NODE_ENV || 'unknown',
     configured: envStatus,
     summary: {
@@ -92,5 +102,14 @@ export async function GET() {
     ].filter(Boolean),
     allKeys: Object.keys(process.env).filter(k => !k.includes('PASS') && !k.includes('SECRET') && !k.includes('KEY')),
     secretKeysPresent: Object.keys(process.env).filter(k => k.includes('STRIPE') || k.includes('SMTP') || k.includes('SUPABASE')),
+    // Debug info
+    debug: {
+      dbStripeConfigured,
+      dbWebhookSecret: !!dbWebhookSecret,
+      dbSmtpConfigured,
+      dbCheckError,
+      dbDataCount: dbData?.length || 0,
+      dbKeys: dbData?.map((d: any) => d.key) || []
+    }
   });
 }
