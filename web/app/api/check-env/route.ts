@@ -1,6 +1,24 @@
 import { NextResponse } from 'next/server';
+import { isStripeConfigured, getWebhookSecret } from '@/lib/stripe';
+import { supabase } from '@/lib/supabase';
 
 export async function GET() {
+  // Perform async checks for DB fallbacks
+  const dbStripeConfigured = await isStripeConfigured();
+  const dbWebhookSecret = await getWebhookSecret();
+
+  // Check SMTP from DB
+  let dbSmtpConfigured = !!(process.env.SMTP_HOST && process.env.SMTP_PORT && process.env.SMTP_USER && process.env.SMTP_PASSWORD);
+  if (!dbSmtpConfigured) {
+    try {
+      const { data } = await supabase.from('site_settings').select('key, value');
+      const hasHost = data?.some(d => d.key === 'SMTP_HOST' && d.value !== 'REPLACE_ME');
+      const hasUser = data?.some(d => d.key === 'SMTP_USER' && d.value !== 'REPLACE_ME');
+      const hasPass = data?.some(d => d.key === 'SMTP_PASSWORD' && d.value !== 'REPLACE_ME');
+      dbSmtpConfigured = !!(hasHost && hasUser && hasPass);
+    } catch (e) { }
+  }
+
   // Check which environment variables are configured
   const envStatus = {
     supabase: {
@@ -9,15 +27,17 @@ export async function GET() {
     },
     stripe: {
       publishableKey: !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
-      secretKey: !!process.env.STRIPE_SECRET_KEY,
-      webhookSecret: !!process.env.STRIPE_WEBHOOK_SECRET,
+      secretKey: !!process.env.STRIPE_SECRET_KEY || dbStripeConfigured,
+      webhookSecret: !!process.env.STRIPE_WEBHOOK_SECRET || !!dbWebhookSecret,
+      usingDatabaseFallback: dbStripeConfigured && !process.env.STRIPE_SECRET_KEY
     },
     email: {
-      smtpHost: !!process.env.SMTP_HOST,
-      smtpPort: !!process.env.SMTP_PORT,
-      smtpUser: !!process.env.SMTP_USER,
-      smtpPassword: !!process.env.SMTP_PASSWORD,
-      adminEmail: !!process.env.ADMIN_EMAIL,
+      smtpHost: !!process.env.SMTP_HOST || dbSmtpConfigured,
+      smtpPort: !!process.env.SMTP_PORT || dbSmtpConfigured,
+      smtpUser: !!process.env.SMTP_USER || dbSmtpConfigured,
+      smtpPassword: !!process.env.SMTP_PASSWORD || dbSmtpConfigured,
+      adminEmail: !!process.env.ADMIN_EMAIL || dbSmtpConfigured,
+      usingDatabaseFallback: dbSmtpConfigured && !process.env.SMTP_HOST
     },
     google: {
       clientId: !!process.env.GOOGLE_CLIENT_ID,
