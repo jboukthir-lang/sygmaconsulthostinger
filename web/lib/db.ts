@@ -29,19 +29,30 @@ if (process.env.NODE_ENV === 'production' && typeof window === 'undefined') {
   }
 }
 
-// Database configuration from environment variables
+// Database configuration from environment variables with production fallback
 const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT || '3306'),
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  user: process.env.DB_USER || (process.env.NODE_ENV === 'production' ? 'u611120010_sygma' : undefined),
+  password: process.env.DB_PASSWORD || (process.env.NODE_ENV === 'production' ? 'GZK446uj%' : undefined),
+  database: process.env.DB_NAME || (process.env.NODE_ENV === 'production' ? 'u611120010_sygma' : undefined),
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
   enableKeepAlive: true,
   keepAliveInitialDelay: 0
 };
+
+// Log config in production for debugging
+if (process.env.NODE_ENV === 'production') {
+  console.log('DB Config:', {
+    host: dbConfig.host,
+    port: dbConfig.port,
+    user: dbConfig.user ? '***SET***' : 'NOT SET',
+    password: dbConfig.password ? '***SET***' : 'NOT SET',
+    database: dbConfig.database
+  });
+}
 
 // Check if database credentials are configured
 const isDbConfigured = !!(process.env.DB_USER && process.env.DB_PASSWORD && process.env.DB_NAME);
