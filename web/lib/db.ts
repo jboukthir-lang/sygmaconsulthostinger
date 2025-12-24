@@ -54,8 +54,8 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// Check if database credentials are configured
-const isDbConfigured = !!(process.env.DB_USER && process.env.DB_PASSWORD && process.env.DB_NAME);
+// Check if database credentials are configured (check the actual dbConfig, not env vars)
+const isDbConfigured = !!(dbConfig.user && dbConfig.password && dbConfig.database);
 
 // Create a connection pool only if DB is configured
 let pool: mysql.Pool | null = null;
@@ -63,9 +63,12 @@ let pool: mysql.Pool | null = null;
 if (isDbConfigured) {
   try {
     pool = mysql.createPool(dbConfig);
+    console.log('✅ Database pool created successfully');
   } catch (error) {
     console.error('Failed to create database pool:', error);
   }
+} else {
+  console.error('❌ Database not configured. Missing credentials.');
 }
 
 // Helper function to execute queries with type safety
