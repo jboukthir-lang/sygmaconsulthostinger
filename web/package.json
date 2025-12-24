@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",
+    "@react-google-maps/api": "^2.20.3",
     "@supabase/supabase-js": "^2.47.11",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22.10.1",
