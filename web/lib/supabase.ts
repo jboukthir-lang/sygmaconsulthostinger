@@ -1,11 +1,17 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Use placeholders for build time if env vars are missing
-// This prevents "supabaseUrl is required" error during build
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
+// Production Supabase credentials with fallback
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  (process.env.NODE_ENV === 'production' ? 'https://ldbsacdpkinbpcguvgai.supabase.co' : 'https://placeholder.supabase.co');
 
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  (process.env.NODE_ENV === 'production'
+    ? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkYnNhY2Rwa2luYnBjZ3V2Z2FpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4OTUwNzgsImV4cCI6MjA4MTQ3MTA3OH0.Qib8uCPcd6CJypKa_oNEDThIQNfTluH2eJE0nsewwug'
+    : 'placeholder-key');
+
+if (process.env.NODE_ENV === 'production') {
+  console.log('✅ Supabase initialized:', supabaseUrl);
+} else if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
   console.warn('Warning: Missing Supabase environment variables. Using placeholders for build.');
 }
 
