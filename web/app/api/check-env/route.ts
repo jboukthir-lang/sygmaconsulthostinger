@@ -72,6 +72,7 @@ export async function GET() {
   return NextResponse.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
+    deploymentVersion: '1.0.1-db-fallback', // Added to verify refresh
     environment: process.env.NODE_ENV || 'unknown',
     configured: envStatus,
     summary: {
