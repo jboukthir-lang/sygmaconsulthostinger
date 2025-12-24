@@ -1,4 +1,31 @@
 /** @type {import('next').NextConfig} */
+
+// Load environment variables from .env.production.local if it exists
+if (process.env.NODE_ENV === 'production') {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const envPath = path.join(__dirname, '.env.production.local');
+
+    if (fs.existsSync(envPath)) {
+      const envContent = fs.readFileSync(envPath, 'utf8');
+      envContent.split('\n').forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith('#')) {
+          const [key, ...valueParts] = trimmed.split('=');
+          if (key && valueParts.length > 0) {
+            const value = valueParts.join('=');
+            process.env[key.trim()] = value.trim();
+          }
+        }
+      });
+      console.log('✅ Loaded .env.production.local');
+    }
+  } catch (error) {
+    console.error('❌ Error loading .env.production.local:', error);
+  }
+}
+
 const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
