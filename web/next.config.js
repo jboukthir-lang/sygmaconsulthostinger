@@ -24,6 +24,12 @@ const nextConfig = {
   },
   // Remove standalone output mode which causes routes-manifest issues
   // output: 'standalone',
+
+  // Ensure assets are loaded correctly from the web subdirectory on some Hostinger setups
+  // If the assets still 404, we will uncomment the line below
+  // assetPrefix: process.env.NODE_ENV === 'production' ? 'https://sygmaconsult.com' : undefined,
+
+  trailingSlash: true,
 };
 
 module.exports = nextConfig;
