@@ -50,14 +50,18 @@ export default function AdminLayout({
     try {
       // Check if user email is in admin_emails list from settings
       const adminEmails = settingsData.admin_emails || [];
-      const isUserAdmin = adminEmails.includes(user.email);
+      const normalizedEmail = user.email.toLowerCase().trim();
+      const isUserAdmin = adminEmails.some(email => email.toLowerCase().trim() === normalizedEmail);
+
+      console.log(`🔍 Checking admin status for: ${normalizedEmail}`);
+      console.log(`📋 Admin list:`, adminEmails);
 
       if (isUserAdmin) {
-        console.log('✅ User IS admin');
+        console.log('✅ Access Granted: User IS admin');
         setIsAdmin(true);
         setAdminRole('admin');
       } else {
-        console.warn('❌ User is NOT admin');
+        console.warn('❌ Access Denied: User is NOT in admin list');
         setIsAdmin(false);
       }
     } catch (error) {
