@@ -147,28 +147,47 @@ export default function AdminServicesPage() {
     const handleSave = async () => {
         setSaving(true);
         try {
+            console.log('💾 Saving service...', { editingService: !!editingService, formData });
+
             if (editingService) {
                 // Update existing service
-                const { error } = await supabase
+                console.log('📝 Updating service ID:', editingService.id);
+                const { data, error } = await supabase
                     .from('services')
                     .update(formData)
-                    .eq('id', editingService.id);
+                    .eq('id', editingService.id)
+                    .select();
 
-                if (error) throw error;
+                if (error) {
+                    console.error('❌ Update error:', error);
+                    throw error;
+                }
+                console.log('✅ Update successful:', data);
             } else {
                 // Create new service
-                const { error } = await supabase
+                console.log('➕ Creating new service');
+                const { data, error } = await supabase
                     .from('services')
-                    .insert([formData]);
+                    .insert([formData])
+                    .select();
 
-                if (error) throw error;
+                if (error) {
+                    console.error('❌ Insert error:', error);
+                    throw error;
+                }
+                console.log('✅ Insert successful:', data);
             }
 
+            alert('✅ تم الحفظ بنجاح! Service saved successfully!');
             setShowModal(false);
             fetchServices();
-        } catch (error) {
-            console.error('Error saving service:', error);
-            alert('Failed to save service');
+        } catch (error: any) {
+            console.error('❌ Error saving service:', error);
+            const errorMessage = error?.message || 'Unknown error';
+            const errorCode = error?.code || 'NO_CODE';
+            const errorDetails = error?.details || 'No details';
+
+            alert(`❌ فشل الحفظ / Failed to save service\n\nError: ${errorMessage}\nCode: ${errorCode}\nDetails: ${errorDetails}\n\nCheck browser console for more info.`);
         } finally {
             setSaving(false);
         }
@@ -180,31 +199,44 @@ export default function AdminServicesPage() {
         }
 
         try {
+            console.log('🗑️ Deleting service ID:', id);
             const { error } = await supabase
                 .from('services')
                 .delete()
                 .eq('id', id);
 
-            if (error) throw error;
+            if (error) {
+                console.error('❌ Delete error:', error);
+                throw error;
+            }
+            console.log('✅ Delete successful');
+            alert('✅ تم الحذف بنجاح! Deleted successfully!');
             fetchServices();
-        } catch (error) {
-            console.error('Error deleting service:', error);
-            alert('Failed to delete service');
+        } catch (error: any) {
+            console.error('❌ Error deleting service:', error);
+            alert(`❌ فشل الحذف / Failed to delete\n\nError: ${error?.message || 'Unknown error'}`);
         }
     };
 
     const toggleActive = async (service: Service) => {
         try {
+            const newStatus = !service.is_active;
+            console.log(`🔄 Toggling service "${service.title_en}" to ${newStatus ? 'active' : 'inactive'}`);
+
             const { error } = await supabase
                 .from('services')
-                .update({ is_active: !service.is_active })
+                .update({ is_active: newStatus })
                 .eq('id', service.id);
 
-            if (error) throw error;
+            if (error) {
+                console.error('❌ Toggle error:', error);
+                throw error;
+            }
+            console.log('✅ Toggle successful');
             fetchServices();
-        } catch (error) {
-            console.error('Error toggling status:', error);
-            alert('Failed to update status');
+        } catch (error: any) {
+            console.error('❌ Error toggling status:', error);
+            alert(`❌ فشل التحديث / Failed to update\n\nError: ${error?.message || 'Unknown error'}`);
         }
     };
 
