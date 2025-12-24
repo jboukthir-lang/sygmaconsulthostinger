@@ -3,6 +3,15 @@ import pool from '@/lib/db';
 
 export async function GET() {
     try {
+        // Debug: Log environment variables (remove in production)
+        console.log('ENV Check:', {
+            DB_HOST: process.env.DB_HOST,
+            DB_PORT: process.env.DB_PORT,
+            DB_USER: process.env.DB_USER ? 'SET' : 'NOT SET',
+            DB_PASSWORD: process.env.DB_PASSWORD ? 'SET' : 'NOT SET',
+            DB_NAME: process.env.DB_NAME
+        });
+
         // Check if pool exists
         if (!pool) {
             return NextResponse.json({
@@ -13,7 +22,14 @@ export async function GET() {
                     DB_HOST: !!process.env.DB_HOST,
                     DB_USER: !!process.env.DB_USER,
                     DB_PASSWORD: !!process.env.DB_PASSWORD,
-                    DB_NAME: !!process.env.DB_NAME
+                    DB_NAME: !!process.env.DB_NAME,
+                    DB_PORT: !!process.env.DB_PORT
+                },
+                env_values: {
+                    DB_HOST: process.env.DB_HOST || 'NOT SET',
+                    DB_PORT: process.env.DB_PORT || 'NOT SET',
+                    DB_USER: process.env.DB_USER || 'NOT SET',
+                    DB_NAME: process.env.DB_NAME || 'NOT SET'
                 }
             }, { status: 500 });
         }
