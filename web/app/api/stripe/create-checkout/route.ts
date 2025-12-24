@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe, formatAmountForStripe, isStripeConfigured } from '@/lib/stripe';
+import { getStripe, formatAmountForStripe, isStripeConfigured } from '@/lib/stripe';
 import { getBookingById, updateBooking } from '@/lib/local-storage';
 
 export async function POST(req: NextRequest) {
   try {
     // Check if Stripe is configured
-    if (!isStripeConfigured() || !stripe) {
+    const stripeInstance = getStripe();
+    if (!isStripeConfigured() || !stripeInstance) {
       return NextResponse.json(
-        { error: 'Payment system is not configured. Please contact support.' },
+        { error: 'Payment system is not properly configured on the server. Please check environment variables.' },
         { status: 503 }
       );
     }
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
 
     // Create Stripe Checkout Session
-    const session = await stripe.checkout.sessions.create({
+    const session = await stripeInstance.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
         {
