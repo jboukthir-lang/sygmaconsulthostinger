@@ -1,10 +1,37 @@
 {
-  "name": "sygmaconsult-root",
-  "version": "1.0.0",
+  "name": "web",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
-    "install": "cd web && npm install",
-    "build": "cd web && npm run build",
-    "start": "cd web && npm start"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@google-cloud/local-auth": "^3.0.1",
+    "@supabase/supabase-js": "^2.47.11",
+    "@types/node": "^22.10.1",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.2",
+    "autoprefixer": "^10.4.20",
+    "date-fns": "^4.1.0",
+    "eslint": "^9.16.0",
+    "eslint-config-next": "^15.1.0",
+    "firebase": "^11.1.0",
+    "googleapis": "^144.0.0",
+    "groq-sdk": "^0.8.0",
+    "mysql2": "^3.11.5",
+    "next": "^15.1.0",
+    "nodemailer": "^6.9.16",
+    "postcss": "^8.4.49",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "stripe": "^17.4.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.2"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^6.4.17"
   }
 }
