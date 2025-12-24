@@ -1,4 +1,33 @@
 import mysql from 'mysql2/promise';
+import fs from 'fs';
+import path from 'path';
+
+// Load .env.production.local if it exists and we're in production
+if (process.env.NODE_ENV === 'production' && typeof window === 'undefined') {
+  try {
+    const envPath = path.join(process.cwd(), '.env.production.local');
+    if (fs.existsSync(envPath)) {
+      const envContent = fs.readFileSync(envPath, 'utf8');
+      envContent.split('\n').forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith('#')) {
+          const [key, ...valueParts] = trimmed.split('=');
+          if (key && valueParts.length > 0) {
+            const value = valueParts.join('=');
+            if (!process.env[key.trim()]) {
+              process.env[key.trim()] = value.trim();
+            }
+          }
+        }
+      });
+      console.log('✅ DB: Loaded .env.production.local');
+    } else {
+      console.log('⚠️ DB: .env.production.local not found at:', envPath);
+    }
+  } catch (error) {
+    console.error('❌ DB: Error loading .env.production.local:', error);
+  }
+}
 
 // Database configuration from environment variables
 const dbConfig = {
