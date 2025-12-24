@@ -9,7 +9,9 @@ export interface StoredMessage {
   subject: string;
   message: string;
   createdAt: string;
+  updatedAt?: string;
   status: 'new' | 'read' | 'replied';
+  reply?: string;
 }
 
 export async function saveMessage(message: Omit<StoredMessage, 'id' | 'createdAt' | 'status'>) {
@@ -100,11 +102,16 @@ export interface Booking {
   is_online: boolean;
   notes?: string;
   price: number;
+  fee?: number; // From some migrations
   payment_status: 'pending' | 'paid' | 'failed' | 'refunded' | 'free';
   stripe_session_id?: string;
   stripe_payment_id?: string;
+  stripe_payment_intent_id?: string; // From migrations
   calendar_event_id?: string;
   meet_link?: string;
+  meeting_link?: string; // From migrations
+  location?: string;
+  consultant_name?: string;
   created_at?: string;
   updated_at?: string;
   internal_notes?: string;
