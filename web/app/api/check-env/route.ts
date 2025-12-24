@@ -67,5 +67,7 @@ export async function GET() {
       !allEmailConfigured ? '🟡 Add Email/SMTP environment variables (REQUIRED for notifications)' : null,
       !envStatus.google.clientId ? '⚪ Add Google API variables (OPTIONAL - for calendar integration)' : null,
     ].filter(Boolean),
+    allKeys: Object.keys(process.env).filter(k => !k.includes('PASS') && !k.includes('SECRET') && !k.includes('KEY')),
+    secretKeysPresent: Object.keys(process.env).filter(k => k.includes('STRIPE') || k.includes('SMTP') || k.includes('SUPABASE')),
   });
 }
