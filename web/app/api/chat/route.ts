@@ -1,20 +1,48 @@
 import { NextResponse } from 'next/server';
 import Groq from 'groq-sdk';
 
-const groq = process.env.GROQ_API_KEY
-    ? new Groq({ apiKey: process.env.GROQ_API_KEY })
-    : null;
+// Function to get Groq API key with DB fallback
+async function getGroqApiKey(): Promise<string | null> {
+    // Try environment variable first
+    if (process.env.GROQ_API_KEY) {
+        return process.env.GROQ_API_KEY;
+    }
+
+    // Fallback to database
+    try {
+        const { supabaseAdmin } = await import('@/lib/supabase-admin');
+        const { data } = await supabaseAdmin
+            .from('site_settings')
+            .select('value')
+            .eq('key', 'GROQ_API_KEY')
+            .single();
+
+        if (data?.value && data.value !== 'REPLACE_ME' && !data.value.includes('REPLACE')) {
+            console.log('✅ Groq API key loaded from database fallback');
+            return data.value;
+        }
+    } catch (e) {
+        console.error('Failed to load Groq API key from DB:', e);
+    }
+
+    return null;
+}
 
 export async function POST(req: Request) {
     try {
         const { messages } = await req.json();
 
+        // Get API key (with DB fallback)
+        const apiKey = await getGroqApiKey();
+
         // If no API key, return a helpful message
-        if (!groq) {
+        if (!apiKey) {
             return NextResponse.json({
                 content: "I apologize, but the AI assistant is currently unavailable. Please contact us directly at contact@sygma-consult.com or call +33 7 52 03 47 86."
             });
         }
+
+        const groq = new Groq({ apiKey });
 
         const completion = await groq.chat.completions.create({
             messages: [

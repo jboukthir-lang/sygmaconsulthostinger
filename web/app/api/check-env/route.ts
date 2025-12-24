@@ -7,28 +7,46 @@ export async function GET() {
   const dbStripeConfigured = await isStripeConfigured();
   const dbWebhookSecret = await getWebhookSecret();
 
-  // Check SMTP from DB
+  // Check all settings from DB
   let dbSmtpConfigured = !!(process.env.SMTP_HOST && process.env.SMTP_PORT && process.env.SMTP_USER && process.env.SMTP_PASSWORD);
+  let dbGoogleConfigured = !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
+  let dbGroqConfigured = !!process.env.GROQ_API_KEY;
   let dbCheckError = null;
   let dbData = null;
 
-  if (!dbSmtpConfigured) {
-    try {
-      const { data, error } = await supabaseAdmin.from('site_settings').select('key, value');
-      if (error) {
-        dbCheckError = error.message;
-        console.error('Error fetching from site_settings:', error);
-      } else {
-        dbData = data;
-        const hasHost = data?.some((d: any) => d.key === 'SMTP_HOST' && d.value !== 'REPLACE_ME');
-        const hasUser = data?.some((d: any) => d.key === 'SMTP_USER' && d.value !== 'REPLACE_ME');
-        const hasPass = data?.some((d: any) => d.key === 'SMTP_PASSWORD' && d.value !== 'REPLACE_ME');
+  // Fetch all settings from database
+  try {
+    const { data, error } = await supabaseAdmin.from('site_settings').select('key, value');
+    if (error) {
+      dbCheckError = error.message;
+      console.error('Error fetching from site_settings:', error);
+    } else {
+      dbData = data;
+
+      // Check SMTP from DB
+      if (!dbSmtpConfigured) {
+        const hasHost = data?.some((d: any) => d.key === 'SMTP_HOST' && d.value !== 'REPLACE_ME' && !d.value.includes('REPLACE'));
+        const hasUser = data?.some((d: any) => d.key === 'SMTP_USER' && d.value !== 'REPLACE_ME' && !d.value.includes('REPLACE'));
+        const hasPass = data?.some((d: any) => d.key === 'SMTP_PASSWORD' && d.value !== 'REPLACE_ME' && !d.value.includes('REPLACE'));
         dbSmtpConfigured = !!(hasHost && hasUser && hasPass);
       }
-    } catch (e: any) {
-      dbCheckError = e.message || 'Unknown error';
-      console.error('Error checking SMTP from DB:', e);
+
+      // Check Google from DB
+      if (!dbGoogleConfigured) {
+        const hasClientId = data?.some((d: any) => d.key === 'GOOGLE_CLIENT_ID' && d.value !== 'REPLACE_ME' && !d.value.includes('REPLACE'));
+        const hasClientSecret = data?.some((d: any) => d.key === 'GOOGLE_CLIENT_SECRET' && d.value !== 'REPLACE_ME' && !d.value.includes('REPLACE'));
+        dbGoogleConfigured = !!(hasClientId && hasClientSecret);
+      }
+
+      // Check Groq from DB
+      if (!dbGroqConfigured) {
+        const hasGroqKey = data?.some((d: any) => d.key === 'GROQ_API_KEY' && d.value !== 'REPLACE_ME' && !d.value.includes('REPLACE'));
+        dbGroqConfigured = !!hasGroqKey;
+      }
     }
+  } catch (e: any) {
+    dbCheckError = e.message || 'Unknown error';
+    console.error('Error checking settings from DB:', e);
   }
 
   // Check which environment variables are configured
@@ -52,12 +70,14 @@ export async function GET() {
       usingDatabaseFallback: dbSmtpConfigured && !process.env.SMTP_HOST
     },
     google: {
-      clientId: !!process.env.GOOGLE_CLIENT_ID,
-      clientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
+      clientId: !!process.env.GOOGLE_CLIENT_ID || dbGoogleConfigured,
+      clientSecret: !!process.env.GOOGLE_CLIENT_SECRET || dbGoogleConfigured,
       redirectUri: !!process.env.GOOGLE_REDIRECT_URI,
+      usingDatabaseFallback: dbGoogleConfigured && !process.env.GOOGLE_CLIENT_ID
     },
     groq: {
-      apiKey: !!process.env.GROQ_API_KEY,
+      apiKey: !!process.env.GROQ_API_KEY || dbGroqConfigured,
+      usingDatabaseFallback: dbGroqConfigured && !process.env.GROQ_API_KEY
     },
     site: {
       url: !!process.env.NEXT_PUBLIC_URL,
@@ -107,6 +127,8 @@ export async function GET() {
       dbStripeConfigured,
       dbWebhookSecret: !!dbWebhookSecret,
       dbSmtpConfigured,
+      dbGoogleConfigured,
+      dbGroqConfigured,
       dbCheckError,
       dbDataCount: dbData?.length || 0,
       dbKeys: dbData?.map((d: any) => d.key) || []
