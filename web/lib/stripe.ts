@@ -1,11 +1,30 @@
 import Stripe from 'stripe';
 
-// Initialize Stripe only if the secret key is available
-// This allows the app to build even if Stripe is not configured
 // Getter function to get Stripe instance
 // Using a function ensures we evaluate process.env at runtime, not just at module load
-export function getStripe() {
-  const secretKey = process.env.STRIPE_SECRET_KEY;
+export async function getStripe() {
+  let secretKey = process.env.STRIPE_SECRET_KEY;
+
+  // High-availability fallback: Try getting from DB if env is missing
+  if (!secretKey) {
+    try {
+      // Lazy import to avoid circular dependencies
+      const { supabase } = await import('./supabase');
+      const { data } = await supabase
+        .from('site_settings')
+        .select('value')
+        .eq('key', 'STRIPE_SECRET_KEY')
+        .single();
+
+      if (data?.value && data.value !== 'REPLACE_ME') {
+        secretKey = data.value;
+        console.log('✅ Stripe secret loaded from database fallback');
+      }
+    } catch (e) {
+      console.error('Failed to load Stripe secret from DB fallback');
+    }
+  }
+
   if (!secretKey) return null;
 
   return new Stripe(secretKey, {
@@ -15,8 +34,22 @@ export function getStripe() {
 }
 
 // Helper function to check if Stripe is configured
-export function isStripeConfigured(): boolean {
-  return !!process.env.STRIPE_SECRET_KEY;
+export async function isStripeConfigured(): Promise<boolean> {
+  const secret = process.env.STRIPE_SECRET_KEY;
+  if (secret) return true;
+
+  // Check DB if env is missing
+  try {
+    const { supabase } = await import('./supabase');
+    const { data } = await supabase
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'STRIPE_SECRET_KEY')
+      .single();
+    return !!(data?.value && data.value !== 'REPLACE_ME');
+  } catch {
+    return false;
+  }
 }
 
 export const CURRENCY = 'eur';

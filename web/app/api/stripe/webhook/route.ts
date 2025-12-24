@@ -7,8 +7,9 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
 
 export async function POST(req: NextRequest) {
   // Check if Stripe is configured
-  const stripeInstance = getStripe();
-  if (!isStripeConfigured() || !stripeInstance || !webhookSecret) {
+  const stripeInstance = await getStripe();
+  const isConfigured = await isStripeConfigured();
+  if (!isConfigured || !stripeInstance || !webhookSecret) {
     return NextResponse.json(
       { error: 'Payment system is not configured' },
       { status: 503 }

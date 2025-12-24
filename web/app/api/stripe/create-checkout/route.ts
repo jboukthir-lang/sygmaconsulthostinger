@@ -5,10 +5,11 @@ import { getBookingById, updateBooking } from '@/lib/local-storage';
 export async function POST(req: NextRequest) {
   try {
     // Check if Stripe is configured
-    const stripeInstance = getStripe();
-    if (!isStripeConfigured() || !stripeInstance) {
+    const stripeInstance = await getStripe();
+    const isConfigured = await isStripeConfigured();
+    if (!isConfigured || !stripeInstance) {
       return NextResponse.json(
-        { error: 'Payment system is not properly configured on the server. Please check environment variables.' },
+        { error: 'Payment system is not properly configured on the server. Please check environment variables or site settings.' },
         { status: 503 }
       );
     }
