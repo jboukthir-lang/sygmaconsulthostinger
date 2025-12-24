@@ -31,7 +31,7 @@ if (process.env.NODE_ENV === 'production' && typeof window === 'undefined') {
 
 // Database configuration from environment variables with production fallback
 const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
+  host: process.env.DB_HOST || (process.env.NODE_ENV === 'production' ? 'srv1790.hstgr.io' : 'localhost'),
   port: parseInt(process.env.DB_PORT || '3306'),
   user: process.env.DB_USER || (process.env.NODE_ENV === 'production' ? 'u611120010_sygma' : undefined),
   password: process.env.DB_PASSWORD || (process.env.NODE_ENV === 'production' ? 'GZK446uj%' : undefined),
