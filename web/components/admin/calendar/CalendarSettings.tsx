@@ -122,9 +122,15 @@ export default function CalendarSettings() {
           ? 'Paramètres enregistrés avec succès'
           : 'Settings saved successfully'
       )
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving settings:', error)
-      alert('Error saving settings')
+      alert(
+        language === 'ar'
+          ? `خطأ في حفظ الإعدادات: ${error.message || 'Unknown error'}`
+          : language === 'fr'
+          ? `Erreur lors de l'enregistrement: ${error.message || 'Erreur inconnue'}`
+          : `Error saving settings: ${error.message || 'Unknown error'}`
+      )
     } finally {
       setSaving(false)
     }
