@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { isStripeConfigured, getWebhookSecret } from '@/lib/stripe';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export async function GET() {
   // Perform async checks for DB fallbacks
@@ -11,12 +11,14 @@ export async function GET() {
   let dbSmtpConfigured = !!(process.env.SMTP_HOST && process.env.SMTP_PORT && process.env.SMTP_USER && process.env.SMTP_PASSWORD);
   if (!dbSmtpConfigured) {
     try {
-      const { data } = await supabase.from('site_settings').select('key, value');
-      const hasHost = data?.some(d => d.key === 'SMTP_HOST' && d.value !== 'REPLACE_ME');
-      const hasUser = data?.some(d => d.key === 'SMTP_USER' && d.value !== 'REPLACE_ME');
-      const hasPass = data?.some(d => d.key === 'SMTP_PASSWORD' && d.value !== 'REPLACE_ME');
+      const { data } = await supabaseAdmin.from('site_settings').select('key, value');
+      const hasHost = data?.some((d: any) => d.key === 'SMTP_HOST' && d.value !== 'REPLACE_ME');
+      const hasUser = data?.some((d: any) => d.key === 'SMTP_USER' && d.value !== 'REPLACE_ME');
+      const hasPass = data?.some((d: any) => d.key === 'SMTP_PASSWORD' && d.value !== 'REPLACE_ME');
       dbSmtpConfigured = !!(hasHost && hasUser && hasPass);
-    } catch (e) { }
+    } catch (e) {
+      console.error('Error checking SMTP from DB:', e);
+    }
   }
 
   // Check which environment variables are configured

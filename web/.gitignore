@@ -43,3 +43,8 @@ next-env.d.ts
 ENV_COPY_PASTE.txt
 HOSTINGER_DEPLOYMENT_GUIDE_AR.md
 **/deploy-prod-env.js
+
+# Sensitive scripts and migrations
+scripts/setup-db-secrets*.mjs
+scripts/check-db-settings.mjs
+supabase/migrations/UPDATE_PRODUCTION_SECRETS.sql

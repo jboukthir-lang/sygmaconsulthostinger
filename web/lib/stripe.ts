@@ -8,9 +8,9 @@ export async function getStripe() {
   // High-availability fallback: Try getting from DB if env is missing
   if (!secretKey) {
     try {
-      // Lazy import to avoid circular dependencies
-      const { supabase } = await import('./supabase');
-      const { data } = await supabase
+      // Use admin client to bypass RLS
+      const { supabaseAdmin } = await import('./supabase-admin');
+      const { data } = await supabaseAdmin
         .from('site_settings')
         .select('value')
         .eq('key', 'STRIPE_SECRET_KEY')
@@ -21,7 +21,7 @@ export async function getStripe() {
         console.log('✅ Stripe secret loaded from database fallback');
       }
     } catch (e) {
-      console.error('Failed to load Stripe secret from DB fallback');
+      console.error('Failed to load Stripe secret from DB fallback:', e);
     }
   }
 
@@ -39,8 +39,8 @@ export async function getWebhookSecret() {
 
   if (!secret) {
     try {
-      const { supabase } = await import('./supabase');
-      const { data } = await supabase
+      const { supabaseAdmin } = await import('./supabase-admin');
+      const { data } = await supabaseAdmin
         .from('site_settings')
         .select('value')
         .eq('key', 'STRIPE_WEBHOOK_SECRET')
@@ -51,7 +51,7 @@ export async function getWebhookSecret() {
         console.log('✅ Stripe webhook secret loaded from database fallback');
       }
     } catch (e) {
-      console.error('Failed to load Stripe webhook secret from DB fallback');
+      console.error('Failed to load Stripe webhook secret from DB fallback:', e);
     }
   }
 
@@ -65,8 +65,8 @@ export async function isStripeConfigured(): Promise<boolean> {
 
   // Check DB if env is missing
   try {
-    const { supabase } = await import('./supabase');
-    const { data } = await supabase
+    const { supabaseAdmin } = await import('./supabase-admin');
+    const { data } = await supabaseAdmin
       .from('site_settings')
       .select('value')
       .eq('key', 'STRIPE_SECRET_KEY')
