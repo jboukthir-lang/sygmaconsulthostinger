@@ -51,7 +51,7 @@ export default function SiteSettingsPage() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('site_settings')
+        .from('app_config')
         .select('*')
         .eq('key', 'main')
         .single();
@@ -74,7 +74,7 @@ export default function SiteSettingsPage() {
       setMessage(null);
 
       const { error } = await supabase
-        .from('site_settings')
+        .from('app_config')
         .update(settings)
         .eq('key', 'main');
 
