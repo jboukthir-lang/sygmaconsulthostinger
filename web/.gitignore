@@ -38,3 +38,6 @@ HOSTINGER_ENV_SETUP.txt
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+ENV_COPY_PASTE.txt
+HOSTINGER_DEPLOYMENT_GUIDE_AR.md
+**/deploy-prod-env.js
