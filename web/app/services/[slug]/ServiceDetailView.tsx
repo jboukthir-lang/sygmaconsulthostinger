@@ -1,47 +1,164 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2 } from "lucide-react";
-import { notFound } from "next/navigation";
+import { ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { supabase } from "@/lib/supabase";
 import Header from "@/components/Header";
 
-export default function ServiceDetailView({ slug }: { slug: string }) {
-    const { t } = useLanguage();
-    const service = t.serviceDetails[slug];
+interface Service {
+    id: string;
+    title_en: string;
+    title_fr: string;
+    title_ar: string;
+    description_en: string;
+    description_fr: string;
+    description_ar: string;
+    icon: string;
+    href: string;
+    image_url?: string;
+    price?: number;
+}
 
-    // We also need access to the keys to iterate for the "Other Services" sidebar
-    // We can get them from the serviceDetails object keys
-    const allServices = t.serviceDetails;
+interface ServicePreview {
+    id: string;
+    title_en: string;
+    title_fr: string;
+    title_ar: string;
+    href: string;
+}
+
+export default function ServiceDetailView({ slug }: { slug: string }) {
+    const { t, language } = useLanguage();
+    const [service, setService] = useState<Service | null>(null);
+    const [otherServices, setOtherServices] = useState<ServicePreview[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        loadService();
+        loadOtherServices();
+    }, [slug, language]);
+
+    async function loadService() {
+        try {
+            console.log(`🔍 Loading service: ${slug}`);
+
+            const { data, error } = await supabase
+                .from('services')
+                .select('*')
+                .or(`href.eq./services/${slug},href.eq./services/${slug}/`)
+                .eq('is_active', true)
+                .single();
+
+            if (error) throw error;
+
+            if (data) {
+                console.log('✅ Service loaded:', data.title_en);
+                setService(data);
+            }
+        } catch (error: any) {
+            console.error('❌ Error loading service:', error);
+            if (error.code === 'PGRST116') {
+                console.warn('Service not found in database');
+            }
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    async function loadOtherServices() {
+        try {
+            const { data, error} = await supabase
+                .from('services')
+                .select('id, title_en, title_fr, title_ar, href')
+                .eq('is_active', true)
+                .neq('href', `/services/${slug}`)
+                .neq('href', `/services/${slug}/`)
+                .order('display_order')
+                .limit(5);
+
+            if (error) throw error;
+            setOtherServices(data || []);
+        } catch (error) {
+            console.error('❌ Error loading other services:', error);
+        }
+    }
+
+    if (loading) {
+        return (
+            <main className="min-h-screen bg-[#F8F9FA]">
+                <Header />
+                <div className="flex items-center justify-center min-h-[400px]">
+                    <Loader2 className="h-8 w-8 animate-spin text-[#001F3F]" />
+                </div>
+            </main>
+        );
+    }
 
     if (!service) {
         return (
-            <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
+            <main className="min-h-screen bg-[#F8F9FA] flex flex-col">
                 <Header />
                 <div className="flex-grow flex items-center justify-center">
                     <div className="text-center">
-                        <h1 className="text-2xl font-bold text-[#001F3F]">Service Not Found</h1>
-                        <Link href="/services" className="text-[#D4AF37] hover:underline mt-4 block">Return to Services</Link>
+                        <h1 className="text-2xl font-bold text-[#001F3F]">
+                            {language === 'ar' ? 'الخدمة غير موجودة' : language === 'fr' ? 'Service non trouvé' : 'Service Not Found'}
+                        </h1>
+                        <Link href="/services" className="text-[#D4AF37] hover:underline mt-4 block">
+                            {language === 'ar' ? 'العودة للخدمات' : language === 'fr' ? 'Retour aux services' : 'Return to Services'}
+                        </Link>
                     </div>
                 </div>
-            </div>
+            </main>
         );
     }
+
+    const title = language === 'ar' ? service.title_ar : language === 'fr' ? service.title_fr : service.title_en;
+    const description = language === 'ar' ? service.description_ar : language === 'fr' ? service.description_fr : service.description_en;
+
+    // Note: Features are not in database yet - using fallback from translations if available
+    const fallbackService = t.serviceDetails?.[slug];
+    const features = fallbackService?.features || [];
 
     return (
         <main className="min-h-screen bg-[#F8F9FA]">
             <Header />
 
-            {/* Hero Header */}
-            <div className="bg-[#001F3F] text-white py-20">
-                <div className="container mx-auto px-4 md:px-6">
-                    <Link href="/services" className="inline-flex items-center text-blue-300 hover:text-[#D4AF37] mb-6 transition-colors">
-                        <ArrowLeft className="mr-2 h-4 w-4" /> {t.nav.services} // Using nav translation for "Services" or hardcode "Back"
-                    </Link>
-                    <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">{service.title}</h1>
-                    <p className="text-xl text-blue-100 max-w-2xl">{service.subtitle}</p>
+            {/* Hero Header with optional image */}
+            {service.image_url ? (
+                <div className="relative h-[400px] bg-[#001F3F]">
+                    <img
+                        src={service.image_url}
+                        alt={title}
+                        className="absolute inset-0 w-full h-full object-cover opacity-30"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#001F3F] to-transparent" />
+                    <div className="relative container mx-auto px-4 md:px-6 h-full flex flex-col justify-end pb-20">
+                        <Link href="/services" className="inline-flex items-center text-blue-300 hover:text-[#D4AF37] mb-6 transition-colors">
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            {language === 'ar' ? 'الخدمات' : language === 'fr' ? 'Services' : 'Services'}
+                        </Link>
+                        <h1 className="text-4xl md:text-5xl font-serif font-bold text-white mb-4">{title}</h1>
+                        {fallbackService?.subtitle && (
+                            <p className="text-xl text-blue-100 max-w-2xl">{fallbackService.subtitle}</p>
+                        )}
+                    </div>
                 </div>
-            </div>
+            ) : (
+                <div className="bg-[#001F3F] text-white py-20">
+                    <div className="container mx-auto px-4 md:px-6">
+                        <Link href="/services" className="inline-flex items-center text-blue-300 hover:text-[#D4AF37] mb-6 transition-colors">
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            {language === 'ar' ? 'الخدمات' : language === 'fr' ? 'Services' : 'Services'}
+                        </Link>
+                        <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">{title}</h1>
+                        {fallbackService?.subtitle && (
+                            <p className="text-xl text-blue-100 max-w-2xl">{fallbackService.subtitle}</p>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Content */}
             <div className="container mx-auto px-4 md:px-6 py-16">
@@ -49,52 +166,88 @@ export default function ServiceDetailView({ slug }: { slug: string }) {
                     {/* Main Info */}
                     <div className="lg:col-span-2 space-y-8">
                         <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                            <h2 className="text-2xl font-bold text-[#001F3F] mb-4">{t.footer.expertise}</h2> {/* "Overview" isn't in t, using Expertise or hardcoding? Let's assume generic or use a new key. I'll stick to a generic header or add "Overview" to details? Actually, "Overview" is hardcoded in original. I'll leave it as "Overview" but ideally add to dictionary. For now, I'll hardcode "Overview" or reuse something safe. */}
-                            <p className="text-gray-600 leading-relaxed text-lg">
-                                {service.description}
+                            <h2 className="text-2xl font-bold text-[#001F3F] mb-4">
+                                {language === 'ar' ? 'نظرة عامة' : language === 'fr' ? 'Aperçu' : 'Overview'}
+                            </h2>
+                            <p className="text-gray-600 leading-relaxed text-lg whitespace-pre-line">
+                                {description}
                             </p>
                         </div>
 
-                        <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                            <h2 className="text-2xl font-bold text-[#001F3F] mb-6">Key Capabilities</h2>
-                            <div className="grid sm:grid-cols-2 gap-4">
-                                {service.features.map((feature, i) => (
-                                    <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                                        <CheckCircle2 className="h-5 w-5 text-[#D4AF37]" />
-                                        <span className="font-medium text-gray-700">{feature}</span>
-                                    </div>
-                                ))}
+                        {features && features.length > 0 && (
+                            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                                <h2 className="text-2xl font-bold text-[#001F3F] mb-6">
+                                    {language === 'ar' ? 'الإمكانيات الرئيسية' : language === 'fr' ? 'Capacités clés' : 'Key Capabilities'}
+                                </h2>
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                    {features.map((feature: string, i: number) => (
+                                        <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                                            <CheckCircle2 className="h-5 w-5 text-[#D4AF37]" />
+                                            <span className="font-medium text-gray-700">{feature}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        )}
+
+                        {service.price && service.price > 0 && (
+                            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                                <h2 className="text-2xl font-bold text-[#001F3F] mb-4">
+                                    {language === 'ar' ? 'التسعير' : language === 'fr' ? 'Tarification' : 'Pricing'}
+                                </h2>
+                                <div className="flex items-baseline gap-2">
+                                    <span className="text-4xl font-bold text-[#D4AF37]">€{service.price}</span>
+                                    <span className="text-gray-500">
+                                        {language === 'ar' ? 'ابتداءً من' : language === 'fr' ? 'à partir de' : 'starting from'}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Sidebar CTA */}
                     <div className="space-y-6">
                         <div className="bg-[#001F3F] text-white p-8 rounded-2xl shadow-lg">
-                            <h3 className="text-xl font-bold mb-4">{t.servicesPage.cta_title}</h3>
+                            <h3 className="text-xl font-bold mb-4">
+                                {language === 'ar' ? 'هل أنت مستعد للبدء؟' : language === 'fr' ? 'Prêt à commencer?' : 'Ready to Get Started?'}
+                            </h3>
                             <p className="text-blue-200 mb-6 text-sm">
-                                {t.servicesPage.cta_desc}
+                                {language === 'ar'
+                                    ? 'احجز استشارة مع خبرائنا اليوم'
+                                    : language === 'fr'
+                                        ? 'Réservez une consultation avec nos experts dès aujourd\'hui'
+                                        : 'Book a consultation with our experts today'}
                             </p>
                             <Link
-                                href="/book"
+                                href="/booking"
                                 className="block w-full text-center bg-[#D4AF37] hover:bg-[#C5A028] text-white font-bold py-3 px-6 rounded-lg transition-colors"
                             >
-                                {t.servicesPage.cta_button}
+                                {language === 'ar' ? 'احجز استشارة' : language === 'fr' ? 'Réserver une consultation' : 'Book a Consultation'}
                             </Link>
                         </div>
 
-                        <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                            <h3 className="text-lg font-bold text-[#001F3F] mb-4">{t.servicesPage.cta_services}</h3>
-                            <div className="flex flex-col space-y-3">
-                                {Object.entries(allServices).map(([key, s]) => (
-                                    key !== slug && (
-                                        <Link key={key} href={`/services/${key}`} className="text-gray-500 hover:text-[#001F3F] hover:underline">
-                                            {s.title}
-                                        </Link>
-                                    )
-                                ))}
+                        {otherServices.length > 0 && (
+                            <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                                <h3 className="text-lg font-bold text-[#001F3F] mb-4">
+                                    {language === 'ar' ? 'خدمات أخرى' : language === 'fr' ? 'Autres services' : 'Other Services'}
+                                </h3>
+                                <div className="flex flex-col space-y-3">
+                                    {otherServices.map((s) => {
+                                        const otherSlug = s.href.replace('/services/', '').replace(/\/$/, '');
+                                        const otherTitle = language === 'ar' ? s.title_ar : language === 'fr' ? s.title_fr : s.title_en;
+                                        return (
+                                            <Link
+                                                key={s.id}
+                                                href={`/services/${otherSlug}`}
+                                                className="text-gray-600 hover:text-[#001F3F] hover:underline transition-colors"
+                                            >
+                                                {otherTitle}
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </div>
