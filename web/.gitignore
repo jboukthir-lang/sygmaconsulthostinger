@@ -28,8 +28,9 @@ yarn-error.log*
 
 # local env files
 .env*.local
-!.env.production.local
 .env
+.env.production.local
+scripts/deploy-prod-env.js
 HOSTINGER_IMPORT.env
 HOSTINGER_ENV_SETUP.txt
 

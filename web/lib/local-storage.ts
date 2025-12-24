@@ -1,5 +1,4 @@
-import { query } from './db';
-import { RowDataPacket } from 'mysql2';
+import { supabase } from './supabase';
 
 // --- MESSAGES ---
 
@@ -15,44 +14,43 @@ export interface StoredMessage {
 
 export async function saveMessage(message: Omit<StoredMessage, 'id' | 'createdAt' | 'status'>) {
   try {
-    const id = crypto.randomUUID();
-    const createdAt = new Date();
-    const status = 'new';
+    const { data, error } = await supabase
+      .from('contacts')
+      .insert([{
+        ...message,
+        status: 'new',
+        created_at: new Date().toISOString()
+      }])
+      .select()
+      .single();
 
-    // Using 'contacts' table as per schema
-    const sql = `
-      INSERT INTO contacts (id, name, email, subject, message, status, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `;
-
-    await query(sql, [
-      id,
-      message.name,
-      message.email,
-      message.subject,
-      message.message,
-      status,
-      createdAt
-    ]);
+    if (error) throw error;
 
     return {
-      id,
-      ...message,
-      status,
-      createdAt: createdAt.toISOString()
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      subject: data.subject,
+      message: data.message,
+      status: data.status,
+      createdAt: data.created_at
     };
   } catch (error) {
-    console.error('Error saving message to DB:', error);
+    console.error('Error saving message to Supabase:', error);
     throw new Error('Failed to save message to database');
   }
 }
 
 export async function getMessages() {
   try {
-    const sql = 'SELECT * FROM contacts ORDER BY created_at DESC';
-    const rows = await query<RowDataPacket[]>(sql);
+    const { data, error } = await supabase
+      .from('contacts')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-    return rows.map(row => ({
+    if (error) throw error;
+
+    return (data || []).map(row => ({
       id: row.id,
       name: row.name,
       email: row.email,
@@ -62,18 +60,24 @@ export async function getMessages() {
       createdAt: row.created_at
     })) as StoredMessage[];
   } catch (error) {
-    console.error('Error fetching messages from DB:', error);
+    console.error('Error fetching messages from Supabase:', error);
     return [];
   }
 }
 
 export async function updateMessageStatus(id: string, status: 'new' | 'read' | 'replied') {
   try {
-    const sql = 'UPDATE contacts SET status = ? WHERE id = ?';
-    await query(sql, [status, id]);
-    return { id, status };
+    const { data, error } = await supabase
+      .from('contacts')
+      .update({ status })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { id: data.id, status: data.status };
   } catch (error) {
-    console.error('Error updating message status in DB:', error);
+    console.error('Error updating message status in Supabase:', error);
     throw new Error('Failed to update message status');
   }
 }
@@ -109,79 +113,70 @@ export interface Booking {
 
 export async function saveBooking(booking: Omit<Booking, 'id' | 'created_at' | 'updated_at'>) {
   try {
-    const id = crypto.randomUUID();
-    const now = new Date();
+    const { data, error } = await supabase
+      .from('bookings')
+      .insert([{
+        ...booking,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }])
+      .select()
+      .single();
 
-    const sql = `
-      INSERT INTO bookings (
-        id, name, email, topic, date, time, user_id, status, duration, 
-        appointment_type, appointment_type_id, specialization, is_online, 
-        notes, price, payment_status, created_at, updated_at,
-        stripe_session_id, stripe_payment_id, calendar_event_id, meet_link, internal_notes, consultant_id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+    if (error) throw error;
 
-    const values = [
-      id, booking.name, booking.email, booking.topic,
-      booking.date, booking.time, booking.user_id, booking.status,
-      booking.duration, booking.appointment_type, booking.appointment_type_id,
-      booking.specialization, booking.is_online, booking.notes,
-      booking.price, booking.payment_status, now, now,
-      booking.stripe_session_id, booking.stripe_payment_id, booking.calendar_event_id,
-      booking.meet_link, booking.internal_notes, booking.consultant_id
-    ];
-
-    await query(sql, values);
-
-    return {
-      id,
-      ...booking,
-      created_at: now.toISOString(),
-      updated_at: now.toISOString()
-    } as Booking;
+    return data as Booking;
   } catch (error) {
-    console.error('Error saving booking to DB:', error);
+    console.error('Error saving booking to Supabase:', error);
     throw new Error('Failed to save booking to database');
   }
 }
 
 export async function updateBooking(id: string, updates: Partial<Booking>) {
   try {
-    const keys = Object.keys(updates).filter(k => k !== 'id');
-    if (keys.length === 0) return null;
+    const { data, error } = await supabase
+      .from('bookings')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select()
+      .single();
 
-    const setClause = keys.map(k => `${k} = ?`).join(', ');
-    const values = keys.map(k => (updates as any)[k]);
-
-    // Add id to values
-    values.push(id);
-
-    const sql = `UPDATE bookings SET ${setClause}, updated_at = NOW() WHERE id = ?`;
-
-    await query(sql, values);
-    return { id, ...updates } as Booking;
+    if (error) throw error;
+    return data as Booking;
   } catch (error) {
-    console.error('Error updating booking in DB:', error);
-    throw new Error('Failed to update booking locally');
+    console.error('Error updating booking in Supabase:', error);
+    throw new Error('Failed to update booking');
   }
 }
 
 export async function deleteBooking(id: string) {
   try {
-    const sql = 'DELETE FROM bookings WHERE id = ?';
-    await query(sql, [id]);
+    const { error } = await supabase
+      .from('bookings')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
     return true;
   } catch (error) {
-    console.error('Error deleting booking from DB:', error);
-    throw new Error('Failed to delete booking locally');
+    console.error('Error deleting booking from Supabase:', error);
+    throw new Error('Failed to delete booking');
   }
 }
 
 export async function getBookingById(id: string) {
   try {
-    const sql = 'SELECT * FROM bookings WHERE id = ?';
-    const rows = await query<RowDataPacket[]>(sql, [id]);
-    return (rows.length > 0 ? rows[0] : null) as Booking | null;
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) throw error;
+    return data as Booking;
   } catch (error) {
     console.error('Error getting booking by ID:', error);
     return null;
@@ -190,9 +185,14 @@ export async function getBookingById(id: string) {
 
 export async function getBookings() {
   try {
-    const sql = 'SELECT * FROM bookings ORDER BY date DESC, time DESC';
-    const rows = await query<RowDataPacket[]>(sql);
-    return rows as Booking[];
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('*')
+      .order('date', { ascending: false })
+      .order('time', { ascending: false });
+
+    if (error) throw error;
+    return data as Booking[];
   } catch (error) {
     console.error('Error getting bookings:', error);
     return [];
