@@ -33,6 +33,31 @@ export async function getStripe() {
   });
 }
 
+// Helper to get Webhook Secret with fallback
+export async function getWebhookSecret() {
+  let secret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  if (!secret) {
+    try {
+      const { supabase } = await import('./supabase');
+      const { data } = await supabase
+        .from('site_settings')
+        .select('value')
+        .eq('key', 'STRIPE_WEBHOOK_SECRET')
+        .single();
+
+      if (data?.value && data.value !== 'REPLACE_ME') {
+        secret = data.value;
+        console.log('✅ Stripe webhook secret loaded from database fallback');
+      }
+    } catch (e) {
+      console.error('Failed to load Stripe webhook secret from DB fallback');
+    }
+  }
+
+  return secret;
+}
+
 // Helper function to check if Stripe is configured
 export async function isStripeConfigured(): Promise<boolean> {
   const secret = process.env.STRIPE_SECRET_KEY;

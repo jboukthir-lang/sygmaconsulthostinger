@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getStripe, formatAmountFromStripe, isStripeConfigured } from '@/lib/stripe';
+import { getStripe, formatAmountFromStripe, isStripeConfigured, getWebhookSecret } from '@/lib/stripe';
 import { updateBooking, getBookingById } from '@/lib/local-storage';
 import Stripe from 'stripe';
 
@@ -9,6 +9,8 @@ export async function POST(req: NextRequest) {
   // Check if Stripe is configured
   const stripeInstance = await getStripe();
   const isConfigured = await isStripeConfigured();
+  const webhookSecret = await getWebhookSecret();
+
   if (!isConfigured || !stripeInstance || !webhookSecret) {
     return NextResponse.json(
       { error: 'Payment system is not configured' },
