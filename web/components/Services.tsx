@@ -37,6 +37,8 @@ interface ServiceFromDB {
     href: string;
     is_active: boolean;
     display_order: number;
+    image_url?: string;
+    price?: number;
 }
 
 export default function Services() {
@@ -49,10 +51,44 @@ export default function Services() {
     }, [language]);
 
     async function loadServices() {
-        // Temporarily using fallback services - will be replaced with MySQL API
-        console.log('Using fallback services');
-        useFallbackServices();
-        setLoading(false);
+        try {
+            console.log('🔍 Loading services from database...');
+
+            const { data, error } = await supabase
+                .from('services')
+                .select('*')
+                .eq('is_active', true)
+                .order('display_order', { ascending: true });
+
+            if (error) {
+                console.error('❌ Error loading services:', error);
+                throw error;
+            }
+
+            if (data && data.length > 0) {
+                console.log(`✅ Loaded ${data.length} services from database`);
+
+                // Map database services to component format
+                const mappedServices = data.map((service: ServiceFromDB) => ({
+                    title: language === 'ar' ? service.title_ar : language === 'fr' ? service.title_fr : service.title_en,
+                    description: language === 'ar' ? service.description_ar : language === 'fr' ? service.description_fr : service.description_en,
+                    icon: iconMap[service.icon] || Briefcase,
+                    href: service.href,
+                    image_url: service.image_url,
+                    price: service.price,
+                }));
+
+                setServices(mappedServices);
+            } else {
+                console.warn('⚠️  No services found in database, using fallback');
+                useFallbackServices();
+            }
+        } catch (error) {
+            console.error('💥 Failed to load services, using fallback:', error);
+            useFallbackServices();
+        } finally {
+            setLoading(false);
+        }
     }
 
     function useFallbackServices() {
@@ -125,9 +161,21 @@ export default function Services() {
                         <Link
                             key={index}
                             href={service.href}
-                            className="group relative overflow-hidden rounded-2xl bg-white p-8 shadow-sm transition-all hover:shadow-md border border-gray-100 hover:border-[#D4AF37]/30"
+                            className="group relative overflow-hidden rounded-2xl bg-white shadow-sm transition-all hover:shadow-md border border-gray-100 hover:border-[#D4AF37]/30"
                         >
-                            <div className="flex flex-col space-y-4">
+                            {/* Image Header (if available) */}
+                            {service.image_url && (
+                                <div className="relative h-48 w-full overflow-hidden">
+                                    <img
+                                        src={service.image_url}
+                                        alt={service.title}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                </div>
+                            )}
+
+                            <div className="p-8 flex flex-col space-y-4">
                                 <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-[#001F3F]/5 text-[#001F3F] group-hover:bg-[#D4AF37] group-hover:text-white transition-colors duration-300">
                                     <service.icon className="h-6 w-6" />
                                 </div>
@@ -137,6 +185,15 @@ export default function Services() {
                                 <p className="text-[#4A4A4A] leading-relaxed">
                                     {service.description}
                                 </p>
+
+                                {/* Price Badge (if available) */}
+                                {service.price && service.price > 0 && (
+                                    <div className="pt-4 border-t border-gray-100">
+                                        <span className="inline-block px-3 py-1 text-sm font-semibold text-[#D4AF37] bg-[#D4AF37]/10 rounded-full">
+                                            {language === 'ar' ? 'من' : language === 'fr' ? 'À partir de' : 'From'} €{service.price}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                         </Link>
                     ))}
