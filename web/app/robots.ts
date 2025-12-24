@@ -1,12 +1,1 @@
-import { MetadataRoute } from 'next';
-
-export default function robots(): MetadataRoute.Robots {
-  return {
-    rules: {
-      userAgent: '*',
-      allow: '/',
-      disallow: ['/admin/', '/profile/', '/api/'],
-    },
-    sitemap: 'https://sygmaconsult.com/sitemap.xml',
-  };
-}
+export default function robots(): any { return { rules: { userAgent: '*', allow: '/', disallow: ['/admin/', '/api/'] }, sitemap: 'https://sygmaconsult.com/sitemap.xml' } }

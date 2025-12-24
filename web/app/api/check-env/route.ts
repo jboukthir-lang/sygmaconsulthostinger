@@ -55,6 +55,15 @@ export async function GET() {
       url: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
       anonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     },
+    mysql: {
+      host: !!process.env.DB_HOST,
+      port: !!process.env.DB_PORT,
+      user: !!process.env.DB_USER,
+      password: !!process.env.DB_PASSWORD,
+      database: !!process.env.DB_NAME,
+      actualHost: process.env.DB_HOST || 'NOT_SET',
+      actualDatabase: process.env.DB_NAME || 'NOT_SET',
+    },
     stripe: {
       publishableKey: !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
       secretKey: !!process.env.STRIPE_SECRET_KEY || dbStripeConfigured,
@@ -101,14 +110,22 @@ export async function GET() {
     envStatus.email.smtpUser &&
     envStatus.email.smtpPassword;
 
+  const allMysqlConfigured =
+    envStatus.mysql.host &&
+    envStatus.mysql.port &&
+    envStatus.mysql.user &&
+    envStatus.mysql.password &&
+    envStatus.mysql.database;
+
   return NextResponse.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    deploymentVersion: '1.0.2-db-diagnostics', // Updated to verify refresh
+    deploymentVersion: '1.0.3-mysql-integrated', // Updated to verify refresh
     environment: process.env.NODE_ENV || 'unknown',
     configured: envStatus,
     summary: {
       supabase: allSupabaseConfigured ? '✅ Configured' : '❌ Missing variables',
+      mysql: allMysqlConfigured ? '✅ Configured' : '⚠️ Optional - Not configured',
       stripe: allStripeConfigured ? '✅ Configured' : '❌ Missing variables',
       email: allEmailConfigured ? '✅ Configured' : '❌ Missing variables',
       google: envStatus.google.clientId ? '✅ Configured' : '⚠️ Optional - Not configured',

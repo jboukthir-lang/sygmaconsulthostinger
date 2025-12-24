@@ -1,23 +1,32 @@
 import { NextResponse } from 'next/server';
-import { saveBooking, updateBooking, getBookingById } from '@/lib/local-storage';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 import { sendBookingConfirmation, sendBookingNotification } from '@/lib/smtp-email';
 import { createCalendarEvent } from '@/lib/google-calendar';
 
 export async function GET(req: Request) {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get('id');
+    try {
+        const { searchParams } = new URL(req.url);
+        const id = searchParams.get('id');
 
-    if (!id) {
-        return NextResponse.json({ error: 'Booking ID is required' }, { status: 400 });
+        if (!id) {
+            return NextResponse.json({ error: 'Booking ID is required' }, { status: 400 });
+        }
+
+        const { data, error } = await supabaseAdmin
+            .from('bookings')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error || !data) {
+            return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
+        }
+
+        return NextResponse.json(data);
+    } catch (error) {
+        console.error('Error fetching booking:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
-
-    const booking = await getBookingById(id);
-
-    if (!booking) {
-        return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
-    }
-
-    return NextResponse.json(booking);
 }
 
 export async function PATCH(req: Request) {
@@ -29,16 +38,20 @@ export async function PATCH(req: Request) {
             return NextResponse.json({ error: 'ID and status required' }, { status: 400 });
         }
 
-        // In a real app, verify user owns this booking
+        const { data, error } = await supabaseAdmin
+            .from('bookings')
+            .update({ status, updated_at: new Date().toISOString() })
+            .eq('id', id)
+            .select()
+            .single();
 
-        const updated = await updateBooking(id, { status });
-
-        if (!updated) {
-            return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
+        if (error || !data) {
+            return NextResponse.json({ error: 'Booking not found or update failed' }, { status: 404 });
         }
 
-        return NextResponse.json(updated);
+        return NextResponse.json(data);
     } catch (error) {
+        console.error('Error updating booking:', error);
         return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
     }
 }
@@ -82,7 +95,7 @@ export async function POST(req: Request) {
             formattedDate = `${year}-${month}-${day}`;
         }
 
-        // Save to Local File
+        // Save to Supabase
         const bookingData = {
             name,
             email,
@@ -101,8 +114,18 @@ export async function POST(req: Request) {
             payment_status: (payment_status || (price > 0 ? 'pending' : 'free')) as any
         };
 
-        const data = await saveBooking(bookingData);
-        console.log('Booking saved locally:', data);
+        const { data, error } = await supabaseAdmin
+            .from('bookings')
+            .insert([bookingData])
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error saving booking:', error);
+            throw new Error('Failed to save booking');
+        }
+
+        console.log('✅ Booking saved to Supabase:', data.id);
 
         // Create Google Calendar event
         let calendarData: any = null;
@@ -110,18 +133,21 @@ export async function POST(req: Request) {
             calendarData = await createCalendarEvent(data as any);
             if (calendarData) {
                 // Update booking with calendar event ID and meet link
-                await updateBooking(data.id, {
-                    calendar_event_id: calendarData.eventId,
-                    meet_link: calendarData.meetLink
-                });
+                await supabaseAdmin
+                    .from('bookings')
+                    .update({
+                        calendar_event_id: calendarData.eventId,
+                        meet_link: calendarData.meetLink
+                    })
+                    .eq('id', data.id);
 
-                console.log('Calendar event created:', calendarData.eventId);
+                console.log('✅ Calendar event created:', calendarData.eventId);
 
                 // Update data object for email
                 data.meet_link = calendarData.meetLink;
             }
         } catch (calendarError) {
-            console.error('Failed to create calendar event:', calendarError);
+            console.error('⚠️ Failed to create calendar event:', calendarError);
             // Don't fail the booking if calendar fails
         }
 

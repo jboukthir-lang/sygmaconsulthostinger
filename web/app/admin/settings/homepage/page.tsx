@@ -469,3 +469,4 @@ export default function HomepageContentPage() {
     </div>
   );
 }
+export const dynamic = 'force-dynamic';

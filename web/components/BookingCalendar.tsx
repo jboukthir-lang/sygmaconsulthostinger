@@ -6,11 +6,6 @@ import { useLanguage } from '@/context/LanguageContext';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 
-// Default time slots
-const DEFAULT_TIME_SLOTS = [
-    "09:00", "10:00", "11:00", "14:00", "15:00", "16:00"
-];
-
 interface AppointmentType {
     id: string;
     name_fr: string;
@@ -27,6 +22,24 @@ interface AppointmentType {
     is_active: boolean;
 }
 
+interface CalendarSettings {
+    id: string;
+    working_hours_start: string;
+    working_hours_end: string;
+    break_start: string | null;
+    break_end: string | null;
+    slot_duration: number;
+    working_days: string[];
+    max_advance_booking_days: number;
+    min_advance_booking_hours: number;
+}
+
+interface BlockedDate {
+    id: string;
+    date: string;
+    reason?: string;
+}
+
 export default function BookingCalendar() {
     const { t, language } = useLanguage();
     const { user } = useAuth();
@@ -34,10 +47,13 @@ export default function BookingCalendar() {
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
     const [step, setStep] = useState(1);
     const [appointmentTypes, setAppointmentTypes] = useState<AppointmentType[]>([]);
-    const [timeSlots, setTimeSlots] = useState<string[]>(DEFAULT_TIME_SLOTS);
+    const [timeSlots, setTimeSlots] = useState<string[]>([]);
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [isLoading, setIsLoading] = useState(false);
     const [loadingData, setLoadingData] = useState(true);
+    const [calendarSettings, setCalendarSettings] = useState<CalendarSettings | null>(null);
+    const [blockedDates, setBlockedDates] = useState<BlockedDate[]>([]);
+    const [bookedSlots, setBookedSlots] = useState<string[]>([]);
 
     const [formData, setFormData] = useState({
         name: user?.displayName || '',
@@ -47,10 +63,11 @@ export default function BookingCalendar() {
         notes: ''
     });
 
-    // Load appointment types and time slots from database
+    // Load appointment types and calendar settings from database
     useEffect(() => {
         loadAppointmentTypes();
-        loadTimeSlots();
+        loadCalendarSettings();
+        loadBlockedDates();
     }, []);
 
     // Update form data when user changes
@@ -63,6 +80,14 @@ export default function BookingCalendar() {
             }));
         }
     }, [user]);
+
+    // Generate time slots when date is selected and settings are loaded
+    useEffect(() => {
+        if (selectedDate && calendarSettings) {
+            generateTimeSlots(selectedDate);
+            loadBookedSlots(selectedDate);
+        }
+    }, [selectedDate, calendarSettings]);
 
     async function loadAppointmentTypes() {
         try {
@@ -96,20 +121,142 @@ export default function BookingCalendar() {
         }
     }
 
-    async function loadTimeSlots() {
+    async function loadCalendarSettings() {
         try {
+            console.log('🔍 Loading calendar settings...');
             const { data, error } = await supabase
-                .from('site_settings')
-                .select('value_json')
-                .eq('key', 'available_time_slots')
+                .from('calendar_settings')
+                .select('*')
                 .single();
 
-            if (!error && data?.value_json) {
-                setTimeSlots(data.value_json as string[]);
+            if (error) throw error;
+            if (data) {
+                console.log('✅ Calendar settings loaded:', data);
+                setCalendarSettings(data);
             }
         } catch (error) {
-            console.error('Error loading time slots:', error);
+            console.error('❌ Error loading calendar settings:', error);
         }
+    }
+
+    async function loadBlockedDates() {
+        try {
+            const today = new Date().toISOString().split('T')[0];
+            const { data, error } = await supabase
+                .from('blocked_dates')
+                .select('*')
+                .gte('date', today);
+
+            if (error) throw error;
+            if (data) {
+                console.log(`✅ Loaded ${data.length} blocked dates`);
+                setBlockedDates(data);
+            }
+        } catch (error) {
+            console.error('❌ Error loading blocked dates:', error);
+        }
+    }
+
+    async function loadBookedSlots(date: Date) {
+        try {
+            const dateStr = date.toISOString().split('T')[0];
+            const { data, error } = await supabase
+                .from('bookings')
+                .select('time')
+                .eq('date', dateStr)
+                .neq('status', 'cancelled');
+
+            if (error) throw error;
+            if (data) {
+                const slots = data.map(b => b.time);
+                console.log(`✅ Found ${slots.length} booked slots for ${dateStr}`);
+                setBookedSlots(slots);
+            }
+        } catch (error) {
+            console.error('❌ Error loading booked slots:', error);
+        }
+    }
+
+    function generateTimeSlots(date: Date) {
+        if (!calendarSettings || !calendarSettings.working_hours_start || !calendarSettings.working_hours_end) {
+            console.log('⚠️ Calendar settings not ready');
+            return;
+        }
+
+        const slots: string[] = [];
+        const [startH, startM] = calendarSettings.working_hours_start.split(':').map(Number);
+        const [endH, endM] = calendarSettings.working_hours_end.split(':').map(Number);
+        const duration = calendarSettings.slot_duration || 30;
+
+        let currentH = startH;
+        let currentM = startM;
+
+        while (currentH < endH || (currentH === endH && currentM < endM)) {
+            const timeString = `${String(currentH).padStart(2, '0')}:${String(currentM).padStart(2, '0')}`;
+
+            // Check if time is in break period
+            let isBreakTime = false;
+            if (calendarSettings.break_start && calendarSettings.break_end) {
+                const [breakStartH, breakStartM] = calendarSettings.break_start.split(':').map(Number);
+                const [breakEndH, breakEndM] = calendarSettings.break_end.split(':').map(Number);
+
+                const currentMinutes = currentH * 60 + currentM;
+                const breakStartMinutes = breakStartH * 60 + breakStartM;
+                const breakEndMinutes = breakEndH * 60 + breakEndM;
+
+                if (currentMinutes >= breakStartMinutes && currentMinutes < breakEndMinutes) {
+                    isBreakTime = true;
+                }
+            }
+
+            if (!isBreakTime) {
+                slots.push(timeString);
+            }
+
+            currentM += duration;
+            if (currentM >= 60) {
+                currentH += Math.floor(currentM / 60);
+                currentM = currentM % 60;
+            }
+        }
+
+        console.log(`✅ Generated ${slots.length} time slots`);
+        setTimeSlots(slots);
+    }
+
+    function isDateBlocked(date: Date): boolean {
+        const dateStr = date.toISOString().split('T')[0];
+        return blockedDates.some(bd => bd.date === dateStr);
+    }
+
+    function isWorkingDay(date: Date): boolean {
+        if (!calendarSettings || !calendarSettings.working_days) return true;
+        const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        const dayName = dayNames[date.getDay()];
+        return calendarSettings.working_days.includes(dayName);
+    }
+
+    function isDateAvailable(date: Date): boolean {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Check if date is in the past
+        if (date < today) return false;
+
+        // Check if it's a working day
+        if (!isWorkingDay(date)) return false;
+
+        // Check if date is blocked
+        if (isDateBlocked(date)) return false;
+
+        // Check max advance booking
+        if (calendarSettings) {
+            const maxDate = new Date();
+            maxDate.setDate(maxDate.getDate() + calendarSettings.max_advance_booking_days);
+            if (date > maxDate) return false;
+        }
+
+        return true;
     }
 
     const handleDateSelect = (date: Date) => {
@@ -307,7 +454,7 @@ export default function BookingCalendar() {
                                 ))}
                                 {getDaysInMonth().map((dayObj, i) => {
                                     const isSelected = selectedDate?.toDateString() === dayObj.date.toDateString();
-                                    const isDisabled = !dayObj.isCurrentMonth || dayObj.date < new Date();
+                                    const isDisabled = !dayObj.isCurrentMonth || !isDateAvailable(dayObj.date);
 
                                     return (
                                         <button
@@ -331,18 +478,25 @@ export default function BookingCalendar() {
                         {/* Time Slots */}
                         {selectedDate && (
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
-                                {timeSlots.map(time => (
-                                    <button
-                                        key={time}
-                                        onClick={() => setSelectedTime(time)}
-                                        className={`py-2 px-3 sm:px-4 rounded-full text-sm border transition-all ${selectedTime === time
-                                            ? 'border-[#D4AF37] bg-[#D4AF37] text-white'
-                                            : 'border-gray-200 hover:border-[#001F3F] hover:text-[#001F3F]'
+                                {timeSlots.map(time => {
+                                    const isBooked = bookedSlots.includes(time);
+                                    return (
+                                        <button
+                                            key={time}
+                                            onClick={() => !isBooked && setSelectedTime(time)}
+                                            disabled={isBooked}
+                                            className={`py-2 px-3 sm:px-4 rounded-full text-sm border transition-all ${
+                                                selectedTime === time
+                                                    ? 'border-[#D4AF37] bg-[#D4AF37] text-white'
+                                                    : isBooked
+                                                        ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed line-through'
+                                                        : 'border-gray-200 hover:border-[#001F3F] hover:text-[#001F3F]'
                                             }`}
-                                    >
-                                        {time}
-                                    </button>
-                                ))}
+                                        >
+                                            {time}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         )}
 
