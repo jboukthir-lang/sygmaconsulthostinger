@@ -21,14 +21,14 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
-  // Remove standalone output mode which causes routes-manifest issues
+  // Output mode standalone removed for Hostinger compatibility
   // output: 'standalone',
 
-  // Ensure assets are loaded correctly from the web subdirectory on some Hostinger setups
-  // If the assets still 404, we will uncomment the line below
-  // assetPrefix: process.env.NODE_ENV === 'production' ? 'https://sygmaconsult.com' : undefined,
-
   trailingSlash: true,
+  // Add generateBuildId to help with cache busting if needed
+  generateBuildId: async () => {
+    return 'sygma-build-' + Date.now();
+  },
 };
 
 module.exports = nextConfig;
