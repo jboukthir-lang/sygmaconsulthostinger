@@ -18,7 +18,6 @@ import {
   Calendar
 } from 'lucide-react';
 import StatsCard from '@/components/admin/StatsCard';
-import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import { t } from '@/lib/translations';
 
