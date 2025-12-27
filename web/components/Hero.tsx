@@ -35,10 +35,23 @@ export default function Hero() {
     const [heroImageUrl, setHeroImageUrl] = useState<string>('/hero.svg');
     const [heroContent, setHeroContent] = useState<HeroSection | null>(null);
 
-    // Temporarily disabled - will be replaced with MySQL API
     const fetchHeroImage = async () => {
-        // Using default hero image for now
-        console.log('Using default hero image');
+        try {
+            const { data, error } = await supabase
+                .from('hero_images')
+                .select('image_url')
+                .eq('is_active', true)
+                .single();
+
+            if (data && data.image_url) {
+                setHeroImageUrl(data.image_url);
+                console.log('✅ Hero image loaded from database');
+            } else {
+                console.log('ℹ️ Using default hero image');
+            }
+        } catch (error) {
+            console.error('Error fetching hero image:', error);
+        }
     };
 
     const fetchHeroContent = async () => {

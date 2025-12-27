@@ -3,11 +3,13 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/context/LanguageContext';
 import { Mail, Loader2, ArrowLeft, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 export default function ResetPasswordPage() {
+  const { t, language } = useLanguage();
   const { resetPassword } = useAuth();
   const router = useRouter();
 
@@ -27,13 +29,13 @@ export default function ResetPasswordPage() {
     } catch (error: any) {
       console.error('Password reset failed:', error);
       if (error.code === 'auth/user-not-found') {
-        setError('No account found with this email address');
+        setError(t.login.errorUserNotFound);
       } else if (error.code === 'auth/invalid-email') {
-        setError('Invalid email address');
+        setError(language === 'fr' ? 'Adresse email invalide' : language === 'ar' ? 'عنوان بريد إلكتروني غير صحيح' : 'Invalid email address');
       } else if (error.code === 'auth/too-many-requests') {
-        setError('Too many requests. Please try again later.');
+        setError(t.login.errorTooManyRequests);
       } else {
-        setError('Failed to send reset email. Please try again.');
+        setError(t.error.desc);
       }
     } finally {
       setIsLoading(false);
@@ -57,16 +59,16 @@ export default function ResetPasswordPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold">Sygma Consult</h1>
-              <p className="text-sm text-blue-200">Paris • Tunis</p>
+              <p className="text-sm text-blue-200">{t.nav.about}</p>
             </div>
           </Link>
 
           <div className="space-y-6 text-white">
             <h2 className="text-4xl font-bold leading-tight">
-              Reset Your Password
+              {t.resetPassword.title}
             </h2>
             <p className="text-lg text-blue-200">
-              Enter your email address and we'll send you a link to reset your password.
+              {t.resetPassword.subtitle}
             </p>
           </div>
         </div>
@@ -74,15 +76,15 @@ export default function ResetPasswordPage() {
         <div className="space-y-4 text-blue-200">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">✓</div>
-            <span>Secure password reset process</span>
+            <span>{language === 'fr' ? 'Processus de réinitialisation sécurisé' : language === 'ar' ? 'عملية إعادة تعيين آمنة' : 'Secure password reset process'}</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">✓</div>
-            <span>Email verification</span>
+            <span>{language === 'fr' ? 'Vérification par email' : language === 'ar' ? 'التحقق من البريد الإلكتروني' : 'Email verification'}</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">✓</div>
-            <span>24/7 support available</span>
+            <span>{t.login.needHelp}</span>
           </div>
         </div>
       </div>
@@ -114,15 +116,15 @@ export default function ResetPasswordPage() {
               className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-[#001F3F] mb-6"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to Sign In
+              {t.resetPassword.backToLogin}
             </Link>
 
             {!success ? (
               <>
                 <div className="mb-8">
-                  <h2 className="text-3xl font-bold text-[#001F3F] mb-2">Forgot Password?</h2>
+                  <h2 className="text-3xl font-bold text-[#001F3F] mb-2">{t.resetPassword.title}</h2>
                   <p className="text-gray-600">
-                    No worries! Enter your email and we'll send you reset instructions.
+                    {t.resetPassword.subtitle}
                   </p>
                 </div>
 
@@ -138,7 +140,7 @@ export default function ResetPasswordPage() {
                   {/* Email Input */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address
+                      {t.login.emailLabel}
                     </label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -148,7 +150,7 @@ export default function ResetPasswordPage() {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20 focus:border-[#001F3F]"
-                        placeholder="Enter your email"
+                        placeholder={t.login.emailPlaceholder}
                       />
                     </div>
                   </div>
@@ -162,12 +164,12 @@ export default function ResetPasswordPage() {
                     {isLoading ? (
                       <>
                         <Loader2 className="h-5 w-5 animate-spin" />
-                        Sending...
+                        {language === 'fr' ? 'Envoi...' : language === 'ar' ? 'جاري الإرسال...' : 'Sending...'}
                       </>
                     ) : (
                       <>
                         <Mail className="h-5 w-5" />
-                        Send Reset Link
+                        {t.resetPassword.sendButton}
                       </>
                     )}
                   </button>
@@ -179,13 +181,13 @@ export default function ResetPasswordPage() {
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <CheckCircle className="h-10 w-10 text-green-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-[#001F3F] mb-2">Check Your Email</h2>
+                <h2 className="text-2xl font-bold text-[#001F3F] mb-2">{t.resetPassword.successTitle}</h2>
                 <p className="text-gray-600 mb-6">
-                  We've sent password reset instructions to:
+                  {t.resetPassword.successMessage}
                 </p>
                 <p className="font-semibold text-[#001F3F] mb-6">{email}</p>
                 <p className="text-sm text-gray-500 mb-8">
-                  Didn't receive the email? Check your spam folder or try again.
+                  {language === 'fr' ? 'Vous n\'avez pas reçu l\'e-mail ? Vérifiez vos spams ou réessayez.' : language === 'ar' ? 'لم يصلك البريد الإلكتروني؟ تفقد صندوق الرسائل غير المرغوب فيها أو حاول مرة أخرى.' : 'Didn\'t receive the email? Check your spam folder or try again.'}
                 </p>
                 <button
                   onClick={() => {
@@ -194,7 +196,7 @@ export default function ResetPasswordPage() {
                   }}
                   className="text-sm text-[#001F3F] hover:underline font-semibold"
                 >
-                  Try another email
+                  {language === 'fr' ? 'Saisir un autre email' : language === 'ar' ? 'تجربة بريد آخر' : 'Try another email'}
                 </button>
               </div>
             )}
@@ -202,9 +204,9 @@ export default function ResetPasswordPage() {
             {/* Sign In Link */}
             <div className="mt-6 text-center text-sm text-gray-600">
               <p>
-                Remember your password?{' '}
+                {t.signup.alreadyHaveAccount}{' '}
                 <Link href="/login" className="text-[#001F3F] hover:underline font-semibold">
-                  Sign in
+                  {t.signup.signInLink}
                 </Link>
               </p>
             </div>
@@ -213,9 +215,9 @@ export default function ResetPasswordPage() {
           {/* Additional Info */}
           <div className="mt-8 text-center text-sm text-gray-600">
             <p>
-              Need help?{' '}
+              {t.login.needHelp}{' '}
               <Link href="/contact" className="text-[#001F3F] hover:underline font-semibold">
-                Contact Support
+                {t.login.contactSupport}
               </Link>
             </p>
           </div>

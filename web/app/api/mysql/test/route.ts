@@ -3,6 +3,15 @@ import { queryAll, queryOne } from '@/lib/mysql';
 
 // GET /api/mysql/test - Test MySQL connection
 export async function GET() {
+  // Check if we're in production
+  if (process.env.NODE_ENV !== 'production') {
+    return NextResponse.json({
+      success: false,
+      message: 'ℹ️ MySQL is disabled in development mode',
+      note: 'MySQL will only work on production server (Hostinger)'
+    }, { status: 200 });
+  }
+
   try {
     console.log('🔍 Testing MySQL connection...');
 

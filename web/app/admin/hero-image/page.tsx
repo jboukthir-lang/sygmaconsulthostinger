@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { Upload, Image as ImageIcon, Trash2, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import Image from 'next/image';
@@ -27,17 +26,12 @@ export default function HeroImageManagement() {
 
   async function fetchHeroImage() {
     try {
-      const { data, error } = await supabase
-        .from('hero_images')
-        .select('*')
-        .eq('is_active', true)
-        .single();
+      const response = await fetch('/api/admin/hero-image');
+      const result = await response.json();
 
-      if (error && error.code !== 'PGRST116') {
-        throw error;
+      if (result.data) {
+        setHeroImage(result.data);
       }
-
-      setHeroImage(data);
     } catch (error: any) {
       console.error('Erreur lors du chargement de l\'image:', error?.message || 'Unknown error');
     } finally {
@@ -65,47 +59,23 @@ export default function HeroImageManagement() {
     setMessage(null);
 
     try {
-      // Upload to Supabase Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `hero_${Date.now()}.${fileExt}`;
-      const filePath = `hero/${fileName}`;
+      // Upload via API
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('userId', user.uid);
 
-      const { error: uploadError } = await supabase.storage
-        .from('public')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false,
-        });
+      const response = await fetch('/api/admin/hero-image', {
+        method: 'POST',
+        body: formData,
+      });
 
-      if (uploadError) throw uploadError;
+      const result = await response.json();
 
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('public')
-        .getPublicUrl(filePath);
-
-      // Deactivate old hero image
-      if (heroImage) {
-        await supabase
-          .from('hero_images')
-          .update({ is_active: false })
-          .eq('id', heroImage.id);
+      if (!response.ok) {
+        throw new Error(result.error || 'Upload failed');
       }
 
-      // Insert new hero image
-      const { data: newHeroImage, error: insertError } = await supabase
-        .from('hero_images')
-        .insert({
-          image_url: publicUrl,
-          uploaded_by: user.uid,
-          is_active: true,
-        })
-        .select()
-        .single();
-
-      if (insertError) throw insertError;
-
-      setHeroImage(newHeroImage);
+      setHeroImage(result.data);
       setMessage({ type: 'success', text: 'Image téléchargée avec succès!' });
     } catch (error: any) {
       console.error('Erreur lors du téléchargement:', error);
@@ -119,20 +89,15 @@ export default function HeroImageManagement() {
     if (!heroImage || !confirm('Êtes-vous sûr de vouloir supprimer cette image?')) return;
 
     try {
-      // Extract file path from URL
-      const urlParts = heroImage.image_url.split('/');
-      const filePath = `hero/${urlParts[urlParts.length - 1]}`;
+      const response = await fetch(`/api/admin/hero-image?id=${heroImage.id}`, {
+        method: 'DELETE',
+      });
 
-      // Delete from storage
-      await supabase.storage
-        .from('public')
-        .remove([filePath]);
+      const result = await response.json();
 
-      // Delete from database
-      await supabase
-        .from('hero_images')
-        .delete()
-        .eq('id', heroImage.id);
+      if (!response.ok) {
+        throw new Error(result.error || 'Delete failed');
+      }
 
       setHeroImage(null);
       setMessage({ type: 'success', text: 'Image supprimée avec succès' });

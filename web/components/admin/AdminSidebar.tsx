@@ -28,7 +28,7 @@ export default function AdminSidebar() {
     },
 
     {
-      title: language === 'ar' ? 'التقويم والمواعيد' : language === 'fr' ? 'Calendrier' : 'Calendar',
+      title: t('admin.calendar', language),
       href: '/admin/calendar',
       icon: Clock,
     },
@@ -53,17 +53,17 @@ export default function AdminSidebar() {
       icon: FileText,
     },
     {
-      title: language === 'ar' ? 'المنشورات' : language === 'fr' ? 'Articles' : 'Posts',
+      title: t('admin.posts', language),
       href: '/admin/posts',
       icon: FileEdit,
     },
     {
-      title: language === 'ar' ? 'الخدمات' : language === 'fr' ? 'Services' : 'Services',
+      title: t('admin.services', language),
       href: '/admin/services',
       icon: ShoppingBag,
     },
     {
-      title: language === 'ar' ? 'صورة الصفحة الرئيسية' : language === 'fr' ? 'Image d\'accueil' : 'Hero Image',
+      title: t('admin.heroImage', language),
       href: '/admin/hero-image',
       icon: ImageIcon,
     },
@@ -162,8 +162,8 @@ export default function AdminSidebar() {
                     href={item.href}
                     onClick={() => setIsOpen(false)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
-                        ? 'bg-[#D4AF37] text-[#001F3F] font-semibold'
-                        : 'text-blue-100 hover:bg-white/10'
+                      ? 'bg-[#D4AF37] text-[#001F3F] font-semibold'
+                      : 'text-blue-100 hover:bg-white/10'
                       }`}
                   >
                     <Icon className="h-5 w-5" />

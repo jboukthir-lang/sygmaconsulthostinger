@@ -225,6 +225,79 @@ type Translations = {
         offices_title: string;
         offices_subtitle: string;
     };
+    signup: {
+        createAccount: string;
+        joinDesc: string;
+        fullNameLabel: string;
+        emailLabel: string;
+        passwordLabel: string;
+        passwordPlaceholder: string;
+        signUpButton: string;
+        alreadyHaveAccount: string;
+        signInLink: string;
+        feature1: string;
+        feature2: string;
+        feature3: string;
+    };
+    resetPassword: {
+        title: string;
+        subtitle: string;
+        emailLabel: string;
+        emailPlaceholder: string;
+        sendButton: string;
+        backToLogin: string;
+        successTitle: string;
+        successMessage: string;
+        newPasswordTitle: string;
+        newPasswordSubtitle: string;
+        newPasswordLabel: string;
+        confirmPasswordLabel: string;
+        updateButton: string;
+    };
+    legal: {
+        title: string;
+        editorTitle: string;
+        editorContent: string;
+        hostingTitle: string;
+        hostingContent: string;
+        propertyTitle: string;
+        propertyContent: string;
+    };
+    privacy: {
+        title: string;
+        collectionTitle: string;
+        collectionContent: string;
+        useTitle: string;
+        useContent: string;
+        protectionTitle: string;
+        protectionContent: string;
+        rightsTitle: string;
+        rightsContent: string;
+    };
+    terms: {
+        title: string;
+        agreementTitle: string;
+        agreementContent: string;
+        licenseTitle: string;
+        licenseContent: string;
+        disclaimerTitle: string;
+        disclaimerContent: string;
+    };
+    careers: {
+        title: string;
+        subtitle: string;
+        whyJoinTitle: string;
+        whyJoinContent: string;
+        positionsTitle: string;
+        noPositions: string;
+        contactCTA: string;
+    };
+    chatbot: {
+        greeting: string;
+        placeholder: string;
+        name: string;
+        status: string;
+    };
 };
 
 const translations: Record<Language, Translations> = {
@@ -495,6 +568,79 @@ const translations: Record<Language, Translations> = {
             excellence_desc: "Delivering premium quality in every consultation.",
             offices_title: "Our Offices",
             offices_subtitle: "With strategic locations in Paris and Tunis, we provide comprehensive support across Europe and North Africa."
+        },
+        signup: {
+            createAccount: "Create Your Account",
+            joinDesc: "Join Sygma Consult today and unlock strategic business growth.",
+            fullNameLabel: "Full Name",
+            emailLabel: "Email Address",
+            passwordLabel: "Password",
+            passwordPlaceholder: "At least 8 characters",
+            signUpButton: "Create Account",
+            alreadyHaveAccount: "Already have an account?",
+            signInLink: "Sign In",
+            feature1: "Personalized strategic advice",
+            feature2: "Fast-track administrative support",
+            feature3: "Cross-border business networking"
+        },
+        resetPassword: {
+            title: "Reset Password",
+            subtitle: "Enter your email and we'll send you a link to reset your password.",
+            emailLabel: "Email Address",
+            emailPlaceholder: "name@company.com",
+            sendButton: "Send Reset Link",
+            backToLogin: "Back to Login",
+            successTitle: "Check your email",
+            successMessage: "If an account exists for this email, you will receive a password reset link shortly.",
+            newPasswordTitle: "Set New Password",
+            newPasswordSubtitle: "Choose a strong password for your account.",
+            newPasswordLabel: "New Password",
+            confirmPasswordLabel: "Confirm Password",
+            updateButton: "Update Password"
+        },
+        legal: {
+            title: "Legal Notice",
+            editorTitle: "Site Editor",
+            editorContent: "Sygma Consult SARL. Registered office in Paris, France.",
+            hostingTitle: "Hosting",
+            hostingContent: "The site is hosted by Hostinger International Ltd.",
+            propertyTitle: "Intellectual Property",
+            propertyContent: "All content on this site is the professional property of Sygma Consult."
+        },
+        privacy: {
+            title: "Privacy Policy",
+            collectionTitle: "Data Collection",
+            collectionContent: "We collect data to provide better services to all our users.",
+            useTitle: "Use of Data",
+            useContent: "Your data is used to process bookings and send updates.",
+            protectionTitle: "Data Protection",
+            protectionContent: "We implement security measures to protect your personal information.",
+            rightsTitle: "Your Rights",
+            rightsContent: "You have the right to access, rectify or delete your personal data."
+        },
+        terms: {
+            title: "Terms of Service",
+            agreementTitle: "Agreement to Terms",
+            agreementContent: "By accessing our site, you agree to be bound by these terms.",
+            licenseTitle: "Use License",
+            licenseContent: "Permission is granted to temporarily download one copy of the materials.",
+            disclaimerTitle: "Disclaimer",
+            disclaimerContent: "The materials on this site are provided on an 'as is' basis."
+        },
+        careers: {
+            title: "Careers",
+            subtitle: "Join our team of experts and researchers.",
+            whyJoinTitle: "Why Join Us?",
+            whyJoinContent: "Work in a dynamic international environment with huge growth potential.",
+            positionsTitle: "Open Positions",
+            noPositions: "No open positions at the moment, but feel free to send a spontaneous application.",
+            contactCTA: "Send CV to careers@sygmaconsult.com"
+        },
+        chatbot: {
+            greeting: "Bonjour! I'm Sygma AI. How can I help you today?",
+            placeholder: "Type your question...",
+            name: "Sygma Assistant",
+            status: "Online"
         }
     },
     fr: {
@@ -764,6 +910,79 @@ const translations: Record<Language, Translations> = {
             excellence_desc: "Offrir une qualité premium dans chaque consultation.",
             offices_title: "Nos Bureaux",
             offices_subtitle: "Avec des emplacements stratégiques à Paris et à Tunis, nous offrons un soutien complet à travers l'Europe et l'Afrique du Nord."
+        },
+        signup: {
+            createAccount: "Créez votre compte",
+            joinDesc: "Rejoignez Sygma Consult dès aujourd'hui et libérez votre potentiel de croissance.",
+            fullNameLabel: "Nom complet",
+            emailLabel: "Adresse e-mail",
+            passwordLabel: "Mot de passe",
+            passwordPlaceholder: "Au moins 8 caractères",
+            signUpButton: "Créer un compte",
+            alreadyHaveAccount: "Vous avez déjà un compte ?",
+            signInLink: "Se connecter",
+            feature1: "Conseils stratégiques personnalisés",
+            feature2: "Support administratif rapide",
+            feature3: "Réseautage d'affaires transfrontalier"
+        },
+        resetPassword: {
+            title: "Réinitialiser le mot de passe",
+            subtitle: "Entrez votre e-mail et nous vous enverrons un lien de réinitialisation.",
+            emailLabel: "Adresse e-mail",
+            emailPlaceholder: "nom@entreprise.com",
+            sendButton: "Envoyer le lien",
+            backToLogin: "Retour à la connexion",
+            successTitle: "Vérifiez vos e-mails",
+            successMessage: "Si un compte existe pour cet e-mail, vous recevrez bientôt un lien de réinitialisation.",
+            newPasswordTitle: "Nouveau mot de passe",
+            newPasswordSubtitle: "Choisissez un mot de passe fort pour votre compte.",
+            newPasswordLabel: "Nouveau mot de passe",
+            confirmPasswordLabel: "Confirmer le mot de passe",
+            updateButton: "Mettre à jour"
+        },
+        legal: {
+            title: "Mentions Légales",
+            editorTitle: "Éditeur du Site",
+            editorContent: "Sygma Consult SARL. Siège social à Paris, France.",
+            hostingTitle: "Hébergement",
+            hostingContent: "Le site est hébergé par Hostinger International Ltd.",
+            propertyTitle: "Propriété Intellectuelle",
+            propertyContent: "Tout le contenu de ce site est la propriété professionnelle de Sygma Consult."
+        },
+        privacy: {
+            title: "Politique de Confidentialité",
+            collectionTitle: "Collecte de Données",
+            collectionContent: "Nous collectons des données pour fournir de meilleurs services à nos utilisateurs.",
+            useTitle: "Utilisation des Données",
+            useContent: "Vos données sont utilisées pour traiter les réservations et envoyer des mises à jour.",
+            protectionTitle: "Protection des Données",
+            protectionContent: "Nous mettons en œuvre des mesures de sécurité pour protéger vos informations.",
+            rightsTitle: "Vos Droits",
+            rightsContent: "Vous avez le droit d'accéder, de rectifier ou de supprimer vos données."
+        },
+        terms: {
+            title: "Conditions d'Utilisation",
+            agreementTitle: "Acceptation des Conditions",
+            agreementContent: "En accédant à notre site, vous acceptez d'être lié par ces conditions.",
+            licenseTitle: "Licence d'Utilisation",
+            licenseContent: "La permission est accordée de télécharger temporairement une copie des documents.",
+            disclaimerTitle: "Clause de Non-responsabilité",
+            disclaimerContent: "Les documents sur ce site sont fournis 'tels quels'."
+        },
+        careers: {
+            title: "Carrières",
+            subtitle: "Rejoignez notre équipe d'experts et de chercheurs.",
+            whyJoinTitle: "Pourquoi nous rejoindre ?",
+            whyJoinContent: "Travaillez dans un environnement international dynamique avec un fort potentiel de croissance.",
+            positionsTitle: "Postes Ouverts",
+            noPositions: "Aucun poste ouvert pour le moment, mais n'hésitez pas à envoyer une candidature spontanée.",
+            contactCTA: "Envoyez votre CV à careers@sygmaconsult.com"
+        },
+        chatbot: {
+            greeting: "Bonjour! Je suis l'IA Sygma. Comment puis-je vous aider aujourd'hui ?",
+            placeholder: "Tapez votre question...",
+            name: "Assistant Sygma",
+            status: "En ligne"
         }
     },
     ar: {
@@ -1034,6 +1253,79 @@ const translations: Record<Language, Translations> = {
             excellence_desc: "تقديم جودة متميزة في كل استشارة.",
             offices_title: "مكاتبنا",
             offices_subtitle: "مع مواقع استراتيجية في باريس وتونس، نقدم دعماً شاملاً عبر أوروبا وشمال إفريقيا."
+        },
+        signup: {
+            createAccount: "أنشئ حسابك",
+            joinDesc: "انضم إلى سيجما كونسلت اليوم وابدأ رحلة نموك الاستراتيجي.",
+            fullNameLabel: "الاسم الكامل",
+            emailLabel: "البريد الإلكتروني",
+            passwordLabel: "كلمة المرور",
+            passwordPlaceholder: "8 أحرف على الأقل",
+            signUpButton: "إنشاء حساب",
+            alreadyHaveAccount: "لديك حساب بالفعل؟",
+            signInLink: "تسجيل الدخول",
+            feature1: "استشارات استراتيجية مخصصة",
+            feature2: "دعم إداري سريع",
+            feature3: "شبكة علاقات أعمال عبر الحدود"
+        },
+        resetPassword: {
+            title: "إعادة تعيين كلمة المرور",
+            subtitle: "أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.",
+            emailLabel: "البريد الإلكتروني",
+            emailPlaceholder: "name@company.com",
+            sendButton: "إرسال رابط التعيين",
+            backToLogin: "العودة لتسجيل الدخول",
+            successTitle: "تفقد بريدك الإلكتروني",
+            successMessage: "إذا كان هناك حساب بهذا البريد، فستتلقى رابطاً لإعادة التعيين قريباً.",
+            newPasswordTitle: "تعيين كلمة مرور جديدة",
+            newPasswordSubtitle: "اختر كلمة مرور قوية لحسابك.",
+            newPasswordLabel: "كلمة المرور الجديدة",
+            confirmPasswordLabel: "تأكيد كلمة المرور",
+            updateButton: "تحديث كلمة المرور"
+        },
+        legal: {
+            title: "إشعار قانوني",
+            editorTitle: "محرر الموقع",
+            editorContent: "سيجما كونسلت. المقر الرئيسي في باريس، فرنسا.",
+            hostingTitle: "الاستضافة",
+            hostingContent: "يتم استضافة الموقع بواسطة Hostinger International Ltd.",
+            propertyTitle: "الملكية الفكرية",
+            propertyContent: "جميع المحتويات على هذا الموقع هي ملكية مهنية لشركة سيجما كونسلت."
+        },
+        privacy: {
+            title: "سياسة الخصوصية",
+            collectionTitle: "جمع البيانات",
+            collectionContent: "نحن نجمع البيانات لتقديم خدمات أفضل لجميع مستخدمينا.",
+            useTitle: "استخدام البيانات",
+            useContent: "تُستخدم بياناتك لمعالجة الحجوزات وإرسال التحديثات.",
+            protectionTitle: "حماية البيانات",
+            protectionContent: "نحن نطبق تدابير أمنية لحماية معلوماتك الشخصية.",
+            rightsTitle: "حقوقك",
+            rightsContent: "لديك الحق في الوصول إلى بياناتك الشخصية أو تصحيحها أو حذفها."
+        },
+        terms: {
+            title: "شروط الخدمة",
+            agreementTitle: "الموافقة على الشروط",
+            agreementContent: "من خلال الوصول إلى موقعنا، فإنك توافق على الالتزام بهذه الشروط.",
+            licenseTitle: "رخصة الاستخدام",
+            licenseContent: "يُمنح الإذن بتنزيل نسخة واحدة من المواد لفترة مؤقتة.",
+            disclaimerTitle: "إخلاء المسؤولية",
+            disclaimerContent: "يتم تقديم المواد الموجودة على هذا الموقع على أساس 'كما هي'."
+        },
+        careers: {
+            title: "وظائف",
+            subtitle: "انضم إلى فريق الخبراء والباحثين لدينا.",
+            whyJoinTitle: "لماذا تنضم إلينا؟",
+            whyJoinContent: "اعمل في بيئة دولية ديناميكية مع إمكانات نمو هائلة.",
+            positionsTitle: "الوظائف المتاحة",
+            noPositions: "لا توجد وظائف شاغرة حالياً، ولكن لا تتردد في إرسال طلب عفوي.",
+            contactCTA: "أرسل سيرتك الذاتية إلى careers@sygmaconsult.com"
+        },
+        chatbot: {
+            greeting: "أهلاً بك! أنا مساعد سيجما الذكي. كيف يمكنني مساعدتك اليوم؟",
+            placeholder: "اكتب سؤالك هنا...",
+            name: "مساعد سيجما",
+            status: "متصل"
         }
     }
 };

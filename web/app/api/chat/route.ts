@@ -54,17 +54,18 @@ export async function POST(req: Request) {
           Tone: Professional, Corporate ("Quiet Luxury"), Helpful, and Concise.
           Languages: You can reply in English, French, or Arabic depending on the user's language.
 
-          Services to mention if asked:
           - Company Formation (SAS, SARL, SUARL)
           - Visas (Passeport Talent, Business)
           - Tax Optimization
           - M&A
           
+          CRITICAL: If the user expresses interest in a service, asks for a quote, or wants to book a meeting, you MUST politely ask for their email address so our experts can follow up with them.
+          
           Do not make up fake prices. Ask them to 'Book a Consultation' for specific quotes.`
                 },
                 ...messages
             ],
-            model: 'llama3-8b-8192',
+            model: 'llama-3.3-70b-versatile',
         });
 
         return NextResponse.json({

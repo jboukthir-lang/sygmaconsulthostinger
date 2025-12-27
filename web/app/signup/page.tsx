@@ -3,11 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/context/LanguageContext';
 import { UserPlus, Loader2, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 export default function SignUpPage() {
+  const { t, language } = useLanguage();
   const { user, loading, signUpWithEmail, signInWithGoogle } = useAuth();
   const router = useRouter();
 
@@ -33,22 +35,22 @@ export default function SignUpPage() {
 
     // Validation
     if (!name.trim()) {
-      setError('Please enter your full name');
+      setError(language === 'ar' ? 'يرجى إدخال اسمك الكامل' : language === 'fr' ? 'Veuillez saisir votre nom complet' : 'Please enter your full name');
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(language === 'ar' ? 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل' : language === 'fr' ? 'Le mot de passe doit contenir au moins 6 caractères' : 'Password must be at least 6 characters');
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(language === 'ar' ? 'كلمات المرور غير متطابقة' : language === 'fr' ? 'Les mots de passe ne correspondent pas' : 'Passwords do not match');
       return;
     }
 
     if (!acceptTerms) {
-      setError('Please accept the terms and conditions');
+      setError(language === 'ar' ? 'يرجى الموافقة على الشروط والأحكام' : language === 'fr' ? 'Veuillez accepter les conditions générales' : 'Please accept the terms and conditions');
       return;
     }
 
@@ -56,17 +58,14 @@ export default function SignUpPage() {
 
     try {
       await signUpWithEmail(email, password, name);
-      // User will be redirected automatically by useEffect
     } catch (error: any) {
       console.error('Sign up failed:', error);
       if (error.code === 'auth/email-already-in-use') {
-        setError('This email is already registered. Please sign in instead.');
+        setError(language === 'ar' ? 'هذا البريد الإلكتروني مسجل بالفعل' : language === 'fr' ? 'Cet e-mail est déjà enregistré' : 'This email is already registered');
       } else if (error.code === 'auth/invalid-email') {
-        setError('Invalid email address');
-      } else if (error.code === 'auth/weak-password') {
-        setError('Password is too weak. Please use a stronger password.');
+        setError(language === 'ar' ? 'عنوان بريد إلكتروني غير صالح' : language === 'fr' ? 'Adresse e-mail invalide' : 'Invalid email address');
       } else {
-        setError('Failed to create account. Please try again.');
+        setError(t.login.errorDefault);
       }
     } finally {
       setIsLoading(false);
@@ -80,7 +79,7 @@ export default function SignUpPage() {
       await signInWithGoogle();
     } catch (error) {
       console.error('Google sign-up failed:', error);
-      setError('Failed to sign up with Google');
+      setError(t.login.errorGoogleSignIn);
     } finally {
       setIsLoading(false);
     }
@@ -91,7 +90,7 @@ export default function SignUpPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <Loader2 className="h-12 w-12 text-[#001F3F] animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600">{t.login.loading}</p>
         </div>
       </div>
     );
@@ -102,7 +101,7 @@ export default function SignUpPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <Loader2 className="h-12 w-12 text-[#001F3F] animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Redirecting...</p>
+          <p className="text-gray-600">{t.login.redirecting}</p>
         </div>
       </div>
     );
@@ -125,16 +124,16 @@ export default function SignUpPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold">Sygma Consult</h1>
-              <p className="text-sm text-blue-200">Paris • Tunis</p>
+              <p className="text-sm text-blue-200">{t.nav.about}</p>
             </div>
           </Link>
 
           <div className="space-y-6 text-white">
             <h2 className="text-4xl font-bold leading-tight">
-              Join Thousands of Successful Businesses
+              {t.signup.createAccount}
             </h2>
             <p className="text-lg text-blue-200">
-              Create your account today and get access to premium consulting services and business solutions.
+              {t.signup.joinDesc}
             </p>
           </div>
         </div>
@@ -142,15 +141,15 @@ export default function SignUpPage() {
         <div className="space-y-4 text-blue-200">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">✓</div>
-            <span>Free account with no credit card required</span>
+            <span>{t.signup.feature1}</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">✓</div>
-            <span>Access to all consulting services</span>
+            <span>{t.signup.feature2}</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">✓</div>
-            <span>24/7 customer support</span>
+            <span>{t.signup.feature3}</span>
           </div>
         </div>
       </div>
@@ -177,8 +176,8 @@ export default function SignUpPage() {
             </Link>
 
             <div className="mb-8">
-              <h2 className="text-3xl font-bold text-[#001F3F] mb-2">Create Account</h2>
-              <p className="text-gray-600">Join us and start your journey</p>
+              <h2 className="text-3xl font-bold text-[#001F3F] mb-2">{t.signup.createAccount}</h2>
+              <p className="text-gray-600">{t.signup.joinDesc}</p>
             </div>
 
             {/* Error Message */}
@@ -193,7 +192,7 @@ export default function SignUpPage() {
               {/* Full Name Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name
+                  {t.signup.fullNameLabel}
                 </label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -203,7 +202,7 @@ export default function SignUpPage() {
                     onChange={(e) => setName(e.target.value)}
                     required
                     className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20 focus:border-[#001F3F]"
-                    placeholder="Enter your full name"
+                    placeholder={t.signup.fullNameLabel}
                   />
                 </div>
               </div>
@@ -211,7 +210,7 @@ export default function SignUpPage() {
               {/* Email Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address
+                  {t.login.emailLabel}
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -221,7 +220,7 @@ export default function SignUpPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20 focus:border-[#001F3F]"
-                    placeholder="Enter your email"
+                    placeholder={t.login.emailPlaceholder}
                   />
                 </div>
               </div>
@@ -229,7 +228,7 @@ export default function SignUpPage() {
               {/* Password Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Password
+                  {t.login.passwordLabel}
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -240,7 +239,7 @@ export default function SignUpPage() {
                     required
                     minLength={6}
                     className="w-full pl-11 pr-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20 focus:border-[#001F3F]"
-                    placeholder="At least 6 characters"
+                    placeholder={t.signup.passwordPlaceholder}
                   />
                   <button
                     type="button"
@@ -255,7 +254,7 @@ export default function SignUpPage() {
               {/* Confirm Password Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Confirm Password
+                  {language === 'ar' ? 'تأكيد كلمة المرور' : language === 'fr' ? 'Confirmer le mot de passe' : 'Confirm Password'}
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -265,7 +264,7 @@ export default function SignUpPage() {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                     className="w-full pl-11 pr-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20 focus:border-[#001F3F]"
-                    placeholder="Confirm your password"
+                    placeholder={language === 'ar' ? 'تأكيد كلمة المرور' : language === 'fr' ? 'Confirmer le mot de passe' : 'Confirm your password'}
                   />
                   <button
                     type="button"
@@ -287,13 +286,13 @@ export default function SignUpPage() {
                   className="mt-1 w-4 h-4 text-[#001F3F] border-gray-300 rounded focus:ring-[#001F3F]"
                 />
                 <label htmlFor="terms" className="text-sm text-gray-600">
-                  I agree to the{' '}
+                  {language === 'ar' ? 'أوافق على' : language === 'fr' ? 'J\'accepte les' : 'I agree to the'}{' '}
                   <Link href="/terms" className="text-[#001F3F] hover:underline">
-                    Terms of Service
+                    {t.footer.terms}
                   </Link>{' '}
-                  and{' '}
+                  {t.login.and}{' '}
                   <Link href="/privacy" className="text-[#001F3F] hover:underline">
-                    Privacy Policy
+                    {t.footer.privacy}
                   </Link>
                 </label>
               </div>
@@ -309,7 +308,7 @@ export default function SignUpPage() {
                 ) : (
                   <>
                     <UserPlus className="h-5 w-5" />
-                    Create Account
+                    {t.signup.signUpButton}
                   </>
                 )}
               </button>
@@ -321,7 +320,7 @@ export default function SignUpPage() {
                 <div className="w-full border-t border-gray-300"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-gray-500">Or sign up with</span>
+                <span className="px-4 bg-white text-gray-500">{t.login.orContinue}</span>
               </div>
             </div>
 
@@ -349,15 +348,15 @@ export default function SignUpPage() {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              Continue with Google
+              {t.login.continueGoogle}
             </button>
 
             {/* Sign In Link */}
             <div className="mt-6 text-center text-sm text-gray-600">
               <p>
-                Already have an account?{' '}
+                {t.signup.alreadyHaveAccount}{' '}
                 <Link href="/login" className="text-[#001F3F] hover:underline font-semibold">
-                  Sign in
+                  {t.signup.signInLink}
                 </Link>
               </p>
             </div>
@@ -366,9 +365,9 @@ export default function SignUpPage() {
           {/* Additional Info */}
           <div className="mt-8 text-center text-sm text-gray-600">
             <p>
-              Need help?{' '}
+              {t.login.needHelp}{' '}
               <Link href="/contact" className="text-[#001F3F] hover:underline font-semibold">
-                Contact Support
+                {t.login.contactSupport}
               </Link>
             </p>
           </div>

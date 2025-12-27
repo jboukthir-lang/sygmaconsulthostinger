@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import { MessageSquare, X, Send, Bot } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function ChatBot() {
+    const { t } = useLanguage();
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<{ role: 'user' | 'assistant', content: string }[]>([
-        { role: 'assistant', content: "Bonjour! I'm Sygma AI. How can I help you with business in France or Tunisia today?" }
+        { role: 'assistant', content: t.chatbot.greeting }
     ]);
     const [input, setInput] = useState('');
 
@@ -32,7 +34,7 @@ export default function ChatBot() {
             setMessages(prev => [...prev, { role: 'assistant', content: data.content }]);
         } catch (error) {
             console.error(error);
-            setMessages(prev => [...prev, { role: 'assistant', content: "I apologize, but I'm having trouble connecting right now. Please try again later." }]);
+            setMessages(prev => [...prev, { role: 'assistant', content: t.error.desc }]);
         }
     };
 
@@ -57,9 +59,9 @@ export default function ChatBot() {
                                 <Bot className="h-5 w-5" />
                             </div>
                             <div>
-                                <h3 className="font-bold text-sm">Sygma Assistant</h3>
+                                <h3 className="font-bold text-sm">{t.chatbot.name}</h3>
                                 <p className="text-[10px] text-blue-200 flex items-center gap-1">
-                                    <span className="w-1.5 h-1.5 bg-green-400 rounded-full"></span> Online
+                                    <span className="w-1.5 h-1.5 bg-green-400 rounded-full"></span> {t.chatbot.status}
                                 </p>
                             </div>
                         </div>
@@ -88,7 +90,7 @@ export default function ChatBot() {
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            placeholder="Type your question..."
+                            placeholder={t.chatbot.placeholder}
                             className="flex-1 px-4 py-2 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20"
                         />
                         <button

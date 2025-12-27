@@ -6,6 +6,9 @@ import { Calendar, MessageSquare, Users, TrendingUp, Clock, CheckCircle, FileTex
 
 import Link from 'next/link';
 
+import { t } from '@/lib/translations';
+import { useLanguage } from '@/context/LanguageContext';
+
 interface Stats {
   totalBookings: number;
   pendingBookings: number;
@@ -18,6 +21,7 @@ interface Stats {
 }
 
 export default function AdminDashboard() {
+  const { language } = useLanguage();
   const [stats, setStats] = useState<Stats>({
     totalBookings: 0,
     pendingBookings: 0,
@@ -94,7 +98,7 @@ export default function AdminDashboard() {
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-[#001F3F] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading dashboard...</p>
+          <p className="text-gray-600">{t('common.loading', language)}</p>
         </div>
       </div>
     );
@@ -104,39 +108,39 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold text-[#001F3F]">Dashboard <span className="text-xs font-normal text-gray-400">v1.2.0-final</span></h1>
-        <p className="text-gray-600 mt-1">Welcome back! Here's what's happening today.</p>
+        <h1 className="text-3xl font-bold text-[#001F3F]">{t('admin.dashboard', language)} <span className="text-xs font-normal text-gray-400">v1.2.0-final</span></h1>
+        <p className="text-gray-600 mt-1">{t('admin.welcomeBack', language)}</p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         <StatsCard
-          title="Total Bookings"
+          title={t('admin.stats.totalBookings', language)}
           value={stats.totalBookings}
           icon={Calendar}
           trend={{ value: 12, isPositive: true }}
-          subtitle={`${stats.pendingBookings} pending`}
+          subtitle={`${stats.pendingBookings} ${t('admin.stats.pending', language)}`}
         />
         <StatsCard
-          title="New Messages"
+          title={t('admin.newMessages', language)}
           value={stats.newMessages}
           icon={MessageSquare}
-          subtitle={`${stats.totalMessages} total`}
+          subtitle={`${stats.totalMessages} ${t('admin.stats.total', language)}`}
         />
         <StatsCard
-          title="Registered Users"
+          title={t('admin.registeredUsers', language)}
           value={stats.totalUsers}
           icon={Users}
           trend={{ value: 8, isPositive: true }}
         />
         <StatsCard
-          title="Blog Posts"
+          title={t('admin.stats.blogPosts', language)}
           value={stats.totalPosts}
           icon={FileText}
-          subtitle={`${stats.publishedPosts} published`}
+          subtitle={`${stats.publishedPosts} ${t('admin.stats.published', language)}`}
         />
         <StatsCard
-          title="Conversion Rate"
+          title={t('admin.stats.conversionRate', language)}
           value="64%"
           icon={TrendingUp}
           trend={{ value: 5, isPositive: true }}
@@ -147,10 +151,10 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Bookings */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-bold text-[#001F3F] mb-4">Recent Bookings</h2>
+          <h2 className="text-lg font-bold text-[#001F3F] mb-4">{t('admin.recentBookings', language)}</h2>
           <div className="space-y-4">
             {stats.recentActivity.length === 0 ? (
-              <p className="text-gray-400 text-sm">No bookings yet</p>
+              <p className="text-gray-400 text-sm">{t('admin.noBookingsYet', language)}</p>
             ) : (
               stats.recentActivity.map((booking: any) => (
                 <div key={booking.id} className="flex items-center justify-between pb-4 border-b border-gray-100 last:border-0">
@@ -173,7 +177,7 @@ export default function AdminDashboard() {
                           : 'bg-red-100 text-red-700'
                         }`}
                     >
-                      {booking.status}
+                      {t(`bookings.${booking.status}`, language)}
                     </span>
                   </div>
                 </div>
@@ -184,35 +188,35 @@ export default function AdminDashboard() {
 
         {/* Quick Actions */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-bold text-[#001F3F] mb-4">Quick Actions</h2>
+          <h2 className="text-lg font-bold text-[#001F3F] mb-4">{t('admin.quickActions.fr', language)}</h2>
           <div className="space-y-3">
             <button className="w-full flex items-center justify-between p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
               <div className="flex items-center gap-3">
                 <CheckCircle className="h-5 w-5 text-[#001F3F]" />
-                <span className="font-medium text-[#001F3F]">Confirm Pending Bookings</span>
+                <span className="font-medium text-[#001F3F]">{t('admin.quickActions.confirmPending', language)}</span>
               </div>
               <span className="text-sm text-gray-600">{stats.pendingBookings}</span>
             </button>
             <button className="w-full flex items-center justify-between p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
               <div className="flex items-center gap-3">
                 <MessageSquare className="h-5 w-5 text-green-700" />
-                <span className="font-medium text-green-700">Reply to Messages</span>
+                <span className="font-medium text-green-700">{t('admin.quickActions.replyMessages', language)}</span>
               </div>
               <span className="text-sm text-gray-600">{stats.newMessages}</span>
             </button>
             <Link href="/admin/posts" className="w-full flex items-center justify-between p-4 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors">
               <div className="flex items-center gap-3">
                 <FileText className="h-5 w-5 text-yellow-700" />
-                <span className="font-medium text-yellow-700">Manage Blog Posts</span>
+                <span className="font-medium text-yellow-700">{t('admin.quickActions.managePosts', language)}</span>
               </div>
               <span className="text-sm text-gray-600">{stats.totalPosts}</span>
             </Link>
             <button className="w-full flex items-center justify-between p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
               <div className="flex items-center gap-3">
                 <Clock className="h-5 w-5 text-purple-700" />
-                <span className="font-medium text-purple-700">Today's Schedule</span>
+                <span className="font-medium text-purple-700">{t('admin.quickActions.todaySchedule', language)}</span>
               </div>
-              <span className="text-sm text-gray-600">View</span>
+              <span className="text-sm text-gray-600">{t('common.view', language)}</span>
             </button>
           </div>
         </div>
@@ -220,9 +224,9 @@ export default function AdminDashboard() {
 
       {/* Monthly Overview */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-lg font-bold text-[#001F3F] mb-4">Monthly Overview</h2>
+        <h2 className="text-lg font-bold text-[#001F3F] mb-4">{t('admin.monthlyOverview', language)}</h2>
         <div className="h-64 flex items-center justify-center text-gray-400">
-          <p>Chart will be integrated here (Recharts)</p>
+          <p>{t('admin.chartPlaceholder', language)}</p>
         </div>
       </div>
     </div>

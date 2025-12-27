@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import DataTable from '@/components/admin/DataTable';
 import { Eye, Mail, CheckCheck } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
+import { t } from '@/lib/translations';
 
 interface Contact {
   id: string;
@@ -15,6 +17,7 @@ interface Contact {
 }
 
 export default function AdminContactsPage() {
+  const { language } = useLanguage();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
@@ -57,40 +60,40 @@ export default function AdminContactsPage() {
 
   const columns = [
     {
-      header: 'Name',
+      header: t('admin.name', language) || 'Name',
       accessor: 'name' as keyof Contact,
       sortable: true,
     },
     {
-      header: 'Email',
+      header: t('admin.email', language) || 'Email',
       accessor: 'email' as keyof Contact,
       sortable: true,
     },
     {
-      header: 'Subject',
+      header: t('common.subject', language) || 'Subject',
       accessor: 'subject' as keyof Contact,
     },
     {
-      header: 'Date',
+      header: t('admin.consultations.date', language) || 'Date',
       accessor: (row: Contact) => new Date(row.createdAt).toLocaleDateString(),
     },
     {
-      header: 'Status',
+      header: t('common.status', language) || 'Status',
       accessor: (row: Contact) => (
         <span
           className={`px-3 py-1 rounded-full text-xs font-semibold ${row.status === 'new'
-              ? 'bg-blue-100 text-blue-700'
-              : row.status === 'read'
-                ? 'bg-gray-100 text-gray-700'
-                : 'bg-green-100 text-green-700'
+            ? 'bg-blue-100 text-blue-700'
+            : row.status === 'read'
+              ? 'bg-gray-100 text-gray-700'
+              : 'bg-green-100 text-green-700'
             }`}
         >
-          {row.status}
+          {row.status === 'new' ? t('admin.messages.new', language) : t('admin.markAsRead', language)}
         </span>
       ),
     },
     {
-      header: 'Actions',
+      header: t('common.actions', language) || 'Actions',
       accessor: (row: Contact) => (
         <div className="flex items-center gap-2">
           <button
@@ -99,7 +102,7 @@ export default function AdminContactsPage() {
               if (row.status === 'new') markAsRead(row.id);
             }}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            title="View"
+            title={t('common.view', language)}
           >
             <Eye className="h-4 w-4 text-gray-600" />
           </button>
@@ -107,7 +110,7 @@ export default function AdminContactsPage() {
             <button
               onClick={() => markAsRead(row.id)}
               className="p-2 hover:bg-green-50 rounded-lg transition-colors"
-              title="Mark as Read"
+              title={t('admin.markAsRead', language)}
             >
               <CheckCheck className="h-4 w-4 text-green-600" />
             </button>
@@ -122,7 +125,7 @@ export default function AdminContactsPage() {
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-[#001F3F] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading messages...</p>
+          <p className="text-gray-600">{t('admin.messages.loading', language)}</p>
         </div>
       </div>
     );
@@ -132,24 +135,24 @@ export default function AdminContactsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[#001F3F]">Messages</h1>
-          <p className="text-gray-600 mt-1">Manage contact form submissions</p>
+          <h1 className="text-3xl font-bold text-[#001F3F]">{t('admin.messages.title', language)}</h1>
+          <p className="text-gray-600 mt-1">{t('admin.messages.subtitle', language)}</p>
         </div>
         <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-gray-200">
           <Mail className="h-5 w-5 text-[#001F3F]" />
           <span className="font-semibold text-[#001F3F]">
-            {contacts.filter((c) => c.status === 'new').length} New
+            {contacts.filter((c) => c.status === 'new').length} {t('admin.messages.new', language)}
           </span>
         </div>
       </div>
 
-      <DataTable data={contacts} columns={columns} searchable searchPlaceholder="Search messages..." />
+      <DataTable data={contacts} columns={columns} searchable searchPlaceholder={t('admin.messages.searchPlaceholder', language)} />
 
       {selectedContact && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-2xl w-full p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-[#001F3F]">Message Details</h2>
+              <h2 className="text-2xl font-bold text-[#001F3F]">{t('admin.messages.details', language)}</h2>
               <button
                 onClick={() => setSelectedContact(null)}
                 className="text-gray-500 hover:text-gray-700"
@@ -160,22 +163,22 @@ export default function AdminContactsPage() {
 
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-gray-600 mb-1">From</p>
+                <p className="text-sm text-gray-600 mb-1">{t('admin.messages.from', language)}</p>
                 <p className="font-semibold">{selectedContact.name}</p>
                 <p className="text-sm text-gray-500">{selectedContact.email}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">Subject</p>
+                <p className="text-sm text-gray-600 mb-1">{t('common.subject', language)}</p>
                 <p className="font-semibold">{selectedContact.subject}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">Message</p>
+                <p className="text-sm text-gray-600 mb-1">{t('common.message', language)}</p>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <p className="text-gray-700 whitespace-pre-wrap">{selectedContact.message}</p>
                 </div>
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">Received</p>
+                <p className="text-sm text-gray-600 mb-1">{t('admin.messages.received', language)}</p>
                 <p className="text-sm">{new Date(selectedContact.createdAt).toLocaleString()}</p>
               </div>
 
@@ -184,7 +187,7 @@ export default function AdminContactsPage() {
                   onClick={() => window.location.href = `mailto:${selectedContact.email}`}
                   className="flex-1 px-4 py-2 bg-[#001F3F] text-white rounded-lg hover:bg-[#003366] transition-colors"
                 >
-                  Reply via Email
+                  {t('admin.messages.replyViaEmail', language)}
                 </button>
               </div>
             </div>

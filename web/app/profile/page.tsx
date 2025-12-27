@@ -222,11 +222,10 @@ export default function ProfilePage() {
       {/* Success/Error Message */}
       {message && (
         <div
-          className={`p-4 rounded-lg ${
-            message.type === 'success'
+          className={`p-4 rounded-lg ${message.type === 'success'
               ? 'bg-green-50 border border-green-200 text-green-800'
               : 'bg-red-50 border border-red-200 text-red-800'
-          }`}
+            }`}
         >
           {message.text}
         </div>
@@ -390,10 +389,10 @@ export default function ProfilePage() {
                 className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20 disabled:bg-gray-50 disabled:text-gray-600"
               >
                 <option value="">{t('profile.selectCountry', language)}</option>
-                <option value="france">France</option>
-                <option value="tunisia">Tunisia</option>
-                <option value="morocco">Morocco</option>
-                <option value="algeria">Algeria</option>
+                <option value="france">{t('profile.france', language)}</option>
+                <option value="tunisia">{t('profile.tunisia', language)}</option>
+                <option value="morocco">{t('profile.morocco', language)}</option>
+                <option value="algeria">{t('profile.algeria', language)}</option>
                 <option value="other">{t('profile.other', language)}</option>
               </select>
             </div>

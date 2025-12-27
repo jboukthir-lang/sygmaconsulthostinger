@@ -7,6 +7,8 @@ import settingsData from '@/data/settings.json';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import { Bell, Search, Loader2, ShieldAlert, X, Calendar, MessageSquare, Info, Filter } from 'lucide-react';
 import Link from 'next/link';
+import { useLanguage } from '@/context/LanguageContext';
+import { t } from '@/lib/translations';
 
 interface AdminNotification {
   id: string;
@@ -26,6 +28,7 @@ export default function AdminLayout({
 }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { language } = useLanguage();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [adminRole, setAdminRole] = useState<string>('');
 
@@ -40,7 +43,6 @@ export default function AdminLayout({
       router.push('/login?redirect=/admin');
     } else if (user) {
       checkAdminStatus();
-      // fetchNotifications(); // Notifications disabled for now
     }
   }, [user, loading, router]);
 
@@ -48,38 +50,20 @@ export default function AdminLayout({
     if (!user || !user.email) return;
 
     try {
-      // Check if user email is in admin_emails list from settings
       const adminEmails = settingsData.admin_emails || [];
       const normalizedEmail = user.email.toLowerCase().trim();
       const isUserAdmin = adminEmails.some(email => email.toLowerCase().trim() === normalizedEmail);
 
-      console.log(`🔍 Checking admin status for: ${normalizedEmail}`);
-      console.log(`📋 Admin list:`, adminEmails);
-
       if (isUserAdmin) {
-        console.log('✅ Access Granted: User IS admin');
         setIsAdmin(true);
         setAdminRole('admin');
       } else {
-        console.warn('❌ Access Denied: User is NOT in admin list');
         setIsAdmin(false);
       }
     } catch (error) {
       console.error('❌ Error checking admin status:', error);
       setIsAdmin(false);
     }
-  }
-
-  async function fetchNotifications() {
-    // Disabled
-  }
-
-  async function markAsRead(id: string) {
-    // Disabled
-  }
-
-  async function markAllAsRead() {
-    // Disabled
   }
 
   const getNotifIcon = (type: string) => {
@@ -97,7 +81,7 @@ export default function AdminLayout({
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <Loader2 className="h-12 w-12 text-[#001F3F] animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600">{t('common.loading', language)}</p>
         </div>
       </div>
     );
@@ -114,15 +98,15 @@ export default function AdminLayout({
         <div className="text-center max-w-md">
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <ShieldAlert className="h-16 w-16 text-red-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-[#001F3F] mb-2">Access Denied</h1>
+            <h1 className="text-2xl font-bold text-[#001F3F] mb-2">{t('admin.accessDenied', language)}</h1>
             <p className="text-gray-600 mb-6">
-              You don't have admin privileges to access this area. Please contact your administrator.
+              {t('admin.accessDeniedMessage', language)}
             </p>
             <button
               onClick={() => router.push('/')}
               className="px-6 py-3 bg-[#001F3F] text-white rounded-lg hover:bg-[#003366] transition-colors"
             >
-              Go to Homepage
+              {t('admin.goToHomepage', language)}
             </button>
           </div>
         </div>
@@ -143,7 +127,7 @@ export default function AdminLayout({
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder={t('admin.searchPlaceholder', language)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20"
               />
             </div>
@@ -178,35 +162,25 @@ export default function AdminLayout({
                     ></div>
                     <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 z-20 overflow-hidden">
                       <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                        <h3 className="font-bold text-[#001F3F]">Notifications</h3>
+                        <h3 className="font-bold text-[#001F3F]">{t('admin.notifications', language)}</h3>
                         {unreadCount > 0 && (
                           <button
-                            onClick={markAllAsRead}
                             className="text-xs text-blue-600 hover:underline"
                           >
-                            Tout marquer comme lu
+                            {t('admin.markAllAsRead', language)}
                           </button>
                         )}
                       </div>
 
                       <div className="max-h-[400px] overflow-y-auto">
-                        {notifLoading && notifications.length === 0 ? (
-                          <div className="p-8 text-center">
-                            <Loader2 className="h-6 w-6 animate-spin text-gray-300 mx-auto" />
-                          </div>
-                        ) : notifications.length === 0 ? (
+                        {notifications.length === 0 ? (
                           <div className="p-8 text-center text-gray-500 text-sm">
-                            Aucune notification
+                            {t('admin.noNotifications', language)}
                           </div>
                         ) : (
                           notifications.map((n) => (
                             <div
                               key={n.id}
-                              onClick={() => {
-                                if (n.link) router.push(n.link);
-                                markAsRead(n.id);
-                                setShowNotifications(false);
-                              }}
                               className={`p-4 border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors relative ${!n.is_read ? 'bg-blue-50/30' : ''}`}
                             >
                               {!n.is_read && (
@@ -235,7 +209,7 @@ export default function AdminLayout({
 
                       <div className="p-3 bg-gray-50 text-center border-t border-gray-100">
                         <button className="text-sm font-medium text-[#001F3F] hover:underline">
-                          Voir tout l'historique
+                          {t('admin.viewAllHistory', language)}
                         </button>
                       </div>
                     </div>
@@ -248,10 +222,10 @@ export default function AdminLayout({
                 {/* Hide text on mobile, show only avatar */}
                 <div className="hidden md:block text-right">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-gray-700 truncate max-w-[120px] lg:max-w-none">{user.displayName || 'Admin User'}</p>
+                    <p className="text-sm font-semibold text-gray-700 truncate max-w-[120px] lg:max-w-none">{user.displayName || t('admin.adminUser', language)}</p>
                     {adminRole && (
                       <span className="hidden lg:inline px-2 py-0.5 bg-[#D4AF37] text-white text-xs font-semibold rounded-full uppercase whitespace-nowrap">
-                        {adminRole === 'super_admin' ? 'Super Admin' : adminRole}
+                        {adminRole === 'super_admin' ? t('admin.superAdmin', language) : adminRole}
                       </span>
                     )}
                   </div>

@@ -337,9 +337,9 @@ export default function AdminUsersPage() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Photo</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('users.user', language)}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.contact', language)}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ville</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Réservations</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Notifications</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('common.city', language)}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('common.bookings', language)}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('notifications.title', language)}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('users.role', language)}</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
               </tr>
@@ -404,7 +404,7 @@ export default function AdminUsersPage() {
                       <button
                         onClick={() => openUserModal(user)}
                         className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                        title="Voir les détails"
+                        title={t('common.viewDetails', language)}
                       >
                         <Eye className="h-4 w-4 text-gray-600" />
                       </button>
@@ -422,7 +422,7 @@ export default function AdminUsersPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white rounded-xl max-w-4xl w-full p-6 my-8 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-[#001F3F]">Détails de l'utilisateur</h2>
+              <h2 className="text-2xl font-bold text-[#001F3F]">{t('common.userDetails', language)}</h2>
               <button
                 onClick={() => {
                   setSelectedUser(null);
@@ -478,7 +478,7 @@ export default function AdminUsersPage() {
                         <MapPin className="h-4 w-4 text-[#001F3F]" />
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500">Ville</p>
+                        <p className="text-xs text-gray-500">{t('common.city', language)}</p>
                         <p className="text-sm font-medium">{selectedUser.city || 'N/A'}</p>
                       </div>
                     </div>
@@ -487,16 +487,16 @@ export default function AdminUsersPage() {
                         <Calendar className="h-4 w-4 text-[#001F3F]" />
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500">Inscrit le</p>
+                        <p className="text-xs text-gray-500">{t('common.registeredOn', language)}</p>
                         <p className="text-sm font-medium">
-                          {new Date(selectedUser.created_at).toLocaleDateString('fr-FR')}
+                          {new Date(selectedUser.created_at).toLocaleDateString(language === 'fr' ? 'fr-FR' : language === 'ar' ? 'ar-TN' : 'en-US')}
                         </p>
                       </div>
                     </div>
                   </div>
                   {selectedUser.address && (
                     <div className="mt-4 p-3 bg-white rounded-lg">
-                      <p className="text-xs text-gray-500 mb-1">Adresse complète</p>
+                      <p className="text-xs text-gray-500 mb-1">{t('common.fullAddress', language)}</p>
                       <p className="text-sm text-gray-700">{selectedUser.address}</p>
                     </div>
                   )}
@@ -511,7 +511,7 @@ export default function AdminUsersPage() {
                       <Calendar className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-blue-900">Réservations</p>
+                      <p className="text-sm font-medium text-blue-900">{t('common.bookings', language)}</p>
                       <p className="text-3xl font-bold text-blue-600">
                         {selectedUser.bookings_count || 0}
                       </p>
@@ -532,7 +532,7 @@ export default function AdminUsersPage() {
                       </p>
                     </div>
                   </div>
-                  <p className="text-xs text-orange-700">Non lues sur {userNotifications.length}</p>
+                  <p className="text-xs text-orange-700">{t('common.unreadOn', language) || 'Unread on'} {userNotifications.length}</p>
                 </div>
               </div>
 
@@ -540,18 +540,18 @@ export default function AdminUsersPage() {
               <div className="bg-white border border-gray-200 rounded-xl p-6">
                 <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <Bell className="h-5 w-5 text-[#001F3F]" />
-                  Notifications de l'utilisateur
+                  {t('common.userNotifications', language)}
                 </h3>
                 {loadingNotifications ? (
                   <div className="text-center py-12">
                     <div className="w-12 h-12 border-4 border-[#001F3F] border-t-transparent rounded-full animate-spin mx-auto"></div>
-                    <p className="text-gray-500 mt-4">Chargement des notifications...</p>
+                    <p className="text-gray-500 mt-4">{t('common.loadingNotifications', language)}</p>
                   </div>
                 ) : userNotifications.length === 0 ? (
                   <div className="text-center py-12 bg-gray-50 rounded-lg">
                     <Bell className="h-16 w-16 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 font-medium">Aucune notification</p>
-                    <p className="text-gray-400 text-sm mt-1">Cet utilisateur n'a pas encore de notifications</p>
+                    <p className="text-gray-500 font-medium">{t('admin.noNotifications', language)}</p>
+                    <p className="text-gray-400 text-sm mt-1">{t('common.noNotificationsYet', language)}</p>
                   </div>
                 ) : (
                   <div className="max-h-96 overflow-y-auto space-y-3">
@@ -559,19 +559,19 @@ export default function AdminUsersPage() {
                       <div
                         key={notification.id}
                         className={`p-4 rounded-lg border-2 transition-all ${!notification.is_read
-                            ? 'bg-blue-50 border-blue-300 shadow-sm'
-                            : 'bg-white border-gray-200'
+                          ? 'bg-blue-50 border-blue-300 shadow-sm'
+                          : 'bg-white border-gray-200'
                           }`}
                       >
                         <div className="flex items-start gap-3">
                           <div
                             className={`mt-1 w-3 h-3 rounded-full flex-shrink-0 ${notification.type === 'success'
-                                ? 'bg-green-500'
-                                : notification.type === 'error'
-                                  ? 'bg-red-500'
-                                  : notification.type === 'warning'
-                                    ? 'bg-yellow-500'
-                                    : 'bg-blue-500'
+                              ? 'bg-green-500'
+                              : notification.type === 'error'
+                                ? 'bg-red-500'
+                                : notification.type === 'warning'
+                                  ? 'bg-yellow-500'
+                                  : 'bg-blue-500'
                               }`}
                           />
                           <div className="flex-1">
@@ -581,7 +581,7 @@ export default function AdminUsersPage() {
                               </span>
                               {!notification.is_read && (
                                 <span className="px-2 py-0.5 bg-blue-600 text-white text-xs rounded-full font-medium">
-                                  Nouveau
+                                  {t('common.new', language)}
                                 </span>
                               )}
                             </div>

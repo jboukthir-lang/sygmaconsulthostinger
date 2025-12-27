@@ -104,7 +104,7 @@ export default function LoginPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold">Sygma Consult</h1>
-              <p className="text-sm text-blue-200">Paris • Tunis</p>
+              <p className="text-sm text-blue-200">{t.about.paris} • {t.about.tunis}</p>
             </div>
           </Link>
 
@@ -151,7 +151,7 @@ export default function LoginPage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-[#001F3F]">Sygma Consult</h1>
-                <p className="text-xs text-gray-500">Paris • Tunis</p>
+                <p className="text-xs text-gray-500">{t.about.paris} • {t.about.tunis}</p>
               </div>
             </Link>
 

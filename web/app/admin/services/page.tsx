@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
+import { useLanguage } from '@/context/LanguageContext';
+import { t } from '@/lib/translations';
 import {
     Plus,
     Edit,
@@ -64,6 +66,7 @@ const availableIcons = [
 ];
 
 export default function AdminServicesPage() {
+    const { language } = useLanguage();
     const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const [services, setServices] = useState<Service[]>([]);
@@ -114,7 +117,7 @@ export default function AdminServicesPage() {
             }
         } catch (error) {
             console.error('Error fetching services:', error);
-            alert('Failed to fetch services');
+            alert(t('common.error', language));
         } finally {
             setLoading(false);
         }
@@ -147,96 +150,65 @@ export default function AdminServicesPage() {
     const handleSave = async () => {
         setSaving(true);
         try {
-            console.log('💾 Saving service...', { editingService: !!editingService, formData });
-
             if (editingService) {
-                // Update existing service
-                console.log('📝 Updating service ID:', editingService.id);
-                const { data, error } = await supabase
+                const { error } = await supabase
                     .from('services')
                     .update(formData)
-                    .eq('id', editingService.id)
-                    .select();
+                    .eq('id', editingService.id);
 
-                if (error) {
-                    console.error('❌ Update error:', error);
-                    throw error;
-                }
-                console.log('✅ Update successful:', data);
+                if (error) throw error;
             } else {
-                // Create new service
-                console.log('➕ Creating new service');
-                const { data, error } = await supabase
+                const { error } = await supabase
                     .from('services')
-                    .insert([formData])
-                    .select();
+                    .insert([formData]);
 
-                if (error) {
-                    console.error('❌ Insert error:', error);
-                    throw error;
-                }
-                console.log('✅ Insert successful:', data);
+                if (error) throw error;
             }
 
-            alert('✅ تم الحفظ بنجاح! Service saved successfully!');
+            alert(t('common.success' as any, language) || 'Success!');
             setShowModal(false);
             fetchServices();
         } catch (error: any) {
-            console.error('❌ Error saving service:', error);
-            const errorMessage = error?.message || 'Unknown error';
-            const errorCode = error?.code || 'NO_CODE';
-            const errorDetails = error?.details || 'No details';
-
-            alert(`❌ فشل الحفظ / Failed to save service\n\nError: ${errorMessage}\nCode: ${errorCode}\nDetails: ${errorDetails}\n\nCheck browser console for more info.`);
+            console.error('Error saving service:', error);
+            alert(t('common.error', language));
         } finally {
             setSaving(false);
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this service?')) {
+        if (!confirm(t('admin.services.deleteConfirm', language))) {
             return;
         }
 
         try {
-            console.log('🗑️ Deleting service ID:', id);
             const { error } = await supabase
                 .from('services')
                 .delete()
                 .eq('id', id);
 
-            if (error) {
-                console.error('❌ Delete error:', error);
-                throw error;
-            }
-            console.log('✅ Delete successful');
-            alert('✅ تم الحذف بنجاح! Deleted successfully!');
+            if (error) throw error;
+            alert(t('common.success' as any, language) || 'Deleted!');
             fetchServices();
         } catch (error: any) {
-            console.error('❌ Error deleting service:', error);
-            alert(`❌ فشل الحذف / Failed to delete\n\nError: ${error?.message || 'Unknown error'}`);
+            console.error('Error deleting service:', error);
+            alert(t('admin.services.deleteError', language));
         }
     };
 
     const toggleActive = async (service: Service) => {
         try {
             const newStatus = !service.is_active;
-            console.log(`🔄 Toggling service "${service.title_en}" to ${newStatus ? 'active' : 'inactive'}`);
-
             const { error } = await supabase
                 .from('services')
                 .update({ is_active: newStatus })
                 .eq('id', service.id);
 
-            if (error) {
-                console.error('❌ Toggle error:', error);
-                throw error;
-            }
-            console.log('✅ Toggle successful');
+            if (error) throw error;
             fetchServices();
         } catch (error: any) {
-            console.error('❌ Error toggling status:', error);
-            alert(`❌ فشل التحديث / Failed to update\n\nError: ${error?.message || 'Unknown error'}`);
+            console.error('Error toggling status:', error);
+            alert(t('common.error', language));
         }
     };
 
@@ -253,7 +225,6 @@ export default function AdminServicesPage() {
         const otherService = services[newIndex];
 
         try {
-            // Swap display_order values
             await supabase
                 .from('services')
                 .update({ display_order: otherService.display_order })
@@ -267,20 +238,25 @@ export default function AdminServicesPage() {
             fetchServices();
         } catch (error) {
             console.error('Error reordering services:', error);
-            alert('Failed to reorder services');
+            alert(t('common.error', language));
         }
     };
 
     const filteredServices = services.filter(service => {
+        const titleEn = service.title_en?.toLowerCase() || '';
+        const titleFr = service.title_fr?.toLowerCase() || '';
+        const titleAr = service.title_ar?.toLowerCase() || '';
+        const searchLowed = searchTerm.toLowerCase();
+
         const matchesSearch =
-            service.title_en.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            service.title_fr.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            service.title_ar.toLowerCase().includes(searchTerm.toLowerCase());
+            titleEn.includes(searchLowed) ||
+            titleFr.includes(searchLowed) ||
+            titleAr.includes(searchLowed);
 
         const matchesFilter =
             filterStatus === 'all' ? true :
-            filterStatus === 'active' ? service.is_active :
-            !service.is_active;
+                filterStatus === 'active' ? service.is_active :
+                    !service.is_active;
 
         return matchesSearch && matchesFilter;
     });
@@ -306,15 +282,15 @@ export default function AdminServicesPage() {
                 <div className="mb-8">
                     <div className="flex items-center justify-between mb-6">
                         <div>
-                            <h1 className="text-3xl font-bold text-[#001F3F]">Services Management</h1>
-                            <p className="text-gray-600 mt-1">Manage services displayed on your website</p>
+                            <h1 className="text-3xl font-bold text-[#001F3F]">{t('admin.services.title', language)}</h1>
+                            <p className="text-gray-600 mt-1">{t('admin.services.subtitle', language)}</p>
                         </div>
                         <button
                             onClick={handleCreate}
                             className="flex items-center gap-2 px-6 py-3 bg-[#D4AF37] text-white rounded-lg hover:bg-[#C5A028] transition-colors font-semibold"
                         >
                             <Plus className="h-5 w-5" />
-                            New Service
+                            {t('admin.services.newService', language)}
                         </button>
                     </div>
 
@@ -323,7 +299,7 @@ export default function AdminServicesPage() {
                         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-gray-600 text-sm">Total Services</p>
+                                    <p className="text-gray-600 text-sm">{t('admin.services.totalServices', language)}</p>
                                     <p className="text-3xl font-bold text-[#001F3F] mt-1">{stats.total}</p>
                                 </div>
                                 <Briefcase className="h-10 w-10 text-blue-500 opacity-20" />
@@ -332,7 +308,7 @@ export default function AdminServicesPage() {
                         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-gray-600 text-sm">Active</p>
+                                    <p className="text-gray-600 text-sm">{t('admin.services.active', language)}</p>
                                     <p className="text-3xl font-bold text-green-600 mt-1">{stats.active}</p>
                                 </div>
                                 <Eye className="h-10 w-10 text-green-500 opacity-20" />
@@ -341,7 +317,7 @@ export default function AdminServicesPage() {
                         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-gray-600 text-sm">Inactive</p>
+                                    <p className="text-gray-600 text-sm">{t('admin.services.inactive', language)}</p>
                                     <p className="text-3xl font-bold text-orange-600 mt-1">{stats.inactive}</p>
                                 </div>
                                 <EyeOff className="h-10 w-10 text-orange-500 opacity-20" />
@@ -355,7 +331,7 @@ export default function AdminServicesPage() {
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                             <input
                                 type="text"
-                                placeholder="Search services by title..."
+                                placeholder={t('admin.services.searchPlaceholder', language)}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20"
@@ -364,33 +340,30 @@ export default function AdminServicesPage() {
                         <div className="flex gap-2">
                             <button
                                 onClick={() => setFilterStatus('all')}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                    filterStatus === 'all'
+                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${filterStatus === 'all'
                                         ? 'bg-[#001F3F] text-white'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
-                                All
+                                {t('common.all', language)}
                             </button>
                             <button
                                 onClick={() => setFilterStatus('active')}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                    filterStatus === 'active'
+                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${filterStatus === 'active'
                                         ? 'bg-green-600 text-white'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
-                                Active
+                                {t('admin.services.active', language)}
                             </button>
                             <button
                                 onClick={() => setFilterStatus('inactive')}
-                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                    filterStatus === 'inactive'
+                                className={`px-4 py-2 rounded-lg font-medium transition-colors ${filterStatus === 'inactive'
                                         ? 'bg-orange-600 text-white'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
-                                Inactive
+                                {t('admin.services.inactive', language)}
                             </button>
                         </div>
                     </div>
@@ -402,18 +375,18 @@ export default function AdminServicesPage() {
                         <table className="w-full">
                             <thead className="bg-gray-50 border-b border-gray-200">
                                 <tr>
-                                    <th className="text-left p-4 font-semibold text-gray-700">Icon</th>
-                                    <th className="text-left p-4 font-semibold text-gray-700">Title (EN)</th>
-                                    <th className="text-left p-4 font-semibold text-gray-700">Status</th>
-                                    <th className="text-left p-4 font-semibold text-gray-700">Order</th>
-                                    <th className="text-left p-4 font-semibold text-gray-700">Actions</th>
+                                    <th className="text-left p-4 font-semibold text-gray-700">{t('admin.services.icon' as any, language) || 'Icon'}</th>
+                                    <th className="text-left p-4 font-semibold text-gray-700">{t('common.title' as any, language) || 'Title'}</th>
+                                    <th className="text-left p-4 font-semibold text-gray-700">{t('common.status', language)}</th>
+                                    <th className="text-left p-4 font-semibold text-gray-700">{t('admin.services.order' as any, language) || 'Order'}</th>
+                                    <th className="text-left p-4 font-semibold text-gray-700">{t('common.actions', language)}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredServices.length === 0 ? (
                                     <tr>
                                         <td colSpan={5} className="text-center py-12 text-gray-500">
-                                            No services found. Create your first service to get started!
+                                            {t('admin.services.noServices', language)}
                                         </td>
                                     </tr>
                                 ) : (
@@ -427,19 +400,21 @@ export default function AdminServicesPage() {
                                                     </div>
                                                 </td>
                                                 <td className="p-4">
-                                                    <div className="font-medium text-gray-900">{service.title_en}</div>
+                                                    <div className="font-medium text-gray-900">
+                                                        {language === 'ar' ? service.title_ar : language === 'fr' ? service.title_fr : service.title_en}
+                                                    </div>
                                                     <div className="text-sm text-gray-500">{service.href}</div>
                                                 </td>
                                                 <td className="p-4">
                                                     {service.is_active ? (
                                                         <span className="px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full flex items-center gap-1 w-fit">
                                                             <Eye className="h-3 w-3" />
-                                                            Active
+                                                            {t('admin.services.active', language)}
                                                         </span>
                                                     ) : (
                                                         <span className="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-semibold rounded-full flex items-center gap-1 w-fit">
                                                             <EyeOff className="h-3 w-3" />
-                                                            Inactive
+                                                            {t('admin.services.inactive', language)}
                                                         </span>
                                                     )}
                                                 </td>
@@ -449,7 +424,7 @@ export default function AdminServicesPage() {
                                                             onClick={() => moveService(service, 'up')}
                                                             disabled={index === 0}
                                                             className="p-1 text-gray-600 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-                                                            title="Move up"
+                                                            title={t('admin.services.moveUp' as any, language) || 'Move up'}
                                                         >
                                                             <ArrowUp className="h-4 w-4" />
                                                         </button>
@@ -458,7 +433,7 @@ export default function AdminServicesPage() {
                                                             onClick={() => moveService(service, 'down')}
                                                             disabled={index === filteredServices.length - 1}
                                                             className="p-1 text-gray-600 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-                                                            title="Move down"
+                                                            title={t('admin.services.moveDown' as any, language) || 'Move down'}
                                                         >
                                                             <ArrowDown className="h-4 w-4" />
                                                         </button>
@@ -469,21 +444,21 @@ export default function AdminServicesPage() {
                                                         <button
                                                             onClick={() => handleEdit(service)}
                                                             className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                            title="Edit"
+                                                            title={t('common.edit', language)}
                                                         >
                                                             <Edit className="h-4 w-4" />
                                                         </button>
                                                         <button
                                                             onClick={() => toggleActive(service)}
                                                             className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                                                            title={service.is_active ? "Deactivate" : "Activate"}
+                                                            title={service.is_active ? t('admin.services.inactive', language) : t('admin.services.active', language)}
                                                         >
                                                             {service.is_active ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                                         </button>
                                                         <button
                                                             onClick={() => handleDelete(service.id)}
                                                             className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                            title="Delete"
+                                                            title={t('common.delete', language)}
                                                         >
                                                             <Trash2 className="h-4 w-4" />
                                                         </button>
@@ -504,7 +479,7 @@ export default function AdminServicesPage() {
                         href="/admin"
                         className="text-[#001F3F] hover:text-[#D4AF37] font-medium"
                     >
-                        ← Back to Dashboard
+                        ← {t('admin.posts.backToDashboard', language)}
                     </Link>
                 </div>
             </div>
@@ -516,7 +491,7 @@ export default function AdminServicesPage() {
                         <div className="p-6 border-b border-gray-200">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-2xl font-bold text-[#001F3F]">
-                                    {editingService ? 'Edit Service' : 'New Service'}
+                                    {editingService ? t('admin.services.editService' as any, language) || 'Edit Service' : t('admin.services.newService' as any, language) || 'New Service'}
                                 </h2>
                                 <button
                                     onClick={() => setShowModal(false)}
@@ -533,33 +508,30 @@ export default function AdminServicesPage() {
                                 <button
                                     type="button"
                                     onClick={() => setActiveTab('en')}
-                                    className={`px-4 py-2 font-medium transition-colors ${
-                                        activeTab === 'en'
+                                    className={`px-4 py-2 font-medium transition-colors ${activeTab === 'en'
                                             ? 'text-[#001F3F] border-b-2 border-[#D4AF37]'
                                             : 'text-gray-500 hover:text-gray-700'
-                                    }`}
+                                        }`}
                                 >
                                     English
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setActiveTab('fr')}
-                                    className={`px-4 py-2 font-medium transition-colors ${
-                                        activeTab === 'fr'
+                                    className={`px-4 py-2 font-medium transition-colors ${activeTab === 'fr'
                                             ? 'text-[#001F3F] border-b-2 border-[#D4AF37]'
                                             : 'text-gray-500 hover:text-gray-700'
-                                    }`}
+                                        }`}
                                 >
                                     Français
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setActiveTab('ar')}
-                                    className={`px-4 py-2 font-medium transition-colors ${
-                                        activeTab === 'ar'
+                                    className={`px-4 py-2 font-medium transition-colors ${activeTab === 'ar'
                                             ? 'text-[#001F3F] border-b-2 border-[#D4AF37]'
                                             : 'text-gray-500 hover:text-gray-700'
-                                    }`}
+                                        }`}
                                 >
                                     العربية
                                 </button>
@@ -568,28 +540,28 @@ export default function AdminServicesPage() {
                             {/* Title */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Title ({activeTab.toUpperCase()})
+                                    {t('common.title' as any, language) || 'Title'} ({activeTab.toUpperCase()})
                                 </label>
                                 <input
                                     type="text"
                                     value={formData[`title_${activeTab}` as keyof Service] as string || ''}
                                     onChange={(e) => setFormData(prev => ({ ...prev, [`title_${activeTab}`]: e.target.value }))}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20"
-                                    placeholder={`Enter title in ${activeTab.toUpperCase()}`}
+                                    placeholder={`${t('common.title' as any, language) || 'Title'} (${activeTab.toUpperCase()})`}
                                 />
                             </div>
 
                             {/* Description */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Description ({activeTab.toUpperCase()})
+                                    {t('common.description' as any, language) || 'Description'} ({activeTab.toUpperCase()})
                                 </label>
                                 <textarea
                                     rows={3}
                                     value={formData[`description_${activeTab}` as keyof Service] as string || ''}
                                     onChange={(e) => setFormData(prev => ({ ...prev, [`description_${activeTab}`]: e.target.value }))}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20"
-                                    placeholder={`Enter description in ${activeTab.toUpperCase()}`}
+                                    placeholder={`${t('common.description' as any, language) || 'Description'} (${activeTab.toUpperCase()})`}
                                 />
                             </div>
 
@@ -598,7 +570,7 @@ export default function AdminServicesPage() {
                                 <>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Icon</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.services.icon' as any, language) || 'Icon'}</label>
                                             <select
                                                 value={formData.icon}
                                                 onChange={(e) => setFormData(prev => ({ ...prev, icon: e.target.value }))}
@@ -610,7 +582,7 @@ export default function AdminServicesPage() {
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Display Order</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.services.order' as any, language) || 'Order'}</label>
                                             <input
                                                 type="number"
                                                 value={formData.display_order}
@@ -621,7 +593,7 @@ export default function AdminServicesPage() {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Service URL</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.services.url' as any, language) || 'Service URL'}</label>
                                         <input
                                             type="text"
                                             value={formData.href}
@@ -638,7 +610,7 @@ export default function AdminServicesPage() {
                                             onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.checked }))}
                                             className="w-4 h-4 text-[#001F3F] border-gray-300 rounded focus:ring-[#001F3F]"
                                         />
-                                        <label className="text-sm font-medium text-gray-700">Active (Display on website)</label>
+                                        <label className="text-sm font-medium text-gray-700">{t('admin.services.active', language)}</label>
                                     </div>
                                 </>
                             )}
@@ -650,7 +622,7 @@ export default function AdminServicesPage() {
                                 className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                                 disabled={saving}
                             >
-                                Cancel
+                                {t('common.cancel', language)}
                             </button>
                             <button
                                 onClick={handleSave}
@@ -658,7 +630,7 @@ export default function AdminServicesPage() {
                                 className="px-6 py-2 bg-[#D4AF37] text-white rounded-lg hover:bg-[#C5A028] transition-colors font-semibold flex items-center gap-2 disabled:opacity-50"
                             >
                                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                                {saving ? 'Saving...' : 'Save Service'}
+                                {saving ? t('common.saving', language) : (t('admin.services.saveService' as any, language) || 'Save Service')}
                             </button>
                         </div>
                     </div>

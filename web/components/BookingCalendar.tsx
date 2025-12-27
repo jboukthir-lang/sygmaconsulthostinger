@@ -24,14 +24,33 @@ interface AppointmentType {
 
 interface CalendarSettings {
     id: string;
-    working_hours_start: string;
-    working_hours_end: string;
-    break_start: string | null;
-    break_end: string | null;
     slot_duration: number;
-    working_days: string[];
     max_advance_booking_days: number;
     min_advance_booking_hours: number;
+    lunch_break_enabled: boolean;
+    lunch_break_start: string | null;
+    lunch_break_end: string | null;
+    monday_enabled: boolean;
+    tuesday_enabled: boolean;
+    wednesday_enabled: boolean;
+    thursday_enabled: boolean;
+    friday_enabled: boolean;
+    saturday_enabled: boolean;
+    sunday_enabled: boolean;
+    monday_start: string;
+    monday_end: string;
+    tuesday_start: string;
+    tuesday_end: string;
+    wednesday_start: string;
+    wednesday_end: string;
+    thursday_start: string;
+    thursday_end: string;
+    friday_start: string;
+    friday_end: string;
+    saturday_start: string;
+    saturday_end: string;
+    sunday_start: string;
+    sunday_end: string;
 }
 
 interface BlockedDate {
@@ -178,14 +197,30 @@ export default function BookingCalendar() {
     }
 
     function generateTimeSlots(date: Date) {
-        if (!calendarSettings || !calendarSettings.working_hours_start || !calendarSettings.working_hours_end) {
+        if (!calendarSettings) {
             console.log('⚠️ Calendar settings not ready');
             return;
         }
 
+        // Get day name
+        const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        const dayName = dayNames[date.getDay()];
+
+        // Get start and end times for this specific day
+        const startTimeKey = `${dayName}_start` as keyof CalendarSettings;
+        const endTimeKey = `${dayName}_end` as keyof CalendarSettings;
+
+        const workingStart = calendarSettings[startTimeKey] as string;
+        const workingEnd = calendarSettings[endTimeKey] as string;
+
+        if (!workingStart || !workingEnd) {
+            console.log('⚠️ No working hours for', dayName);
+            return;
+        }
+
         const slots: string[] = [];
-        const [startH, startM] = calendarSettings.working_hours_start.split(':').map(Number);
-        const [endH, endM] = calendarSettings.working_hours_end.split(':').map(Number);
+        const [startH, startM] = workingStart.split(':').map(Number);
+        const [endH, endM] = workingEnd.split(':').map(Number);
         const duration = calendarSettings.slot_duration || 30;
 
         let currentH = startH;
@@ -194,11 +229,11 @@ export default function BookingCalendar() {
         while (currentH < endH || (currentH === endH && currentM < endM)) {
             const timeString = `${String(currentH).padStart(2, '0')}:${String(currentM).padStart(2, '0')}`;
 
-            // Check if time is in break period
+            // Check if time is in lunch break period
             let isBreakTime = false;
-            if (calendarSettings.break_start && calendarSettings.break_end) {
-                const [breakStartH, breakStartM] = calendarSettings.break_start.split(':').map(Number);
-                const [breakEndH, breakEndM] = calendarSettings.break_end.split(':').map(Number);
+            if (calendarSettings.lunch_break_enabled && calendarSettings.lunch_break_start && calendarSettings.lunch_break_end) {
+                const [breakStartH, breakStartM] = calendarSettings.lunch_break_start.split(':').map(Number);
+                const [breakEndH, breakEndM] = calendarSettings.lunch_break_end.split(':').map(Number);
 
                 const currentMinutes = currentH * 60 + currentM;
                 const breakStartMinutes = breakStartH * 60 + breakStartM;
@@ -220,7 +255,7 @@ export default function BookingCalendar() {
             }
         }
 
-        console.log(`✅ Generated ${slots.length} time slots`);
+        console.log(`✅ Generated ${slots.length} time slots for ${dayName}`);
         setTimeSlots(slots);
     }
 
@@ -230,10 +265,11 @@ export default function BookingCalendar() {
     }
 
     function isWorkingDay(date: Date): boolean {
-        if (!calendarSettings || !calendarSettings.working_days) return true;
+        if (!calendarSettings) return true;
         const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
         const dayName = dayNames[date.getDay()];
-        return calendarSettings.working_days.includes(dayName);
+        const enabledKey = `${dayName}_enabled` as keyof CalendarSettings;
+        return calendarSettings[enabledKey] as boolean;
     }
 
     function isDateAvailable(date: Date): boolean {
