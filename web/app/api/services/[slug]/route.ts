@@ -1,5 +1,47 @@
 import { NextResponse } from 'next/server';
-import { queryOne, queryAll } from '@/lib/mysql';
+import { createClient } from '@supabase/supabase-js';
+
+export async function GET(
+    request: Request,
+    { params }: { params: { slug: string } }
+) {
+    try {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+        if (!supabaseUrl || !supabaseKey) {
+            throw new Error('Missing Supabase credentials');
+        }
+
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        const slug = params.slug;
+
+        // Extract service name from slug (e.g., "visa" from "/services/visa")
+        const serviceName = slug.split('/').pop();
+
+        const { data: service, error } = await supabase
+            .from('services')
+            .select('*')
+            .eq('href', `/services/${serviceName}`)
+            .eq('is_active', true)
+            .single();
+
+        if (error || !service) {
+            return NextResponse.json(
+                { error: 'Service not found' },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json(service);
+    } catch (error: any) {
+        console.error('Error fetching service:', error);
+        return NextResponse.json(
+            { error: 'Internal Server Error', details: error.message },
+            { status: 500 }
+        );
+    }
+}
 
 export async function GET(
     request: Request,
