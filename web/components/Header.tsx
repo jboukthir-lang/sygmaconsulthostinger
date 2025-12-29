@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, Phone, LogIn, LogOut, User, X, Globe } from 'lucide-react';
+import { Menu, Phone, LogIn, LogOut, User, X, Globe, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import NotificationBell from './NotificationBell';
@@ -12,6 +12,7 @@ export default function Header() {
     const { t, language, setLanguage, logoUrl } = useLanguage();
     const { user, signOut } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isServicesOpen, setIsServicesOpen] = useState(false);
     const [imgSrc, setImgSrc] = useState<string | null>(null);
 
     useEffect(() => {
@@ -25,6 +26,29 @@ export default function Header() {
             console.error('Sign out error:', error);
         }
     };
+
+    const services = [
+        {
+            name: { en: 'Strategic Market Analysis', fr: 'Analyse Stratégique du Marché', ar: 'تحليل استراتيجي للسوق' },
+            href: '/services/market-analysis',
+            icon: '📊'
+        },
+        {
+            name: { en: 'Digital Transformation', fr: 'Transformation Digitale', ar: 'التحول الرقمي' },
+            href: '/services/digital-transformation',
+            icon: '💻'
+        },
+        {
+            name: { en: 'Cross-Border Development', fr: 'Développement Transfrontalier', ar: 'التطوير عبر الحدود' },
+            href: '/services/cross-border',
+            icon: '🌍'
+        },
+        {
+            name: { en: 'Regulatory Compliance', fr: 'Conformité Réglementaire', ar: 'الامتثال التنظيمي' },
+            href: '/services/compliance',
+            icon: '⚖️'
+        },
+    ];
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm">
@@ -49,7 +73,44 @@ export default function Header() {
                     {/* Desktop Navigation */}
                     <nav className="hidden lg:flex gap-6 xl:gap-8 text-sm font-medium text-[#4A4A4A]">
                         <Link className="hover:text-[#D4AF37] transition-colors" href="/">{t.nav.home}</Link>
-                        <Link className="hover:text-[#D4AF37] transition-colors" href="/services">{t.nav.services}</Link>
+
+                        {/* Services Dropdown */}
+                        <div
+                            className="relative"
+                            onMouseEnter={() => setIsServicesOpen(true)}
+                            onMouseLeave={() => setIsServicesOpen(false)}
+                        >
+                            <button className="flex items-center gap-1 hover:text-[#D4AF37] transition-colors">
+                                {t.nav.services}
+                                <ChevronDown className={`h-4 w-4 transition-transform ${isServicesOpen ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {isServicesOpen && (
+                                <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 space-y-2">
+                                    {services.map((service, idx) => (
+                                        <Link
+                                            key={idx}
+                                            href={service.href}
+                                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
+                                        >
+                                            <span className="text-2xl">{service.icon}</span>
+                                            <div>
+                                                <p className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">
+                                                    {service.name[language as keyof typeof service.name]}
+                                                </p>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                    <Link
+                                        href="/services"
+                                        className="block text-center py-3 mt-2 text-[#D4AF37] font-semibold hover:bg-[#D4AF37]/10 rounded-xl transition-colors"
+                                    >
+                                        {language === 'en' ? 'View All Services' : language === 'fr' ? 'Voir Tous les Services' : 'عرض جميع الخدمات'} →
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
+
                         <Link className="hover:text-[#D4AF37] transition-colors" href="/about">{t.nav.about}</Link>
                         <Link className="hover:text-[#D4AF37] transition-colors" href="/insights">{t.nav.insights}</Link>
                         <Link className="hover:text-[#D4AF37] transition-colors" href="/contact">{t.nav.contact}</Link>
@@ -107,7 +168,7 @@ export default function Header() {
                 </div>
             </div>
 
-            {/* Mobile Menu - Improved Design */}
+            {/* Mobile Menu */}
             {isMenuOpen && (
                 <div className="lg:hidden fixed inset-0 top-16 md:top-20 bg-white z-50 overflow-y-auto">
                     <div className="container mx-auto px-4 py-6 space-y-6">
@@ -121,14 +182,33 @@ export default function Header() {
                                 <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.home}</span>
                                 <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
                             </Link>
-                            <Link
-                                onClick={() => setIsMenuOpen(false)}
-                                className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
-                                href="/services"
-                            >
-                                <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.services}</span>
-                                <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
-                            </Link>
+
+                            {/* Services Expandable */}
+                            <div>
+                                <button
+                                    onClick={() => setIsServicesOpen(!isServicesOpen)}
+                                    className="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors"
+                                >
+                                    <span className="font-semibold text-gray-900">{t.nav.services}</span>
+                                    <ChevronDown className={`h-5 w-5 text-gray-400 transition-transform ${isServicesOpen ? 'rotate-180' : ''}`} />
+                                </button>
+                                {isServicesOpen && (
+                                    <div className="ml-4 mt-2 space-y-2">
+                                        {services.map((service, idx) => (
+                                            <Link
+                                                key={idx}
+                                                href={service.href}
+                                                onClick={() => setIsMenuOpen(false)}
+                                                className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-50"
+                                            >
+                                                <span className="text-xl">{service.icon}</span>
+                                                <span className="text-sm text-gray-700">{service.name[language as keyof typeof service.name]}</span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
                             <Link
                                 onClick={() => setIsMenuOpen(false)}
                                 className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"

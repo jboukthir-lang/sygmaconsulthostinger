@@ -37,18 +37,24 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    metadataBase: new URL('https://sygmaconsult.com'),
+    metadataBase: new URL('https://sygma-consult.com'),
     title: {
-      default: 'Sygma Consult | Transformation Digitale & Conseil Stratégique',
-      template: '%s | Sygma Consult'
+      default: 'SYGMA CONSULT - Strategic Consulting Europe & Africa | Paris - Tunis',
+      template: '%s | SYGMA CONSULT'
     },
-    description: 'Cabinet de conseil expert en transformation digitale, conseil juridique et stratégie de croissance. Présent à Paris et Tunis. Solutions sur-mesure pour entreprises.',
+    description: 'Expert strategic consulting bridging European and African markets. Digital transformation, market entry strategies, and cross-border commercial development. Offices in Paris & Tunis.',
     keywords: [
-      'transformation digitale', 'conseil stratégique', 'consulting Paris', 'consulting Tunis',
-      'conseil juridique', 'stratégie entreprise', 'digitalisation entreprise', 'Sygma Consult'
+      'conseil stratégique',
+      'consulting Europe Africa',
+      'transformation digitale',
+      'Paris Tunis consulting',
+      'market entry Africa',
+      'strategic consulting France Tunisia',
+      'business development cross-border',
+      'consulting international',
+      'développement commercial transfrontalier',
+      'conseil en stratégie Paris',
     ],
-    authors: [{ name: 'Sygma Consult' }],
-    creator: 'Sygma Consult',
     publisher: 'Sygma Consult',
     formatDetection: {
       email: false,

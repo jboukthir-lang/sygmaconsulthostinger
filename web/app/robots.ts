@@ -1,1 +1,14 @@
-export default function robots(): any { return { rules: { userAgent: '*', allow: '/', disallow: ['/admin/', '/api/'] }, sitemap: 'https://sygmaconsult.com/sitemap.xml' } }
+import { MetadataRoute } from 'next'
+
+export default function robots(): MetadataRoute.Robots {
+    return {
+        rules: [
+            {
+                userAgent: '*',
+                allow: '/',
+                disallow: ['/admin/', '/api/', '/login', '/signup'],
+            },
+        ],
+        sitemap: 'https://sygma-consult.com/sitemap.xml',
+    }
+}
