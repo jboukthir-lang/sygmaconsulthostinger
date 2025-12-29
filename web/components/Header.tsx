@@ -19,6 +19,27 @@ export default function Header() {
         setImgSrc(logoUrl || "/logo.png");
     }, [logoUrl]);
 
+    useEffect(() => {
+        // Close menu on escape key
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setIsMenuOpen(false);
+        };
+        document.addEventListener('keydown', handleEscape);
+        return () => document.removeEventListener('keydown', handleEscape);
+    }, []);
+
+    useEffect(() => {
+        // Prevent body scroll when menu is open
+        if (isMenuOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isMenuOpen]);
+
     const handleSignOut = async () => {
         try {
             await signOut();
@@ -168,156 +189,165 @@ export default function Header() {
                 </div>
             </div>
 
-            {/* Mobile Menu */}
+            {/* Mobile Menu - FIXED VERSION */}
             {isMenuOpen && (
-                <div className="lg:hidden fixed inset-0 top-16 md:top-20 bg-white z-50 overflow-y-auto">
-                    <div className="container mx-auto px-4 py-6 space-y-6">
-                        {/* Navigation Links */}
-                        <nav className="space-y-1">
-                            <Link
-                                onClick={() => setIsMenuOpen(false)}
-                                className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
-                                href="/"
-                            >
-                                <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.home}</span>
-                                <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
-                            </Link>
+                <div className="lg:hidden">
+                    {/* Backdrop */}
+                    <div
+                        className="fixed inset-0 bg-black/50 z-40"
+                        onClick={() => setIsMenuOpen(false)}
+                    />
 
-                            {/* Services Expandable */}
-                            <div>
-                                <button
-                                    onClick={() => setIsServicesOpen(!isServicesOpen)}
-                                    className="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors"
-                                >
-                                    <span className="font-semibold text-gray-900">{t.nav.services}</span>
-                                    <ChevronDown className={`h-5 w-5 text-gray-400 transition-transform ${isServicesOpen ? 'rotate-180' : ''}`} />
-                                </button>
-                                {isServicesOpen && (
-                                    <div className="ml-4 mt-2 space-y-2">
-                                        {services.map((service, idx) => (
-                                            <Link
-                                                key={idx}
-                                                href={service.href}
-                                                onClick={() => setIsMenuOpen(false)}
-                                                className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-50"
-                                            >
-                                                <span className="text-xl">{service.icon}</span>
-                                                <span className="text-sm text-gray-700">{service.name[language as keyof typeof service.name]}</span>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            <Link
-                                onClick={() => setIsMenuOpen(false)}
-                                className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
-                                href="/about"
-                            >
-                                <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.about}</span>
-                                <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
-                            </Link>
-                            <Link
-                                onClick={() => setIsMenuOpen(false)}
-                                className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
-                                href="/insights"
-                            >
-                                <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.insights}</span>
-                                <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
-                            </Link>
-                            <Link
-                                onClick={() => setIsMenuOpen(false)}
-                                className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
-                                href="/contact"
-                            >
-                                <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.contact}</span>
-                                <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
-                            </Link>
-                        </nav>
-
-                        {/* Language Switcher */}
-                        <div className="bg-gray-50 rounded-2xl p-4">
-                            <div className="flex items-center gap-2 mb-3">
-                                <Globe className="h-5 w-5 text-[#D4AF37]" />
-                                <span className="text-sm font-semibold text-gray-700">Language</span>
-                            </div>
-                            <div className="grid grid-cols-3 gap-2">
-                                <button
-                                    onClick={() => { setLanguage('en'); setIsMenuOpen(false); }}
-                                    className={`px-4 py-3 rounded-xl font-semibold transition-all ${language === 'en' ? 'bg-[#D4AF37] text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
-                                >
-                                    🇬🇧 EN
-                                </button>
-                                <button
-                                    onClick={() => { setLanguage('fr'); setIsMenuOpen(false); }}
-                                    className={`px-4 py-3 rounded-xl font-semibold transition-all ${language === 'fr' ? 'bg-[#D4AF37] text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
-                                >
-                                    🇫🇷 FR
-                                </button>
-                                <button
-                                    onClick={() => { setLanguage('ar'); setIsMenuOpen(false); }}
-                                    className={`px-4 py-3 rounded-xl font-semibold transition-all ${language === 'ar' ? 'bg-[#D4AF37] text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
-                                >
-                                    🇹🇳 AR
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* User Section */}
-                        {user ? (
-                            <div className="bg-gray-50 rounded-2xl p-4 space-y-3">
+                    {/* Menu Panel */}
+                    <div className="fixed top-16 md:top-20 left-0 right-0 h-[calc(100vh-4rem)] md:h-[calc(100vh-5rem)] bg-white z-50 overflow-y-auto">
+                        <div className="container mx-auto px-4 py-6 space-y-6">
+                            {/* Navigation Links */}
+                            <nav className="space-y-1">
                                 <Link
-                                    href="/profile"
                                     onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-gray-100 transition-colors"
+                                    className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
+                                    href="/"
                                 >
-                                    {user.photoURL ? (
-                                        <img src={user.photoURL} alt="Profile" className="h-10 w-10 rounded-full" />
-                                    ) : (
-                                        <div className="h-10 w-10 rounded-full bg-[#D4AF37] flex items-center justify-center">
-                                            <User className="h-5 w-5 text-white" />
+                                    <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.home}</span>
+                                    <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
+                                </Link>
+
+                                {/* Services Expandable */}
+                                <div>
+                                    <button
+                                        onClick={() => setIsServicesOpen(!isServicesOpen)}
+                                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors"
+                                    >
+                                        <span className="font-semibold text-gray-900">{t.nav.services}</span>
+                                        <ChevronDown className={`h-5 w-5 text-gray-400 transition-transform ${isServicesOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+                                    {isServicesOpen && (
+                                        <div className="ml-4 mt-2 space-y-2">
+                                            {services.map((service, idx) => (
+                                                <Link
+                                                    key={idx}
+                                                    href={service.href}
+                                                    onClick={() => setIsMenuOpen(false)}
+                                                    className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-50"
+                                                >
+                                                    <span className="text-xl">{service.icon}</span>
+                                                    <span className="text-sm text-gray-700">{service.name[language as keyof typeof service.name]}</span>
+                                                </Link>
+                                            ))}
                                         </div>
                                     )}
-                                    <div className="flex-1">
-                                        <p className="font-semibold text-gray-900">{user.displayName || 'User'}</p>
-                                        <p className="text-xs text-gray-500">{user.email}</p>
-                                    </div>
-                                </Link>
-                                <button
-                                    onClick={() => { handleSignOut(); setIsMenuOpen(false); }}
-                                    className="w-full flex items-center justify-center gap-2 p-3 bg-red-50 text-red-600 rounded-xl font-semibold hover:bg-red-100 transition-colors"
+                                </div>
+
+                                <Link
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
+                                    href="/about"
                                 >
-                                    <LogOut className="h-5 w-5" />
-                                    {t.nav.signOut}
-                                </button>
+                                    <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.about}</span>
+                                    <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
+                                </Link>
+                                <Link
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
+                                    href="/insights"
+                                >
+                                    <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.insights}</span>
+                                    <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
+                                </Link>
+                                <Link
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
+                                    href="/contact"
+                                >
+                                    <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.contact}</span>
+                                    <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
+                                </Link>
+                            </nav>
+
+                            {/* Language Switcher */}
+                            <div className="bg-gray-50 rounded-2xl p-4">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <Globe className="h-5 w-5 text-[#D4AF37]" />
+                                    <span className="text-sm font-semibold text-gray-700">Language</span>
+                                </div>
+                                <div className="grid grid-cols-3 gap-2">
+                                    <button
+                                        onClick={() => { setLanguage('en'); setIsMenuOpen(false); }}
+                                        className={`px-4 py-3 rounded-xl font-semibold transition-all ${language === 'en' ? 'bg-[#D4AF37] text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+                                    >
+                                        🇬🇧 EN
+                                    </button>
+                                    <button
+                                        onClick={() => { setLanguage('fr'); setIsMenuOpen(false); }}
+                                        className={`px-4 py-3 rounded-xl font-semibold transition-all ${language === 'fr' ? 'bg-[#D4AF37] text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+                                    >
+                                        🇫🇷 FR
+                                    </button>
+                                    <button
+                                        onClick={() => { setLanguage('ar'); setIsMenuOpen(false); }}
+                                        className={`px-4 py-3 rounded-xl font-semibold transition-all ${language === 'ar' ? 'bg-[#D4AF37] text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+                                    >
+                                        🇹🇳 AR
+                                    </button>
+                                </div>
                             </div>
-                        ) : (
+
+                            {/* User Section */}
+                            {user ? (
+                                <div className="bg-gray-50 rounded-2xl p-4 space-y-3">
+                                    <Link
+                                        href="/profile"
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-gray-100 transition-colors"
+                                    >
+                                        {user.photoURL ? (
+                                            <img src={user.photoURL} alt="Profile" className="h-10 w-10 rounded-full" />
+                                        ) : (
+                                            <div className="h-10 w-10 rounded-full bg-[#D4AF37] flex items-center justify-center">
+                                                <User className="h-5 w-5 text-white" />
+                                            </div>
+                                        )}
+                                        <div className="flex-1">
+                                            <p className="font-semibold text-gray-900">{user.displayName || 'User'}</p>
+                                            <p className="text-xs text-gray-500">{user.email}</p>
+                                        </div>
+                                    </Link>
+                                    <button
+                                        onClick={() => { handleSignOut(); setIsMenuOpen(false); }}
+                                        className="w-full flex items-center justify-center gap-2 p-3 bg-red-50 text-red-600 rounded-xl font-semibold hover:bg-red-100 transition-colors"
+                                    >
+                                        <LogOut className="h-5 w-5" />
+                                        {t.nav.signOut}
+                                    </button>
+                                </div>
+                            ) : (
+                                <Link
+                                    href="/login"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center justify-center gap-2 p-4 bg-[#001F3F] text-white rounded-2xl font-bold shadow-lg hover:bg-[#003366] transition-all"
+                                >
+                                    <LogIn className="h-5 w-5" />
+                                    {t.nav.signIn}
+                                </Link>
+                            )}
+
+                            {/* CTA Button */}
                             <Link
-                                href="/login"
+                                href="/booking"
                                 onClick={() => setIsMenuOpen(false)}
-                                className="flex items-center justify-center gap-2 p-4 bg-[#001F3F] text-white rounded-2xl font-bold shadow-lg hover:bg-[#003366] transition-all"
+                                className="flex items-center justify-center gap-2 p-4 bg-gradient-to-r from-[#D4AF37] to-[#C5A028] text-white rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all"
                             >
-                                <LogIn className="h-5 w-5" />
-                                {t.nav.signIn}
+                                <Phone className="h-5 w-5" />
+                                {t.nav.book}
                             </Link>
-                        )}
 
-                        {/* CTA Button */}
-                        <Link
-                            href="/booking"
-                            onClick={() => setIsMenuOpen(false)}
-                            className="flex items-center justify-center gap-2 p-4 bg-gradient-to-r from-[#D4AF37] to-[#C5A028] text-white rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all"
-                        >
-                            <Phone className="h-5 w-5" />
-                            {t.nav.book}
-                        </Link>
-
-                        {/* Contact Info */}
-                        <div className="pt-4 border-t border-gray-200 text-center">
-                            <p className="text-sm text-gray-500 mb-2">Need help?</p>
-                            <a href="tel:+33752034786" className="text-[#D4AF37] font-semibold text-lg">
-                                +33 7 52 03 47 86
-                            </a>
+                            {/* Contact Info */}
+                            <div className="pt-4 border-t border-gray-200 text-center">
+                                <p className="text-sm text-gray-500 mb-2">Need help?</p>
+                                <a href="tel:+33752034786" className="text-[#D4AF37] font-semibold text-lg">
+                                    +33 7 52 03 47 86
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
