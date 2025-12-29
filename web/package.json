@@ -16,6 +16,7 @@
     "@types/node": "^22.10.1",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
+    "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -41,7 +42,8 @@
     "stripe": "^17.4.0",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.0.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/nodemailer": "^6.4.17"

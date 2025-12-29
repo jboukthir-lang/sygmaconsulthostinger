@@ -15,19 +15,43 @@ export async function POST(request: Request) {
             );
         }
 
-        // Save to Local File
-        const data = await saveMessage({
+        // Save to Database (Supabase + MySQL)
+        let savedData;
+        try {
+            const { db } = await import('@/lib/db');
+            savedData = await db.createContact({
+                name,
+                email,
+                subject: subject || 'General Inquiry',
+                message
+            });
+            console.log('Contact saved to DB:', savedData);
+        } catch (dbError) {
+            console.error('Failed to save to DB:', dbError);
+            // Fallback to local storage if DB fails completely
+            savedData = await saveMessage({
+                name,
+                email,
+                subject: subject || 'General Inquiry',
+                message
+            });
+        }
+
+        const data = savedData || await saveMessage({
             name,
             email,
             subject: subject || 'General Inquiry',
             message
         });
 
-        console.log('Contact saved locally:', data);
-
         // Send notification email to admin
         try {
-            await sendContactNotification(data);
+            await sendContactNotification({
+                ...data,
+                created_at: data.created_at instanceof Date
+                    ? data.created_at.toISOString()
+                    : data.created_at || new Date().toISOString()
+            } as any);
             console.log('Notification email sent to admin');
         } catch (emailError) {
             console.error('Failed to send notification email:', emailError);

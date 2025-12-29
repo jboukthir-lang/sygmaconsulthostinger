@@ -58,6 +58,24 @@ https://sygmaconsult.vercel.app
       attendees: [clientEmail],
     });
 
+    // Save to Database (Supabase + MySQL Dual Write)
+    try {
+      const { db } = await import('@/lib/db');
+      await db.createBooking({
+        name: clientName,
+        email: clientEmail,
+        topic: service,
+        date: date,
+        time: `${time}:00`,
+        status: 'confirmed',
+        notes: notes
+      });
+      console.log('Booking saved to DB successfully');
+    } catch (dbError) {
+      console.error('Failed to save booking to DB:', dbError);
+      // Continue, as calendar event was created
+    }
+
     return NextResponse.json({
       success: true,
       eventId: result.eventId,

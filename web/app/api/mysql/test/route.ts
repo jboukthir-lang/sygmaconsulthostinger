@@ -3,13 +3,29 @@ import { queryAll, queryOne } from '@/lib/mysql';
 
 // GET /api/mysql/test - Test MySQL connection
 export async function GET() {
-  // Check if we're in production
-  if (process.env.NODE_ENV !== 'production') {
+  // Check if we're in production OR if we have credentials in dev
+  const hasCredentials = process.env.DB_HOST && process.env.DB_USER && process.env.DB_PASSWORD;
+
+  if (process.env.NODE_ENV !== 'production' && !hasCredentials) {
     return NextResponse.json({
       success: false,
       message: 'ℹ️ MySQL is disabled in development mode',
-      note: 'MySQL will only work on production server (Hostinger)'
+      note: 'To enable in dev, add DB_* variables to your .env file',
+      debug: {
+        host_configured: !!process.env.DB_HOST,
+        user_configured: !!process.env.DB_USER,
+        host_value: process.env.DB_HOST || 'undefined (defaulting to localhost)'
+      }
     }, { status: 200 });
+  }
+
+  // Debug check
+  if (!process.env.DB_HOST) {
+    return NextResponse.json({
+      success: false,
+      message: '❌ DB_HOST is missing. The app is trying to connect to localhost.',
+      tip: 'Did you restart the server after creating .env?'
+    }, { status: 500 });
   }
 
   try {

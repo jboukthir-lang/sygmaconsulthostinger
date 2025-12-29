@@ -5,7 +5,11 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 let pool: mysql.Pool | null = null;
 
-if (isProduction && process.env.DB_HOST && process.env.DB_USER && process.env.DB_PASSWORD) {
+// Only create MySQL connection pool if credentials are provided
+// Modified to support Dev mode if variables are present
+const hasCredentials = process.env.DB_HOST && process.env.DB_USER && process.env.DB_PASSWORD;
+
+if (hasCredentials) {
   pool = mysql.createPool({
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT || '3306'),
@@ -17,6 +21,10 @@ if (isProduction && process.env.DB_HOST && process.env.DB_USER && process.env.DB
     queueLimit: 0,
     enableKeepAlive: true,
     keepAliveInitialDelay: 0,
+    // Add SSL for remote Hostinger connection (required often)
+    ssl: {
+      rejectUnauthorized: false
+    }
   });
 
   // Test connection
@@ -29,7 +37,7 @@ if (isProduction && process.env.DB_HOST && process.env.DB_USER && process.env.DB
       console.error('❌ MySQL connection failed:', err.message);
     });
 } else {
-  console.log('ℹ️ MySQL disabled in development mode');
+  console.log('ℹ️ MySQL disabled: Missing DB_* environment variables');
 }
 
 export default pool;
