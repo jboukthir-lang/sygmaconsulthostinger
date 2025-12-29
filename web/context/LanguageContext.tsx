@@ -1,7 +1,8 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import homeContent from '@/data/home.json';
+import { supabase } from '@/lib/supabase';
 
 type Language = 'en' | 'fr' | 'ar';
 
@@ -298,7 +299,390 @@ type Translations = {
         name: string;
         status: string;
     };
+    notifications: Notifications;
+    // Admin & Dashboard
+    admin: {
+        dashboard: string;
+        analytics: string;
+        calendar: string;
+        documents: string;
+        services: string;
+        posts: string;
+        partners: string;
+        consultations: string;
+        contacts: string;
+        homePage: string;
+        siteSettings: string;
+        branding: string;
+        welcomeBack: string;
+        stats: {
+            totalBookings: string;
+            pending: string;
+            newMessages: string;
+            total: string;
+            registeredUsers: string;
+            blogPosts: string;
+            published: string;
+            conversionRate: string;
+        };
+        recentBookings: string;
+        noBookingsYet: string;
+        quickActions: {
+            title: string;
+            confirmPending: string;
+            replyMessages: string;
+            managePosts: string;
+            todaySchedule: string;
+        };
+        monthlyOverview: string;
+        chartPlaceholder: string;
+        bookings: {
+            title: string;
+            pending: string;
+            confirmed: string;
+            cancelled: string;
+            rejected: string;
+        };
+        servicesView: {
+            title: string;
+            subtitle: string;
+            newService: string;
+            totalServices: string;
+            active: string;
+            inactive: string;
+            searchPlaceholder: string;
+            icon: string;
+            titleEn: string;
+            status: string;
+            order: string;
+            noServices: string;
+            editService: string;
+            activeDisplay: string;
+            deleteConfirm: string;
+            saveSuccess: string;
+            deleteSuccess: string;
+            saveError: string;
+            deleteError: string;
+            moveUp: string;
+            moveDown: string;
+            image: string;
+            optional: string;
+            noImage: string;
+            changeImage: string;
+            uploadImage: string;
+            uploadSuccess: string;
+            saveService: string;
+            url: string;
+            features: string;
+            addFeature: string;
+        };
+        postsView: {
+            title: string;
+            subtitle: string;
+            newPost: string;
+            totalPosts: string;
+            published: string;
+            drafts: string;
+            totalViews: string;
+            searchPlaceholder: string;
+            noPosts: string;
+            deleteConfirm: string;
+            backToDashboard: string;
+        };
+        consultationsView: {
+            title: string;
+            subtitle: string;
+            new: string;
+            pending: string;
+            total: string;
+            scheduled: string;
+            upcoming: string;
+            inProgress: string;
+            activeNow: string;
+            completed: string;
+            revenue: string;
+            totalEarned: string;
+            searchPlaceholder: string;
+            noConsultations: string;
+            details: string;
+            changeStatus: string;
+            assignConsultant: string;
+            unassigned: string;
+            fee: string;
+            meetingLink: string;
+            clientNotes: string;
+            noClientNotes: string;
+            internalNotes: string;
+            addInternalNotes: string;
+            deleteConfirm: string;
+            loading: string;
+        };
+        messagesView: {
+            title: string;
+            subtitle: string;
+            new: string;
+            searchPlaceholder: string;
+            details: string;
+            from: string;
+            received: string;
+            replyViaEmail: string;
+            loading: string;
+            markAsRead: string;
+            view: {
+                list: string;
+                kanban: string;
+            };
+            kanban: {
+                new: string;
+                contacted: string;
+                proposal: string;
+                negotiation: string;
+                won: string;
+                lost: string;
+            };
+        };
+        partnersView: {
+            title: string;
+            subtitle: string;
+            new: string;
+            searchPlaceholder: string;
+            total: string;
+            noPartners: string;
+            active: string;
+            inactive: string;
+            website: string;
+            logo: string;
+            name: string;
+            recommended: string;
+            deleteConfirm: string;
+        };
+        usersView: {
+            title: string;
+            subtitle: string;
+            total: string;
+            admins: string;
+            newThisMonth: string;
+            noAdmins: string;
+            allUsers: string;
+            searchPlaceholder: string;
+            noUsers: string;
+            role: string;
+            user: string;
+            admin: string;
+            superAdmin: string;
+            removeAdmin: string;
+            removeAdminConfirm: string;
+            adminAdded: string;
+            adminRemoved: string;
+            makeAdmin: string;
+        };
+    };
+    invoicesView: {
+        title: string;
+        subtitle: string;
+        new: string;
+        type: {
+            quote: string;
+            invoice: string;
+            credit_note: string;
+        };
+        status: {
+            draft: string;
+            sent: string;
+            accepted: string;
+            rejected: string;
+            paid: string;
+            overdue: string;
+            cancelled: string;
+        };
+        fields: {
+            number: string;
+            client: string;
+            amount: string;
+            date: string;
+            dueDate: string;
+            items: string;
+        };
+        actions: {
+            convert: string;
+            markPaid: string;
+            downloadPdf: string;
+            emailClient: string;
+        };
+    };
+    partners: {
+        title: string;
+        subtitle: string;
+        new: string;
+        name: string;
+        website: string;
+        logo: string;
+        uploadLogo: string;
+        changeLogo: string;
+        active: string;
+        inactive: string;
+        noPartners: string;
+        deleteConfirm: string;
+        searchPlaceholder: string;
+        total: string;
+        recommended: string;
+        saveSuccess: string;
+    };
+    galleryView: {
+        title: string;
+        subtitle: string;
+        newImage: string;
+        totalImages: string;
+        searchPlaceholder: string;
+        noImages: string;
+        deleteConfirm: string;
+        uploadImage: string;
+        imageTitle: string;
+        category: string;
+        saveSuccess: string;
+        deleteSuccess: string;
+        uploading: string;
+        preview: string;
+    };
+    settings: {
+        title: string;
+        subtitle: string;
+        save: string;
+        saving: string;
+        tabs: {
+            company: string;
+            contact: string;
+            social: string;
+            branding: string;
+        };
+        companyName: string;
+        tagline: string;
+        description: string;
+        primaryPhone: string;
+        secondaryPhone: string;
+        whatsapp: string;
+        primaryEmail: string;
+        secondaryEmail: string;
+        address: string;
+        businessHours: string;
+        socialLinks: string;
+        primaryColor: string;
+        secondaryColor: string;
+        preview: string;
+        logo: string;
+        favicon: string;
+        upload: string;
+        change: string;
+        warning: string;
+        success: string;
+        error: string;
+        googleIntegration: string;
+        connectGoogle: string;
+        disconnectGoogle: string;
+        googleConnected: string;
+        googleNotConnected: string;
+        enabledFeatures: string;
+        systemInfo: string;
+        version: string;
+        environment: string;
+        siteSettingsDesc: string;
+        homepageContent: string;
+        homepageContentDesc: string;
+        heroImage: string;
+        heroImageDesc: string;
+        googleDesc: string;
+        featureCalendar: string;
+        featureMeet: string;
+        featureDrive: string;
+        featureSheets: string;
+        featureDocs: string;
+        homepageBuilder: {
+            title: string;
+            subtitle: string;
+            heroTab: string;
+            aboutTab: string;
+            badge: string;
+            mainTitle: string;
+            mainSubtitle: string;
+            description: string;
+            ctaSection: string;
+            primaryButton: string;
+            secondaryButton: string;
+            buttonTextEn: string;
+            buttonTextFr: string;
+            buttonTextAr: string;
+            buttonLink: string;
+            saveSuccess: string;
+            saveError: string;
+            loadError: string;
+            noContent: string;
+        };
+        heroImageBuilder: {
+            title: string;
+            subtitle: string;
+            invalidImage: string;
+            sizeLimit: string;
+            uploadSuccess: string;
+            uploadError: string;
+            deleteSuccess: string;
+            deleteError: string;
+            currentImage: string;
+            uploadedAt: string;
+            delete: string;
+            deleteConfirm: string;
+            noImage: string;
+            defaultImageNote: string;
+            uploadNew: string;
+            selectImage: string;
+            recommendation: string;
+            uploading: string;
+            instructionsTitle: string;
+            instruction1: string;
+            instruction2: string;
+            instruction3: string;
+            instruction4: string;
+        };
+    };
+    common: {
+        loading: string;
+        edit: string;
+        delete: string;
+        cancel: string;
+        save: string;
+        search: string;
+        filter: string;
+        view: string;
+        back: string;
+        actions: string;
+        status: string;
+        created_at: string;
+        contact: string;
+        login: string;
+        logout: string;
+        dashboard: string;
+        profile: string;
+        all: string;
+        date: string;
+        views: string;
+        category: string;
+        confirm: string;
+        saving: string;
+        error: string;
+        title: string;
+        description: string;
+        name: string;
+        email: string;
+        subject: string;
+        message: string;
+    };
 };
+
+export interface Notifications {
+    title: string;
+    markAllRead: string;
+    noNotifications: string;
+    viewAll: string;
+}
 
 const translations: Record<Language, Translations> = {
     en: {
@@ -597,6 +981,387 @@ const translations: Record<Language, Translations> = {
             newPasswordLabel: "New Password",
             confirmPasswordLabel: "Confirm Password",
             updateButton: "Update Password"
+        },
+        // Admin Data (English)
+        admin: {
+            dashboard: 'Dashboard',
+            analytics: "Analytics",
+            calendar: "Calendar",
+            documents: "Documents",
+            services: "Services",
+            posts: "Posts",
+            partners: "Partners",
+            consultations: "Consultations",
+            contacts: "Contacts",
+            homePage: "Home Page",
+            siteSettings: "Site Settings",
+            branding: "Branding",
+            welcomeBack: "Welcome back! Here's what's happening today.",
+            stats: {
+                totalBookings: "Total Bookings",
+                pending: "pending",
+                newMessages: "New Messages",
+                total: "total",
+                registeredUsers: "Registered Users",
+                blogPosts: "Blog Posts",
+                published: "published",
+                conversionRate: "Conversion Rate"
+            },
+            recentBookings: "Recent Bookings",
+            noBookingsYet: "No bookings yet",
+            quickActions: {
+                title: "Quick Actions",
+                confirmPending: "Confirm Pending Bookings",
+                replyMessages: "Reply to Messages",
+                managePosts: "Manage Blog Posts",
+                todaySchedule: "Today's Schedule"
+            },
+            monthlyOverview: "Monthly Overview",
+            chartPlaceholder: "Chart will be integrated here",
+            bookings: {
+                title: "Bookings",
+                pending: "Pending",
+                confirmed: "Confirmed",
+                cancelled: "Cancelled",
+                rejected: "Rejected"
+            },
+            servicesView: {
+                title: "Services Management",
+                subtitle: "Manage services displayed on your website",
+                newService: "New Service",
+                totalServices: "Total Services",
+                active: "Active",
+                inactive: "Inactive",
+                searchPlaceholder: "Search services by title...",
+                icon: "Icon",
+                titleEn: "Title (EN)",
+                status: "Status",
+                order: "Order",
+                noServices: "No services found. Create your first service to get started!",
+                editService: "Edit Service",
+                activeDisplay: "Active (Display on website)",
+                deleteConfirm: "Are you sure you want to delete this service?",
+                saveSuccess: "Service saved successfully!",
+                deleteSuccess: "Deleted successfully!",
+                saveError: "Failed to save service",
+                deleteError: "Failed to delete",
+                moveUp: "Move up",
+                moveDown: "Move down",
+                image: "Service Image",
+                optional: "(optional)",
+                noImage: "No image",
+                changeImage: "Change image",
+                uploadImage: "Upload image",
+                uploadSuccess: "Uploaded successfully",
+                saveService: "Save Service",
+                url: "Service URL",
+                features: "Features",
+                addFeature: "Add Feature"
+            },
+            postsView: {
+                title: "Posts Management",
+                subtitle: "Create and manage blog posts for your website",
+                newPost: "New Post",
+                totalPosts: "Total Posts",
+                published: "Published",
+                drafts: "Drafts",
+                totalViews: "Total Views",
+                searchPlaceholder: "Search posts by title or category...",
+                noPosts: "No posts found. Create your first post to get started!",
+                deleteConfirm: "Are you sure you want to delete this post? This action cannot be undone.",
+                backToDashboard: "Back to Dashboard"
+            },
+            consultationsView: {
+                title: "Consultations",
+                subtitle: "Manage all consultation sessions",
+                new: "New Consultation",
+                pending: "Pending",
+                total: "Total",
+                scheduled: "Scheduled",
+                upcoming: "Upcoming",
+                inProgress: "In Progress",
+                activeNow: "Active now",
+                completed: "Completed",
+                revenue: "Revenue",
+                totalEarned: "Total earned",
+                searchPlaceholder: "Search by client name, email, or service...",
+                noConsultations: "No consultations found",
+                details: "Consultation Details",
+                changeStatus: "Change Status",
+                assignConsultant: "Assign Consultant",
+                unassigned: "Unassigned",
+                fee: "Consultation Fee (€)",
+                meetingLink: "Meeting Link (Join)",
+                clientNotes: "Client Notes",
+                noClientNotes: "No client notes provided.",
+                internalNotes: "Internal Admin Notes",
+                addInternalNotes: "Add internal notes for consultants...",
+                deleteConfirm: "Are you sure you want to delete this consultation? This action cannot be undone.",
+                loading: "Loading consultations..."
+            },
+            messagesView: {
+                title: "Messages",
+                subtitle: "Manage contact form messages",
+                new: "New",
+                searchPlaceholder: "Search messages...",
+                details: "Message Details",
+                from: "From",
+                received: "Received at",
+                replyViaEmail: "Reply via Email",
+                loading: "Loading messages...",
+                markAsRead: "Mark as Read",
+                view: {
+                    list: "List",
+                    kanban: "Kanban Board"
+                },
+                kanban: {
+                    new: "New Opportunities",
+                    contacted: "Contacted",
+                    proposal: "Proposal Sent",
+                    negotiation: "Negotiation",
+                    won: "Won",
+                    lost: "Lost"
+                }
+            },
+            partnersView: {
+                title: "Partners Management",
+                subtitle: "Manage your strategic partners and collaborations",
+                new: "New Partner",
+                searchPlaceholder: "Search partners...",
+                total: "Total Partners",
+                noPartners: "No partners found",
+                active: "Active",
+                inactive: "Inactive",
+                website: "Website",
+                logo: "Logo",
+                name: "Partner Name",
+                recommended: "Recommended: 200x200px (PNG/JPG)",
+                deleteConfirm: "Are you sure you want to delete this partner?"
+            },
+            usersView: {
+                title: "User Management",
+                subtitle: "Manage users and access privileges",
+                total: "Total Users",
+                admins: "Admin Users",
+                newThisMonth: "New This Month",
+                noAdmins: "No admin users found",
+                allUsers: "All Users",
+                searchPlaceholder: "Search by name or email...",
+                noUsers: "No users found",
+                role: "Role",
+                user: "User",
+                admin: "Admin",
+                superAdmin: "Super Admin",
+                removeAdmin: "Remove Admin",
+                removeAdminConfirm: "Are you sure you want to remove admin privileges?",
+                adminAdded: "Admin added successfully",
+                adminRemoved: "Admin privileges removed",
+                makeAdmin: "Make Admin"
+            }
+        },
+        invoicesView: {
+            title: "Invoices & Quotes",
+            subtitle: "Manage billing and proposals",
+            new: "New Document",
+            type: {
+                quote: "Quote",
+                invoice: "Invoice",
+                credit_note: "Credit Note"
+            },
+            status: {
+                draft: "Draft",
+                sent: "Sent",
+                accepted: "Accepted",
+                rejected: "Rejected",
+                paid: "Paid",
+                overdue: "Overdue",
+                cancelled: "Cancelled"
+            },
+            fields: {
+                number: "Number",
+                client: "Client",
+                amount: "Amount",
+                date: "Date",
+                dueDate: "Due Date",
+                items: "Item Details"
+            },
+            actions: {
+                convert: "Convert to Invoice",
+                markPaid: "Mark as Paid",
+                downloadPdf: "Download PDF",
+                emailClient: "Email to Client"
+            }
+        },
+        partners: {
+            title: "Partners & Clients",
+            subtitle: "Manage displayed partners and client logos",
+            new: "New Partner",
+            name: "Company Name",
+            website: "Website URL (Optional)",
+            logo: "Partner Logo",
+            uploadLogo: "Upload Logo",
+            changeLogo: "Change Logo",
+            active: "Active (Visible)",
+            inactive: "Inactive (Hidden)",
+            noPartners: "No partners found",
+            deleteConfirm: "Are you sure you want to delete this partner?",
+            searchPlaceholder: "Search partners...",
+            total: "Total:",
+            recommended: "Recommended: Transparent PNG, 400x200px",
+            saveSuccess: "Partner saved successfully"
+        },
+        galleryView: {
+            title: "Gallery Manager",
+            subtitle: "Manage homepage gallery images",
+            newImage: "Add Image",
+            totalImages: "Total Images",
+            searchPlaceholder: "Search images...",
+            noImages: "No images found",
+            deleteConfirm: "Are you sure you want to delete this image?",
+            uploadImage: "Upload Image",
+            imageTitle: "Image Title (Optional)",
+            category: "Category",
+            saveSuccess: "Image saved successfully!",
+            deleteSuccess: "Image deleted successfully",
+            uploading: "Uploading...",
+            preview: "Preview"
+        },
+        settings: {
+            title: "Site Settings",
+            subtitle: "Manage company information and branding",
+            save: "Save Changes",
+            saving: "Saving...",
+            tabs: {
+                company: "Company Info",
+                contact: "Contact Info",
+                social: "Social Media",
+                branding: "Branding & Colors"
+            },
+            companyName: "Company Name",
+            tagline: "Tagline",
+            description: "Description",
+            primaryPhone: "Primary Phone",
+            secondaryPhone: "Secondary Phone",
+            whatsapp: "WhatsApp Number",
+            primaryEmail: "Primary Email",
+            secondaryEmail: "Secondary Email",
+            address: "Address",
+            businessHours: "Business Hours",
+            socialLinks: "Social Links",
+            primaryColor: "Primary Color",
+            secondaryColor: "Secondary Color",
+            preview: "Preview",
+            logo: "Site Logo",
+            favicon: "Favicon",
+            upload: "Upload",
+            change: "Change",
+            warning: "Warning: Changing colors will affect the entire site.",
+            success: "Settings saved successfully",
+            error: "Error saving settings",
+            googleIntegration: "Google Integration",
+            connectGoogle: "Connect with Google",
+            disconnectGoogle: "Disconnect Google Account",
+            googleConnected: "Google Account Connected",
+            googleNotConnected: "Google integration is not connected. Connect to enable advanced features.",
+            enabledFeatures: "Enabled Features:",
+            systemInfo: "System Information",
+            version: "Version",
+            environment: "Environment",
+            siteSettingsDesc: "Manage company info, contact details, and social media links",
+            homepageContent: "Homepage Content",
+            homepageContentDesc: "Edit hero section, about section, and call-to-action buttons",
+            heroImage: "Hero Image",
+            heroImageDesc: "Upload and manage the main homepage hero image",
+            googleDesc: "Connect your Google account to enable Calendar, Meet, Drive, Sheets, and Docs integrations.",
+            featureCalendar: "Google Calendar - Automatic event creation",
+            featureMeet: "Google Meet - Video conference links",
+            featureDrive: "Google Drive - File storage and sharing",
+            featureSheets: "Google Sheets - Data export",
+            featureDocs: "Google Docs - Contract generation",
+            homepageBuilder: {
+                title: "Homepage Content",
+                subtitle: "Edit homepage text and titles",
+                heroTab: "Hero Section",
+                aboutTab: "About Section",
+                badge: "Badge",
+                mainTitle: "Main Title",
+                mainSubtitle: "Subtitle",
+                description: "Description",
+                ctaSection: "CTA Buttons",
+                primaryButton: "Primary Button",
+                secondaryButton: "Secondary Button",
+                buttonTextEn: "Button Text (EN)",
+                buttonTextFr: "Button Text (FR)",
+                buttonTextAr: "Button Text (AR)",
+                buttonLink: "Button Link",
+                saveSuccess: "Homepage content saved successfully!",
+                saveError: "Failed to save content",
+                loadError: "Failed to load page content",
+                noContent: "No content found"
+            },
+            heroImageBuilder: {
+                title: "Homepage Hero Image",
+                subtitle: "Manage the main image displayed on the homepage",
+                invalidImage: "Please select a valid image",
+                sizeLimit: "Image must not exceed 5 MB",
+                uploadSuccess: "Image uploaded successfully!",
+                uploadError: "Error during upload",
+                deleteSuccess: "Image deleted successfully",
+                deleteError: "Error during deletion",
+                currentImage: "Current Image",
+                uploadedAt: "Uploaded on",
+                delete: "Delete",
+                deleteConfirm: "Are you sure you want to delete this image?",
+                noImage: "No image currently set",
+                defaultImageNote: "The default SVG placeholder will be used",
+                uploadNew: "Upload New Image",
+                selectImage: "Select an image",
+                recommendation: "Recommended size: 1200x800px (3:2 ratio) • Max 5 MB • JPG, PNG, WebP",
+                uploading: "Uploading...",
+                instructionsTitle: "Instructions",
+                instruction1: "Image should be high quality for professional display",
+                instruction2: "Recommended ratio is 3:2 (e.g., 1200x800px)",
+                instruction3: "The old image will be automatically replaced upon upload",
+                instruction4: "If no image is set, the default placeholder will be used"
+            }
+        },
+        common: {
+            loading: "Loading...",
+            edit: "Edit",
+            delete: "Delete",
+            cancel: "Cancel",
+            save: "Save",
+            search: "Search",
+            filter: "Filter",
+            view: "View",
+            back: "Back",
+            actions: "Actions",
+            status: "Status",
+            created_at: "Created At",
+            contact: "Contact",
+            login: "Login",
+            logout: "Logout",
+            dashboard: "Dashboard",
+            profile: "Profile",
+            all: "All",
+            date: "Date",
+            views: "Views",
+            category: "Category",
+            confirm: "Confirm",
+            saving: "Saving",
+            error: "Error",
+            title: "Title",
+            description: "Description",
+            name: "Name",
+            email: "Email",
+            subject: "Subject",
+            message: "Message"
+        },
+        notifications: {
+            title: "Notifications",
+            markAllRead: "Mark all as read",
+            noNotifications: "No notifications",
+            viewAll: "View all"
         },
         legal: {
             title: "Legal Notice",
@@ -901,7 +1666,7 @@ const translations: Record<Language, Translations> = {
             stats_value: "Valeur Créée",
             story_title: "Notre Histoire",
             story_p1: "Sygma Consult est né d'une vision visant à créer un corridor commercial transparent entre la France et la Tunisie. Conscients des complexités auxquelles sont confrontés les entrepreneurs opérant dans ces deux économies dynamiques, nous avons créé un cabinet fondé sur une expertise locale approfondie et des normes internationales.",
-            story_p2: "Aujourd'hui, nous sommes fiers d'être le partenaire de confiance des multinationales, des PME et des startups visionnaires. Notre double présence à Paris et à Tunis nous permet d'offrir un soutien en temps réel et sur le terrain que d'autres cabinets ne peuvent égaler.",
+            story_p2: "Aujourd'hui, nous sommes fiers d'être le partenaire de confiance des multinationales, des PME, et des startups visionnaires. Notre double présence à Paris et à Tunis permet d'offrir un soutien en temps réel et sur le terrain que d'autres cabinets ne peuvent égaler.",
             vision_title: "Vision Mondiale",
             vision_desc: "Penser au-delà des frontières pour débloquer le potentiel international.",
             client_title: "Centré sur le Client",
@@ -940,6 +1705,387 @@ const translations: Record<Language, Translations> = {
             confirmPasswordLabel: "Confirmer le mot de passe",
             updateButton: "Mettre à jour"
         },
+        // Admin Data (French)
+        admin: {
+            dashboard: 'Tableau de Bord',
+            analytics: "Analytique",
+            calendar: "Calendrier",
+            documents: "Documents",
+            services: "Services",
+            posts: "Articles",
+            partners: "Partenaires",
+            consultations: "Consultations",
+            contacts: "Contacts",
+            homePage: "Page d'Accueil",
+            siteSettings: "Paramètres du Site",
+            branding: "Marque & Couleurs",
+            welcomeBack: "Bon retour ! Voici ce qui se passe aujourd'hui.",
+            stats: {
+                totalBookings: "Total des réservations",
+                pending: "en attente",
+                newMessages: "Nouveaux messages",
+                total: "au total",
+                registeredUsers: "Utilisateurs enregistrés",
+                blogPosts: "Articles de blog",
+                published: "publiés",
+                conversionRate: "Taux de conversion"
+            },
+            recentBookings: "Réservations récentes",
+            noBookingsYet: "Aucune réservation pour le moment",
+            quickActions: {
+                title: "Actions rapides",
+                confirmPending: "Confirmer les réservations en attente",
+                replyMessages: "Répondre aux messages",
+                managePosts: "Gérer les articles de blog",
+                todaySchedule: "Emploi du temps d'aujourd'hui"
+            },
+            monthlyOverview: "Aperçu mensuel",
+            chartPlaceholder: "Le graphique sera intégré ici",
+            bookings: {
+                title: "Réservations",
+                pending: "En attente",
+                confirmed: "Confirmé",
+                cancelled: "Annulé",
+                rejected: "Rejeté"
+            },
+            servicesView: {
+                title: "Gestion des services",
+                subtitle: "Gérer les services affichés sur votre site",
+                newService: "Nouveau service",
+                totalServices: "Total des services",
+                active: "Actifs",
+                inactive: "Inactifs",
+                searchPlaceholder: "Rechercher des services par titre...",
+                icon: "Icône",
+                titleEn: "Titre (EN)",
+                status: "Statut",
+                order: "Order",
+                noServices: "Aucun service trouvé. Créez votre premier service !",
+                editService: "Modifier le service",
+                activeDisplay: "Actif (Afficher sur le site)",
+                deleteConfirm: "Êtes-vous sûr de vouloir supprimer ce service ?",
+                saveSuccess: "Service enregistré avec succès !",
+                deleteSuccess: "Supprimé avec succès !",
+                saveError: "Échec de l'enregistrement du service",
+                deleteError: "Échec de la suppression",
+                moveUp: "Déplacer vers le haut",
+                moveDown: "Déplacer vers le bas",
+                image: "Image du service",
+                optional: "(optionnel)",
+                noImage: "Pas d'image",
+                changeImage: "Changer l'image",
+                uploadImage: "Télécharger une image",
+                uploadSuccess: "Téléchargé avec succès",
+                saveService: "Enregistrer le service",
+                url: "URL du service",
+                features: "Fonctionnalités",
+                addFeature: "Ajouter une fonctionnalité"
+            },
+            postsView: {
+                title: "Gestion des articles",
+                subtitle: "Créer et gérer les articles de blog pour votre site",
+                newPost: "Nouvel article",
+                totalPosts: "Total des articles",
+                published: "Publiés",
+                drafts: "Brouillons",
+                totalViews: "Total des vues",
+                searchPlaceholder: "Rechercher par titre ou catégorie...",
+                noPosts: "Aucun article trouvé. Créez votre premier article !",
+                deleteConfirm: "Êtes-vous sûr de vouloir supprimer cet article ? Cette action est irréversible.",
+                backToDashboard: "Retour au tableau de bord"
+            },
+            consultationsView: {
+                title: "Consultations",
+                subtitle: "Gérer toutes les sessions de consultation",
+                new: "Nouvelle consultation",
+                pending: "En attente",
+                total: "Total",
+                scheduled: "Planifiées",
+                upcoming: "À venir",
+                inProgress: "En cours",
+                activeNow: "Actif maintenant",
+                completed: "Terminées",
+                revenue: "Revenu",
+                totalEarned: "Total gagné",
+                searchPlaceholder: "Rechercher par nom, email ou service...",
+                noConsultations: "Aucune consultation trouvée",
+                details: "Détails de la consultation",
+                changeStatus: "Changer le statut",
+                assignConsultant: "Assigner un consultant",
+                unassigned: "Non assigné",
+                fee: "Frais de consultation (€)",
+                meetingLink: "Lien de la réunion",
+                clientNotes: "Notes du client",
+                noClientNotes: "Aucune note fournie par le client.",
+                internalNotes: "Notes internes de l'admin",
+                addInternalNotes: "Ajouter des notes internes...",
+                deleteConfirm: "Êtes-vous sûr de vouloir supprimer cette consultation ? Cette action est irréversible.",
+                loading: "Chargement des consultations..."
+            },
+            messagesView: {
+                title: "Messages",
+                subtitle: "Gérer les messages du formulaire",
+                new: "Nouveau",
+                searchPlaceholder: "Rechercher des messages...",
+                details: "Détails du message",
+                from: "De",
+                received: "Reçu le",
+                replyViaEmail: "Répondre par email",
+                loading: "Chargement des messages...",
+                markAsRead: "Marquer comme lu",
+                view: {
+                    list: "Liste",
+                    kanban: "Tableau Kanban"
+                },
+                kanban: {
+                    new: "Nouvelles Opportunités",
+                    contacted: "Contacté",
+                    proposal: "Proposition Envoyée",
+                    negotiation: "Négociation",
+                    won: "Gagné",
+                    lost: "Perdu"
+                }
+            },
+            invoicesView: {
+                title: "Factures & Devis",
+                subtitle: "Gérer la facturation et les propositions",
+                new: "Nouveau Document",
+                type: {
+                    quote: "Devis",
+                    invoice: "Facture",
+                    credit_note: "Avoir"
+                },
+                status: {
+                    draft: "Brouillon",
+                    sent: "Envoyé",
+                    accepted: "Accepté",
+                    rejected: "Refusé",
+                    paid: "Payé",
+                    overdue: "Retard",
+                    cancelled: "Annulé"
+                },
+                fields: {
+                    number: "Numéro",
+                    client: "Client",
+                    amount: "Montant",
+                    date: "Date",
+                    dueDate: "Échéance",
+                    items: "Détails"
+                },
+                actions: {
+                    convert: "Convertir en Facture",
+                    markPaid: "Marquer comme Payé",
+                    downloadPdf: "Télécharger PDF",
+                    emailClient: "Envoyer par Email"
+                }
+            },
+            partnersView: {
+                title: "Gestion des Partenaires",
+                subtitle: "Gérez vos partenaires stratégiques et collaborations",
+                new: "Nouveau Partenaire",
+                searchPlaceholder: "Rechercher des partenaires...",
+                total: "Total Partenaires",
+                noPartners: "Aucun partenaire trouvé",
+                active: "Actif",
+                inactive: "Inactif",
+                website: "Site Web",
+                logo: "Logo",
+                name: "Nom du Partenaire",
+                recommended: "Recommandé: 200x200px (PNG/JPG)",
+                deleteConfirm: "Êtes-vous sûr de vouloir supprimer ce partenaire ?"
+            },
+            usersView: {
+                title: "Gestion des Utilisateurs",
+                subtitle: "Gérer les utilisateurs et les privilèges d'accès",
+                total: "Total Utilisateurs",
+                admins: "Utilisateurs Admin",
+                newThisMonth: "Nouveaux ce mois-ci",
+                noAdmins: "Aucun utilisateur admin trouvé",
+                allUsers: "Tous les Utilisateurs",
+                searchPlaceholder: "Rechercher par nom ou email...",
+                noUsers: "Aucun utilisateur trouvé",
+                role: "Rôle",
+                user: "Utilisateur",
+                admin: "Admin",
+                superAdmin: "Super Admin",
+                removeAdmin: "Retirer Admin",
+                removeAdminConfirm: "Êtes-vous sûr de vouloir retirer les privilèges admin ?",
+                adminAdded: "Admin ajouté avec succès",
+                adminRemoved: "Privilèges admin retirés",
+                makeAdmin: "Rendre Admin"
+            }
+        },
+        partners: {
+            title: "Partenaires & Clients",
+            subtitle: "Gérer les logos des partenaires affichés",
+            new: "Nouveau Partenaire",
+            name: "Nom de l'entreprise",
+            website: "Site Web (Optionnel)",
+            logo: "Logo du partenaire",
+            uploadLogo: "Télécharger le logo",
+            changeLogo: "Changer le logo",
+            active: "Actif (Visible)",
+            inactive: "Inactif (Masqué)",
+            noPartners: "Aucun partenaire trouvé",
+            deleteConfirm: "Êtes-vous sûr de vouloir supprimer ce partenaire ?",
+            searchPlaceholder: "Rechercher des partenaires...",
+            total: "Total:",
+            recommended: "Recommandé : PNG transparent, 400x200px",
+            saveSuccess: "Partenaire enregistré avec succès"
+        },
+        galleryView: {
+            title: "Gestion de la Galerie",
+            subtitle: "Gérer les images de la galerie d'accueil",
+            newImage: "Ajouter une image",
+            totalImages: "Total Images",
+            searchPlaceholder: "Rechercher des images...",
+            noImages: "Aucune image trouvée",
+            deleteConfirm: "Êtes-vous sûr de vouloir supprimer cette image ?",
+            uploadImage: "Télécharger une image",
+            imageTitle: "Titre de l'image (Optionnel)",
+            category: "Catégorie",
+            saveSuccess: "Image enregistrée avec succès !",
+            deleteSuccess: "Image supprimée avec succès",
+            uploading: "Téléchargement...",
+            preview: "Aperçu"
+        },
+        settings: {
+            title: "Paramètres du site",
+            subtitle: "Gérer les informations de l'entreprise et la marque",
+            save: "Enregistrer les modifications",
+            saving: "Enregistrement...",
+            tabs: {
+                company: "Informations",
+                contact: "Contact",
+                social: "Réseaux sociaux",
+                branding: "Marque & Couleurs"
+            },
+            companyName: "Nom de l'entreprise",
+            tagline: "Slogan",
+            description: "Description",
+            primaryPhone: "Téléphone principal",
+            secondaryPhone: "Téléphone secondaire",
+            whatsapp: "Numéro WhatsApp",
+            primaryEmail: "Email principal",
+            secondaryEmail: "Email secondaire",
+            address: "Adresse",
+            businessHours: "Heures d'ouverture",
+            socialLinks: "Liens sociaux",
+            primaryColor: "Couleur principale",
+            secondaryColor: "Couleur secondaire",
+            preview: "Aperçu",
+            logo: "Logo du site",
+            favicon: "Favicon",
+            upload: "Télécharger",
+            change: "Changer",
+            warning: "Attention : Changer les couleurs affectera tout le site.",
+            success: "Paramètres enregistrés avec succès",
+            error: "Erreur lors de l'enregistrement",
+            googleIntegration: "Intégration Google",
+            connectGoogle: "Se connecter avec Google",
+            disconnectGoogle: "Déconnecter le compte Google",
+            googleConnected: "Compte Google connecté",
+            googleNotConnected: "L'intégration Google n'est pas connectée. Connectez-vous pour activer les fonctionnalités avancées.",
+            enabledFeatures: "Fonctionnalités activées :",
+            systemInfo: "Informations Système",
+            version: "Version",
+            environment: "Environnement",
+            siteSettingsDesc: "Gérez les infos de l'entreprise, les coordonnées et les réseaux sociaux",
+            homepageContent: "Contenu Accueil",
+            homepageContentDesc: "Modifier la section héros, à propos et les boutons d'action",
+            heroImage: "Image Héros",
+            heroImageDesc: "Télécharger et gérer l'image principale de la page d'accueil",
+            googleDesc: "Connectez votre compte Google pour activer les intégrations Calendar, Meet, Drive, Sheets et Docs.",
+            featureCalendar: "Google Calendar - Création automatique d'événements",
+            featureMeet: "Google Meet - Liens de visioconférence",
+            featureDrive: "Google Drive - Stockage et partage de fichiers",
+            featureSheets: "Google Sheets - Exportation de données",
+            featureDocs: "Google Docs - Génération de contrats",
+            homepageBuilder: {
+                title: "Contenu de la page d'accueil",
+                subtitle: "Modifier les textes et titres de l'accueil",
+                heroTab: "Section Héro",
+                aboutTab: "Section À Propos",
+                badge: "Badge",
+                mainTitle: "Titre Principal",
+                mainSubtitle: "Sous-titre",
+                description: "Description",
+                ctaSection: "Boutons d'action (CTA)",
+                primaryButton: "Bouton Principal",
+                secondaryButton: "Bouton Secondaire",
+                buttonTextEn: "Texte Bouton (EN)",
+                buttonTextFr: "Texte Bouton (FR)",
+                buttonTextAr: "Texte Bouton (AR)",
+                buttonLink: "Lien du Bouton",
+                saveSuccess: "Contenu enregistré avec succès !",
+                saveError: "Échec de l'enregistrement",
+                loadError: "Échec du chargement du contenu",
+                noContent: "Aucun contenu trouvé"
+            },
+            heroImageBuilder: {
+                title: "Image de la page d'accueil",
+                subtitle: "Gérer l'image principale affichée sur la page d'accueil",
+                invalidImage: "Veuillez sélectionner une image valide",
+                sizeLimit: "L'image ne doit pas dépasser 5 MB",
+                uploadSuccess: "Image téléchargée avec succès !",
+                uploadError: "Erreur lors du téléchargement",
+                deleteSuccess: "Image supprimée avec succès",
+                deleteError: "Erreur lors de la suppression",
+                currentImage: "Image actuelle",
+                uploadedAt: "Téléchargé le",
+                delete: "Supprimer",
+                deleteConfirm: "Êtes-vous sûr de vouloir supprimer cette image ?",
+                noImage: "Aucune image actuellement définie",
+                defaultImageNote: "L'image temporaire SVG sera utilisée par défaut",
+                uploadNew: "Télécharger une nouvelle image",
+                selectImage: "Sélectionner une image",
+                recommendation: "Format recommandé : 1200x800px (ratio 3:2) • Max 5 MB • JPG, PNG, WebP",
+                uploading: "Téléchargement en cours...",
+                instructionsTitle: "Instructions",
+                instruction1: "L'image doit être de haute qualité pour un affichage professionnel",
+                instruction2: "Le ratio recommandé est 3:2 (par exemple : 1200x800px ou 1800x1200px)",
+                instruction3: "L'ancienne image sera automatiquement remplacée lors du téléchargement d'une nouvelle",
+                instruction4: "Si aucune image n'est définie, l'image temporaire SVG sera utilisée par défaut"
+            }
+        },
+        common: {
+            loading: "Chargement...",
+            edit: "Modifier",
+            delete: "Supprimer",
+            cancel: "Annuler",
+            save: "Enregistrer",
+            search: "Rechercher",
+            filter: "Filtrer",
+            view: "Voir",
+            back: "Retour",
+            actions: "Actions",
+            status: "Statut",
+            created_at: "Créé le",
+            contact: "Contact",
+            login: "Se connecter",
+            logout: "Se déconnecter",
+            dashboard: "Tableau de bord",
+            profile: "Profil",
+            all: "Tout",
+            date: "Date",
+            views: "Vues",
+            category: "Catégorie",
+            confirm: "Confirmer",
+            saving: "Enregistrement",
+            error: "Erreur",
+            title: "Titre",
+            description: "Description",
+            name: "Nom",
+            email: "Email",
+            subject: "Sujet",
+            message: "Message"
+        },
+        notifications: {
+            title: "Notifications",
+            markAllRead: "Tout marquer comme lu",
+            noNotifications: "Aucune notification",
+            viewAll: "Voir tout"
+        },
         legal: {
             title: "Mentions Légales",
             editorTitle: "Éditeur du Site",
@@ -965,7 +2111,7 @@ const translations: Record<Language, Translations> = {
             agreementTitle: "Acceptation des Conditions",
             agreementContent: "En accédant à notre site, vous acceptez d'être lié par ces conditions.",
             licenseTitle: "Licence d'Utilisation",
-            licenseContent: "La permission est accordée de télécharger temporairement une copie des documents.",
+            licenseContent: "Permission est accordée de télécharger temporairement une copie des documents.",
             disclaimerTitle: "Clause de Non-responsabilité",
             disclaimerContent: "Les documents sur ce site sont fournis 'tels quels'."
         },
@@ -1283,6 +2429,387 @@ const translations: Record<Language, Translations> = {
             confirmPasswordLabel: "تأكيد كلمة المرور",
             updateButton: "تحديث كلمة المرور"
         },
+        // Admin Data (Arabic)
+        admin: {
+            dashboard: 'لوحة القيادة',
+            analytics: "التحليلات",
+            calendar: "التقويم",
+            documents: "المستندات",
+            services: "الخدمات",
+            posts: "المقالات",
+            partners: "الشركاء",
+            consultations: "الاستشارات",
+            contacts: "جهات الاتصال",
+            homePage: "الصفحة الرئيسية",
+            siteSettings: "إعدادات الموقع",
+            branding: "العلامة التجارية",
+            welcomeBack: "مرحباً بعودتك! إليك ما يحدث اليوم.",
+            stats: {
+                totalBookings: "إجمالي الحجوزات",
+                pending: "قيد الانتظار",
+                newMessages: "رسائل جديدة",
+                total: "إجمالي",
+                registeredUsers: "المستخدمون المسجلون",
+                blogPosts: "منشورات المدونة",
+                published: "منشورة",
+                conversionRate: "معدل التحويل"
+            },
+            recentBookings: "الحجوزات الأخيرة",
+            noBookingsYet: "لا توجد حجوزات بعد",
+            quickActions: {
+                title: "إجراءات سريعة",
+                confirmPending: "تأكيد الحجوزات المعلقة",
+                replyMessages: "الرد على الرسائل",
+                managePosts: "إدارة منشورات المدونة",
+                todaySchedule: "جدول اليوم"
+            },
+            monthlyOverview: "نظرة عامة شهرية",
+            chartPlaceholder: "سيتم دمج الرسم البياني هنا",
+            bookings: {
+                title: "الحجوزات",
+                pending: "قيد الانتظار",
+                confirmed: "مؤكد",
+                cancelled: "ملغي",
+                rejected: "مرفوض"
+            },
+            servicesView: {
+                title: "إدارة الخدمات",
+                subtitle: "إدارة الخدمات المعروضة على موقعك",
+                newService: "خدمة جديدة",
+                totalServices: "إجمالي الخدمات",
+                active: "النشطة",
+                inactive: "غير النشطة",
+                searchPlaceholder: "بحث في الخدمات بالعنوان...",
+                icon: "أيقونة",
+                titleEn: "العنوان (EN)",
+                status: "الحالة",
+                order: "الترتيب",
+                noServices: "لم يتم العثور على خدمات. أنشئ خدمتك الأولى للبدء!",
+                editService: "تعديل الخدمة",
+                activeDisplay: "نشط (عرض على الموقع)",
+                deleteConfirm: "هل أنت متأكد من حذف هذه الخدمة؟",
+                saveSuccess: "تم حفظ الخدمة بنجاح!",
+                deleteSuccess: "تم الحذف بنجاح!",
+                saveError: "فشل في حفظ الخدمة",
+                deleteError: "فشل في الحذف",
+                moveUp: "تحريك للأعلى",
+                moveDown: "تحريك للأسفل",
+                image: "صورة الخدمة",
+                optional: "(اختياري)",
+                noImage: "لا توجد صورة",
+                changeImage: "تغيير الصورة",
+                uploadImage: "تحميل صورة",
+                uploadSuccess: "تم التحميل بنجاح",
+                saveService: "حفظ الخدمة",
+                url: "رابط الخدمة",
+                features: "الميزات",
+                addFeature: "إضافة ميزة"
+            },
+            postsView: {
+                title: "إدارة المنشورات",
+                subtitle: "إنشاء وإدارة منشورات المدونة لموقعك",
+                newPost: "منشور جديد",
+                totalPosts: "إجمالي المنشورات",
+                published: "المنشورة",
+                drafts: "المسودات",
+                totalViews: "إجمالي المشاهدات",
+                searchPlaceholder: "بحث بالعنوان أو الفئة...",
+                noPosts: "لم يتم العثور على منشورات. أنشئ منشورك الأول للبدء!",
+                deleteConfirm: "هل أنت متأكد من حذف هذا المنشور؟ لا يمكن التراجع عن هذا الإجراء.",
+                backToDashboard: "العودة للوحة التحكم"
+            },
+            consultationsView: {
+                title: "الاستشارات",
+                subtitle: "إدارة جميع جلسات الاستشارة",
+                new: "استشارة جديدة",
+                pending: "قيد الانتظار",
+                total: "الإجمالي",
+                scheduled: "المجدولة",
+                upcoming: "القادمة",
+                inProgress: "قيد التنفيذ",
+                activeNow: "نشط الآن",
+                completed: "مكتملة",
+                revenue: "الإيرادات",
+                totalEarned: "إجمالي المكتسب",
+                searchPlaceholder: "بحث بالاسم أو البريد أو الخدمة...",
+                noConsultations: "لم يتم العثور على استشارات",
+                details: "تفاصيل الاستشارة",
+                changeStatus: "تغيير الحالة",
+                assignConsultant: "تعيين مستشار",
+                unassigned: "غير معين",
+                fee: "رسوم الاستشارة (€)",
+                meetingLink: "رابط الاجتماع",
+                clientNotes: "ملاحظات العميل",
+                noClientNotes: "لا توجد ملاحظات من العميل.",
+                internalNotes: "ملاحظات إدارية داخلية",
+                addInternalNotes: "إضافة ملاحظات داخلية...",
+                deleteConfirm: "هل أنت متأكد من حذف هذه الاستشارة؟ لا يمكن التراجع عن هذا الإجراء.",
+                loading: "جاري تحميل الاستشارات..."
+            },
+            messagesView: {
+                title: "الرسائل",
+                subtitle: "إدارة رسائل نموذج الاتصال",
+                new: "جديد",
+                searchPlaceholder: "بحث في الرسائل...",
+                details: "تفاصيل الرسالة",
+                from: "من",
+                received: "استلم في",
+                replyViaEmail: "الرد عبر البريد",
+                loading: "جاري تحميل الرسائل...",
+                markAsRead: "تحديد كمقروء",
+                view: {
+                    list: "قائمة",
+                    kanban: "لوحة كانبان"
+                },
+                kanban: {
+                    new: "فرص جديدة",
+                    contacted: "تم التواصل",
+                    proposal: "عرض مقترح",
+                    negotiation: "تفاوض",
+                    won: "مكتسبة (فوز)",
+                    lost: "خسارة"
+                }
+            },
+            usersView: {
+                title: "إدارة المستخدمين",
+                subtitle: "إدارة المستخدمين وصلاحيات الوصول",
+                total: "إجمالي المستخدمين",
+                admins: "المستخدمين المسؤولين",
+                newThisMonth: "الجدد هذا الشهر",
+                noAdmins: "لم يتم العثور على مسؤولين",
+                allUsers: "جميع المستخدمين",
+                searchPlaceholder: "البحث بالاسم أو البريد الإلكتروني...",
+                noUsers: "لم يتم العثور على مستخدمين",
+                role: "الدور",
+                user: "مستخدم",
+                admin: "مسؤول",
+                superAdmin: "مسؤول متميز",
+                removeAdmin: "إزالة المسؤول",
+                removeAdminConfirm: "هل أنت متأكد من رغبتك في إزالة امتيازات المسؤول؟",
+                adminAdded: "تمت إضافة المسؤول بنجاح",
+                adminRemoved: "تمت إزالة امتيازات المسؤول",
+                makeAdmin: "تعيين كمسؤول"
+            },
+            invoicesView: {
+                title: "الفواتير والعروض",
+                subtitle: "إدارة الفواتير وعروض الأسعار",
+                new: "مستند جديد",
+                type: {
+                    quote: "عرض سعر (Devis)",
+                    invoice: "فاتورة",
+                    credit_note: "إشعار دائن"
+                },
+                status: {
+                    draft: "مسودة",
+                    sent: "مرسل",
+                    accepted: "مقبول",
+                    rejected: "مرفوض",
+                    paid: "مدفوع",
+                    overdue: "متأخر",
+                    cancelled: "ملغى"
+                },
+                fields: {
+                    number: "رقم",
+                    client: "العميل",
+                    amount: "المبلغ",
+                    date: "التاريخ",
+                    dueDate: "تاريخ الاستحقاق",
+                    items: "التفاصيل"
+                },
+                actions: {
+                    convert: "تحويل إلى فاتورة",
+                    markPaid: "تحديد كمدفوع",
+                    downloadPdf: "تحميل PDF",
+                    emailClient: "إرسال للعميل"
+                }
+            },
+            partnersView: {
+                title: "إدارة الشركاء",
+                subtitle: "إدارة شركائك الاستراتيجيين والتعاونات",
+                new: "شريك جديد",
+                searchPlaceholder: "البحث عن شركاء...",
+                total: "إجمالي الشركاء",
+                noPartners: "لم يتم العثور على شركاء",
+                active: "نشط",
+                inactive: "غير نشط",
+                website: "الموقع الإلكتروني",
+                logo: "الشعار",
+                name: "اسم الشريك",
+                recommended: "موصى به: 200x200px (PNG/JPG)",
+                deleteConfirm: "هل أنت متأكد من حذف هذا الشريك؟"
+            }
+        },
+        partners: {
+            title: "الشركاء والعملاء",
+            subtitle: "إدارة شعارات الشركاء المعروضة",
+            new: "شريك جديد",
+            name: "اسم الشركة",
+            website: "الموقع الإلكتروني (اختياري)",
+            logo: "شعار الشريك",
+            uploadLogo: "تحميل الشعار",
+            changeLogo: "تغيير الشعار",
+            active: "نشط (مرئي)",
+            inactive: "غير نشط (مخفي)",
+            noPartners: "لم يتم العثور على شركاء",
+            deleteConfirm: "هل أنت متأكد من حذف هذا الشريك؟",
+            searchPlaceholder: "بحث عن شركاء...",
+            total: "الإجمالي:",
+            recommended: "موصى به: PNG شفاف، 400x200 بكسل",
+            saveSuccess: "تم حفظ الشريك بنجاح"
+        },
+        galleryView: {
+            title: "إدارة معرض الصور",
+            subtitle: "إدارة صور معرض الصفحة الرئيسية",
+            newImage: "إضافة صورة",
+            totalImages: "إجمالي الصور",
+            searchPlaceholder: "بحث عن صور...",
+            noImages: "لم يتم العثور على صور",
+            deleteConfirm: "هل أنت متأكد من حذف هذه الصورة؟",
+            uploadImage: "رفع صورة",
+            imageTitle: "عنوان الصورة (اختياري)",
+            category: "الفئة",
+            saveSuccess: "تم حفظ الصورة بنجاح!",
+            deleteSuccess: "تم حذف الصورة بنجاح",
+            uploading: "جاري الرفع...",
+            preview: "معاينة"
+        },
+        settings: {
+            title: "إعدادات الموقع",
+            subtitle: "إدارة معلومات الشركة والعلامة التجارية",
+            save: "حفظ التغييرات",
+            saving: "جاري الحفظ...",
+            tabs: {
+                company: "معلومات الشركة",
+                contact: "معلومات التواصل",
+                social: "وسائل التواصل",
+                branding: "العلامة التجارية والألوان"
+            },
+            companyName: "اسم الشركة",
+            tagline: "الشعار النصي",
+            description: "الوصف",
+            primaryPhone: "الهاتف الرئيسي",
+            secondaryPhone: "الهاتف الثانوي",
+            whatsapp: "رقم واتساب",
+            primaryEmail: "البريد الإلكتروني الرئيسي",
+            secondaryEmail: "بريد إلكتروني ثانوي",
+            address: "العنوان",
+            businessHours: "ساعات العمل",
+            socialLinks: "روابط التواصل",
+            primaryColor: "اللون الأساسي",
+            secondaryColor: "اللون الثانوي",
+            preview: "معاينة",
+            logo: "شعار الموقع",
+            favicon: "أيقونة الموقع",
+            upload: "تحميل",
+            change: "تغيير",
+            warning: "تنبيه: تغيير الألوان سيؤثر على كامل الموقع.",
+            success: "تم حفظ الإعدادات بنجاح",
+            error: "خطأ في حفظ الإعدادات",
+            googleIntegration: "ربط جوجل",
+            connectGoogle: "الربط مع جوجل",
+            disconnectGoogle: "فصل حساب جوجل",
+            googleConnected: "تم ربط حساب جوجل",
+            googleNotConnected: "لم يتم ربط جوجل. قم بالربط لتفعيل الميزات المتقدمة.",
+            enabledFeatures: "الميزات المفعلة:",
+            systemInfo: "معلومات النظام",
+            version: "الإصدار",
+            environment: "البيئة",
+            siteSettingsDesc: "إدارة معلومات الشركة والتواصل وروابط التواصل الاجتماعي",
+            homepageContent: "محتوى الصفحة الرئيسية",
+            homepageContentDesc: "تعديل القسم الرئيسي، قسم من نحن، وأزرار الدعوة لاتخاذ إجراء",
+            heroImage: "صورة الغلاف",
+            heroImageDesc: "تحميل وإدارة صورة الغلاف الرئيسية للموقع",
+            googleDesc: "قم بربط حساب جوجل لتفعيل ميزات التقويم، ميت، درايف، جداول البيانات، والمستندات.",
+            featureCalendar: "تقويم جوجل - إنشاء تلقائي للأحداث",
+            featureMeet: "جوجل ميت - روابط اجتماعات الفيديو",
+            featureDrive: "جوجل درايف - تخزين ومشاركة الملفات",
+            featureSheets: "جداول بيانات جوجل - تصدير البيانات",
+            featureDocs: "مستندات جوجل - إنشاء العقود",
+            homepageBuilder: {
+                title: "محتوى الصفحة الرئيسية",
+                subtitle: "تحرير نصوص وعناوين الصفحة الرئيسية",
+                heroTab: "قسم الغلاف (Hero)",
+                aboutTab: "قسم من نحن (About)",
+                badge: "الشارة (Badge)",
+                mainTitle: "العنوان الرئيسي",
+                mainSubtitle: "العنوان الفرعي",
+                description: "الوصف",
+                ctaSection: "أزرار الإجراء (CTA)",
+                primaryButton: "الزر الأساسي",
+                secondaryButton: "الزر الثانوي",
+                buttonTextEn: "نص الزر (EN)",
+                buttonTextFr: "نص الزر (FR)",
+                buttonTextAr: "نص الزر (AR)",
+                buttonLink: "رابط الزر",
+                saveSuccess: "تم حفظ محتوى الصفحة الرئيسية بنجاح!",
+                saveError: "فشل حفظ المحتوى",
+                loadError: "فشل تحميل محتوى الصفحة",
+                noContent: "لا يوجد محتوى"
+            },
+            heroImageBuilder: {
+                title: "صورة الصفحة الرئيسية",
+                subtitle: "إدارة الصورة الرئيسية المعروضة في الصفحة الرئيسية",
+                invalidImage: "يرجى اختيار صورة صالحة",
+                sizeLimit: "يجب ألا يتجاوز حجم الصورة 5 ميجابايت",
+                uploadSuccess: "تم رفع الصورة بنجاح!",
+                uploadError: "خطأ أثناء الرفع",
+                deleteSuccess: "تم حذف الصورة بنجاح",
+                deleteError: "خطأ أثناء الحذف",
+                currentImage: "الصورة الحالية",
+                uploadedAt: "تم الرفع في",
+                delete: "حذف",
+                deleteConfirm: "هل أنت متأكد من رغبتك في حذف هذه الصورة؟",
+                noImage: "لا توجد صورة محددة حاليًا",
+                defaultImageNote: "سيتم استخدام الصورة الافتراضية",
+                uploadNew: "رفع صورة جديدة",
+                selectImage: "اختر صورة",
+                recommendation: "الحجم الموصى به: 1200x800 بكسل (نسبة 3:2) • الحد الأقصى 5 ميجابايت • JPG, PNG, WebP",
+                uploading: "جاري الرفع...",
+                instructionsTitle: "تعليمات",
+                instruction1: "يجب أن تكون الصورة عالية الجودة لعرض احترافي",
+                instruction2: "النسبة الموصى بها هي 3:2 (مثال: 1200x800 بكسل)",
+                instruction3: "سيتم استبدال الصورة القديمة تلقائيًا عند رفع صورة جديدة",
+                instruction4: "إذا لم يتم تحديد صورة، سيتم استخدام الصورة الافتراضية"
+            }
+        },
+        common: {
+            loading: "جاري التحميل...",
+            edit: "تعديل",
+            delete: "حذف",
+            cancel: "إلغاء",
+            save: "حفظ",
+            search: "بحث",
+            filter: "تصفية",
+            view: "عرض",
+            back: "رجوع",
+            actions: "إجراءات",
+            status: "الحالة",
+            created_at: "تاريخ الإنشاء",
+            contact: "تواصل معنا",
+            login: "تسجيل الدخول",
+            logout: "تسجيل الخروج",
+            dashboard: "لوحة التحكم",
+            profile: "الملف الشخصي",
+            all: "الكل",
+            date: "التاريخ",
+            views: "المشاهدات",
+            category: "الفئة",
+            confirm: "تأكيد",
+            saving: "جاري الحفظ...",
+            error: "خطأ",
+            description: "الوصف",
+            title: "العنوان",
+            name: "الاسم",
+            email: "البريد الإلكتروني",
+            subject: "الموضوع",
+            message: "الرسالة"
+        },
+        notifications: {
+            title: "الإشعارات",
+            markAllRead: "تحديد الكل كمقروء",
+            noNotifications: "لا توجد إشعارات",
+            viewAll: "عرض الكل"
+        },
         legal: {
             title: "إشعار قانوني",
             editorTitle: "محرر الموقع",
@@ -1335,18 +2862,51 @@ interface LanguageContextType {
     setLanguage: (lang: Language) => void;
     t: Translations;
     dir: 'ltr' | 'rtl';
+    logoUrl: string | null;
+    faviconUrl: string | null;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
     const [language, setLanguage] = useState<Language>('fr');
+    const [logoUrl, setLogoUrl] = useState<string | null>(null);
+    const [faviconUrl, setFaviconUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('app_config')
+                    .select('logo_url, favicon_url')
+                    .eq('key', 'main');
+
+                if (error) {
+                    console.warn('⚠️ Could not fetch app_config:', error.message);
+                    return;
+                }
+
+                if (data && data.length > 0) {
+                    const settings = data[0];
+                    if (settings.logo_url) setLogoUrl(settings.logo_url);
+                    if (settings.favicon_url) setFaviconUrl(settings.favicon_url);
+                    console.log('✅ Branding loaded from app_config');
+                }
+            } catch (err) {
+                console.error('❌ Error fetching site settings:', err);
+            }
+        };
+
+        fetchSettings();
+    }, []);
 
     const value = {
         language,
         setLanguage,
         t: translations[language],
-        dir: (language === 'ar' ? 'rtl' : 'ltr') as 'ltr' | 'rtl'
+        dir: (language === 'ar' ? 'rtl' : 'ltr') as 'ltr' | 'rtl',
+        logoUrl,
+        faviconUrl
     };
 
     return (

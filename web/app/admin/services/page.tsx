@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { useLanguage } from '@/context/LanguageContext';
-import { t } from '@/lib/translations';
 import {
     Plus,
     Edit,
@@ -17,14 +16,14 @@ import {
     Eye,
     EyeOff,
     X,
-    Save,
     Briefcase,
     Globe2,
     Building2,
     Scale,
     TrendingUp,
     Users2,
-    ShieldCheck
+    ShieldCheck,
+    Save
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -36,11 +35,18 @@ interface Service {
     description_en: string;
     description_fr: string;
     description_ar: string;
+    subtitle_en?: string;
+    subtitle_fr?: string;
+    subtitle_ar?: string;
+    features_en?: string[];
+    features_fr?: string[];
+    features_ar?: string[];
     icon: string;
     href: string;
     color: string;
     is_active: boolean;
     display_order: number;
+    image_url?: string;
     created_at?: string;
     updated_at?: string;
 }
@@ -66,7 +72,7 @@ const availableIcons = [
 ];
 
 export default function AdminServicesPage() {
-    const { language } = useLanguage();
+    const { language, t } = useLanguage();
     const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const [services, setServices] = useState<Service[]>([]);
@@ -85,11 +91,18 @@ export default function AdminServicesPage() {
         description_en: '',
         description_fr: '',
         description_ar: '',
+        subtitle_en: '',
+        subtitle_fr: '',
+        subtitle_ar: '',
+        features_en: [],
+        features_fr: [],
+        features_ar: [],
         icon: 'Briefcase',
         href: '/services/',
         color: '#001F3F',
         is_active: true,
         display_order: 0,
+        image_url: '',
     });
 
     useEffect(() => {
@@ -113,11 +126,32 @@ export default function AdminServicesPage() {
             if (error) throw error;
 
             if (data) {
-                setServices(data);
+                const sanitizedData = data.map((service: any) => ({
+                    ...service,
+                    title_en: service.title_en || '',
+                    title_fr: service.title_fr || '',
+                    title_ar: service.title_ar || '',
+                    description_en: service.description_en || '',
+                    description_fr: service.description_fr || '',
+                    description_ar: service.description_ar || '',
+                    subtitle_en: service.subtitle_en || '',
+                    subtitle_fr: service.subtitle_fr || '',
+                    subtitle_ar: service.subtitle_ar || '',
+                    features_en: service.features_en || [],
+                    features_fr: service.features_fr || [],
+                    features_ar: service.features_ar || [],
+                    icon: service.icon || 'Briefcase',
+                    href: service.href || '/services/',
+                    color: service.color || '#001F3F',
+                    is_active: service.is_active ?? true,
+                    display_order: service.display_order || 0,
+                    image_url: service.image_url || '',
+                }));
+                setServices(sanitizedData);
             }
         } catch (error) {
             console.error('Error fetching services:', error);
-            alert(t('common.error', language));
+            alert(t.common.error);
         } finally {
             setLoading(false);
         }
@@ -132,6 +166,12 @@ export default function AdminServicesPage() {
             description_en: '',
             description_fr: '',
             description_ar: '',
+            subtitle_en: '',
+            subtitle_fr: '',
+            subtitle_ar: '',
+            features_en: [],
+            features_fr: [],
+            features_ar: [],
             icon: 'Briefcase',
             href: '/services/',
             color: '#001F3F',
@@ -143,7 +183,10 @@ export default function AdminServicesPage() {
 
     const handleEdit = (service: Service) => {
         setEditingService(service);
-        setFormData(service);
+        setFormData({
+            ...service,
+            image_url: service.image_url || '',
+        });
         setShowModal(true);
     };
 
@@ -165,19 +208,19 @@ export default function AdminServicesPage() {
                 if (error) throw error;
             }
 
-            alert(t('common.success' as any, language) || 'Success!');
+            alert(t.admin.servicesView.saveSuccess);
             setShowModal(false);
             fetchServices();
         } catch (error: any) {
             console.error('Error saving service:', error);
-            alert(t('common.error', language));
+            alert(`Error saving service: ${error.message || error.code || 'Unknown error'}`);
         } finally {
             setSaving(false);
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm(t('admin.services.deleteConfirm', language))) {
+        if (!confirm(t.admin.servicesView.deleteConfirm)) {
             return;
         }
 
@@ -188,11 +231,11 @@ export default function AdminServicesPage() {
                 .eq('id', id);
 
             if (error) throw error;
-            alert(t('common.success' as any, language) || 'Deleted!');
+            alert(t.admin.servicesView.deleteSuccess);
             fetchServices();
         } catch (error: any) {
             console.error('Error deleting service:', error);
-            alert(t('admin.services.deleteError', language));
+            alert(t.admin.servicesView.deleteError);
         }
     };
 
@@ -208,7 +251,7 @@ export default function AdminServicesPage() {
             fetchServices();
         } catch (error: any) {
             console.error('Error toggling status:', error);
-            alert(t('common.error', language));
+            alert(t.common.error);
         }
     };
 
@@ -238,7 +281,7 @@ export default function AdminServicesPage() {
             fetchServices();
         } catch (error) {
             console.error('Error reordering services:', error);
-            alert(t('common.error', language));
+            alert(t.common.error);
         }
     };
 
@@ -282,15 +325,15 @@ export default function AdminServicesPage() {
                 <div className="mb-8">
                     <div className="flex items-center justify-between mb-6">
                         <div>
-                            <h1 className="text-3xl font-bold text-[#001F3F]">{t('admin.services.title', language)}</h1>
-                            <p className="text-gray-600 mt-1">{t('admin.services.subtitle', language)}</p>
+                            <h1 className="text-3xl font-bold text-[#001F3F]">{t.admin.servicesView.title}</h1>
+                            <p className="text-gray-600 mt-1">{t.admin.servicesView.subtitle}</p>
                         </div>
                         <button
                             onClick={handleCreate}
                             className="flex items-center gap-2 px-6 py-3 bg-[#D4AF37] text-white rounded-lg hover:bg-[#C5A028] transition-colors font-semibold"
                         >
                             <Plus className="h-5 w-5" />
-                            {t('admin.services.newService', language)}
+                            {t.admin.servicesView.newService}
                         </button>
                     </div>
 
@@ -299,7 +342,7 @@ export default function AdminServicesPage() {
                         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-gray-600 text-sm">{t('admin.services.totalServices', language)}</p>
+                                    <p className="text-gray-600 text-sm">{t.admin.servicesView.totalServices}</p>
                                     <p className="text-3xl font-bold text-[#001F3F] mt-1">{stats.total}</p>
                                 </div>
                                 <Briefcase className="h-10 w-10 text-blue-500 opacity-20" />
@@ -308,7 +351,7 @@ export default function AdminServicesPage() {
                         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-gray-600 text-sm">{t('admin.services.active', language)}</p>
+                                    <p className="text-gray-600 text-sm">{t.admin.servicesView.active}</p>
                                     <p className="text-3xl font-bold text-green-600 mt-1">{stats.active}</p>
                                 </div>
                                 <Eye className="h-10 w-10 text-green-500 opacity-20" />
@@ -317,7 +360,7 @@ export default function AdminServicesPage() {
                         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-gray-600 text-sm">{t('admin.services.inactive', language)}</p>
+                                    <p className="text-gray-600 text-sm">{t.admin.servicesView.inactive}</p>
                                     <p className="text-3xl font-bold text-orange-600 mt-1">{stats.inactive}</p>
                                 </div>
                                 <EyeOff className="h-10 w-10 text-orange-500 opacity-20" />
@@ -331,7 +374,7 @@ export default function AdminServicesPage() {
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                             <input
                                 type="text"
-                                placeholder={t('admin.services.searchPlaceholder', language)}
+                                placeholder={t.admin.servicesView.searchPlaceholder}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20"
@@ -341,136 +384,129 @@ export default function AdminServicesPage() {
                             <button
                                 onClick={() => setFilterStatus('all')}
                                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${filterStatus === 'all'
-                                        ? 'bg-[#001F3F] text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-[#001F3F] text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
-                                {t('common.all', language)}
+                                {t.common.all}
                             </button>
                             <button
                                 onClick={() => setFilterStatus('active')}
                                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${filterStatus === 'active'
-                                        ? 'bg-green-600 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-green-600 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
-                                {t('admin.services.active', language)}
+                                {t.admin.servicesView.active}
                             </button>
                             <button
                                 onClick={() => setFilterStatus('inactive')}
                                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${filterStatus === 'inactive'
-                                        ? 'bg-orange-600 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-orange-600 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
-                                {t('admin.services.inactive', language)}
+                                {t.admin.servicesView.inactive}
                             </button>
                         </div>
                     </div>
                 </div>
 
-                {/* Services Table */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead className="bg-gray-50 border-b border-gray-200">
-                                <tr>
-                                    <th className="text-left p-4 font-semibold text-gray-700">{t('admin.services.icon' as any, language) || 'Icon'}</th>
-                                    <th className="text-left p-4 font-semibold text-gray-700">{t('common.title' as any, language) || 'Title'}</th>
-                                    <th className="text-left p-4 font-semibold text-gray-700">{t('common.status', language)}</th>
-                                    <th className="text-left p-4 font-semibold text-gray-700">{t('admin.services.order' as any, language) || 'Order'}</th>
-                                    <th className="text-left p-4 font-semibold text-gray-700">{t('common.actions', language)}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredServices.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={5} className="text-center py-12 text-gray-500">
-                                            {t('admin.services.noServices', language)}
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    filteredServices.map((service, index) => {
-                                        const IconComponent = iconMap[service.icon] || Briefcase;
-                                        return (
-                                            <tr key={service.id} className="border-b border-gray-100 hover:bg-gray-50">
-                                                <td className="p-4">
-                                                    <div className="w-10 h-10 rounded-lg bg-[#001F3F]/10 flex items-center justify-center">
-                                                        <IconComponent className="h-5 w-5 text-[#001F3F]" />
-                                                    </div>
-                                                </td>
-                                                <td className="p-4">
-                                                    <div className="font-medium text-gray-900">
-                                                        {language === 'ar' ? service.title_ar : language === 'fr' ? service.title_fr : service.title_en}
-                                                    </div>
-                                                    <div className="text-sm text-gray-500">{service.href}</div>
-                                                </td>
-                                                <td className="p-4">
-                                                    {service.is_active ? (
-                                                        <span className="px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full flex items-center gap-1 w-fit">
-                                                            <Eye className="h-3 w-3" />
-                                                            {t('admin.services.active', language)}
-                                                        </span>
-                                                    ) : (
-                                                        <span className="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-semibold rounded-full flex items-center gap-1 w-fit">
-                                                            <EyeOff className="h-3 w-3" />
-                                                            {t('admin.services.inactive', language)}
-                                                        </span>
-                                                    )}
-                                                </td>
-                                                <td className="p-4">
-                                                    <div className="flex items-center gap-1">
-                                                        <button
-                                                            onClick={() => moveService(service, 'up')}
-                                                            disabled={index === 0}
-                                                            className="p-1 text-gray-600 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-                                                            title={t('admin.services.moveUp' as any, language) || 'Move up'}
-                                                        >
-                                                            <ArrowUp className="h-4 w-4" />
-                                                        </button>
-                                                        <span className="text-gray-600 font-medium">{service.display_order}</span>
-                                                        <button
-                                                            onClick={() => moveService(service, 'down')}
-                                                            disabled={index === filteredServices.length - 1}
-                                                            className="p-1 text-gray-600 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
-                                                            title={t('admin.services.moveDown' as any, language) || 'Move down'}
-                                                        >
-                                                            <ArrowDown className="h-4 w-4" />
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                                <td className="p-4">
-                                                    <div className="flex items-center gap-2">
-                                                        <button
-                                                            onClick={() => handleEdit(service)}
-                                                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                            title={t('common.edit', language)}
-                                                        >
-                                                            <Edit className="h-4 w-4" />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => toggleActive(service)}
-                                                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                                                            title={service.is_active ? t('admin.services.inactive', language) : t('admin.services.active', language)}
-                                                        >
-                                                            {service.is_active ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDelete(service.id)}
-                                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                            title={t('common.delete', language)}
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+                {/* Services Grid (Glassmorphism) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredServices.map((service) => {
+                        const IconComponent = iconMap[service.icon] || Briefcase;
+                        return (
+                            <div
+                                key={service.id}
+                                className="group relative bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col"
+                            >
+                                {/* Image Header */}
+                                <div className="relative h-48 w-full overflow-hidden shrink-0">
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#001F3F] to-transparent opacity-60 z-10 transition-opacity group-hover:opacity-40"></div>
+                                    <img
+                                        src={service.image_url || '/placeholder-service.jpg'}
+                                        alt={service.title_en}
+                                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                                    />
+                                    <div className="absolute top-4 right-4 z-20">
+                                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide backdrop-blur-md ${service.is_active ? 'bg-green-500/20 text-green-100 border border-green-500/30' : 'bg-orange-500/20 text-orange-200 border border-orange-500/30'}`}>
+                                            {service.is_active ? t.admin.servicesView.active : t.admin.servicesView.inactive}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Content Body */}
+                                <div className="p-6 relative z-20 flex-1 flex flex-col">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="w-10 h-10 rounded-lg bg-[#001F3F]/5 flex items-center justify-center text-[#D4AF37]">
+                                            <IconComponent className="w-5 h-5" />
+                                        </div>
+                                        <h3 className="text-xl font-bold text-[#001F3F] line-clamp-1 group-hover:text-[#D4AF37] transition-colors">
+                                            {language === 'ar' ? service.title_ar : language === 'fr' ? service.title_fr : service.title_en}
+                                        </h3>
+                                    </div>
+
+                                    <p className="text-gray-500 text-sm line-clamp-2 mb-6 h-10">
+                                        {language === 'ar' ? service.description_ar : language === 'fr' ? service.description_fr : service.description_en}
+                                    </p>
+
+                                    {/* Actions Footer */}
+                                    <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
+                                        <div className="flex gap-1">
+                                            <button
+                                                onClick={() => moveService(service, 'up')}
+                                                className="p-1 px-2 text-gray-400 hover:text-[#001F3F] hover:bg-gray-100 rounded transition-colors"
+                                                title="Move Up"
+                                            >
+                                                <ArrowUp className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={() => moveService(service, 'down')}
+                                                className="p-1 px-2 text-gray-400 hover:text-[#001F3F] hover:bg-gray-100 rounded transition-colors"
+                                                title="Move Down"
+                                            >
+                                                <ArrowDown className="w-4 h-4" />
+                                            </button>
+                                        </div>
+
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => toggleActive(service)}
+                                                className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                                title={service.is_active ? "Deactivate" : "Activate"}
+                                            >
+                                                {service.is_active ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                            </button>
+                                            <button
+                                                onClick={() => handleEdit(service)}
+                                                className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                            >
+                                                <Edit className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(service.id)}
+                                                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    })}
+
+                    {/* Empty State */}
+                    {filteredServices.length === 0 && (
+                        <div className="col-span-full py-20 text-center bg-white/50 border border-dashed border-gray-300 rounded-3xl">
+                            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+                                <Briefcase className="w-8 h-8" />
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-900">{t.admin.servicesView.noServices}</h3>
+                            <p className="text-gray-500">Get started by creating your first service.</p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Back to Dashboard */}
@@ -479,7 +515,7 @@ export default function AdminServicesPage() {
                         href="/admin"
                         className="text-[#001F3F] hover:text-[#D4AF37] font-medium"
                     >
-                        ← {t('admin.posts.backToDashboard', language)}
+                        ← {t.admin.postsView.backToDashboard}
                     </Link>
                 </div>
             </div>
@@ -491,7 +527,7 @@ export default function AdminServicesPage() {
                         <div className="p-6 border-b border-gray-200">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-2xl font-bold text-[#001F3F]">
-                                    {editingService ? t('admin.services.editService' as any, language) || 'Edit Service' : t('admin.services.newService' as any, language) || 'New Service'}
+                                    {editingService ? t.admin.servicesView.editService : t.admin.servicesView.newService}
                                 </h2>
                                 <button
                                     onClick={() => setShowModal(false)}
@@ -509,8 +545,8 @@ export default function AdminServicesPage() {
                                     type="button"
                                     onClick={() => setActiveTab('en')}
                                     className={`px-4 py-2 font-medium transition-colors ${activeTab === 'en'
-                                            ? 'text-[#001F3F] border-b-2 border-[#D4AF37]'
-                                            : 'text-gray-500 hover:text-gray-700'
+                                        ? 'text-[#001F3F] border-b-2 border-[#D4AF37]'
+                                        : 'text-gray-500 hover:text-gray-700'
                                         }`}
                                 >
                                     English
@@ -519,8 +555,8 @@ export default function AdminServicesPage() {
                                     type="button"
                                     onClick={() => setActiveTab('fr')}
                                     className={`px-4 py-2 font-medium transition-colors ${activeTab === 'fr'
-                                            ? 'text-[#001F3F] border-b-2 border-[#D4AF37]'
-                                            : 'text-gray-500 hover:text-gray-700'
+                                        ? 'text-[#001F3F] border-b-2 border-[#D4AF37]'
+                                        : 'text-gray-500 hover:text-gray-700'
                                         }`}
                                 >
                                     Français
@@ -529,8 +565,8 @@ export default function AdminServicesPage() {
                                     type="button"
                                     onClick={() => setActiveTab('ar')}
                                     className={`px-4 py-2 font-medium transition-colors ${activeTab === 'ar'
-                                            ? 'text-[#001F3F] border-b-2 border-[#D4AF37]'
-                                            : 'text-gray-500 hover:text-gray-700'
+                                        ? 'text-[#001F3F] border-b-2 border-[#D4AF37]'
+                                        : 'text-gray-500 hover:text-gray-700'
                                         }`}
                                 >
                                     العربية
@@ -540,29 +576,87 @@ export default function AdminServicesPage() {
                             {/* Title */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    {t('common.title' as any, language) || 'Title'} ({activeTab.toUpperCase()})
+                                    {t.common.title} ({activeTab.toUpperCase()})
                                 </label>
                                 <input
                                     type="text"
                                     value={formData[`title_${activeTab}` as keyof Service] as string || ''}
                                     onChange={(e) => setFormData(prev => ({ ...prev, [`title_${activeTab}`]: e.target.value }))}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20"
-                                    placeholder={`${t('common.title' as any, language) || 'Title'} (${activeTab.toUpperCase()})`}
+                                    placeholder={`${t.common.title} (${activeTab.toUpperCase()})`}
                                 />
                             </div>
 
                             {/* Description */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    {t('common.description' as any, language) || 'Description'} ({activeTab.toUpperCase()})
+                                    {t.common.description} ({activeTab.toUpperCase()})
                                 </label>
                                 <textarea
                                     rows={3}
                                     value={formData[`description_${activeTab}` as keyof Service] as string || ''}
                                     onChange={(e) => setFormData(prev => ({ ...prev, [`description_${activeTab}`]: e.target.value }))}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20"
-                                    placeholder={`${t('common.description' as any, language) || 'Description'} (${activeTab.toUpperCase()})`}
+                                    placeholder={`${t.common.description} (${activeTab.toUpperCase()})`}
                                 />
+                            </div>
+
+                            {/* Subtitle */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    {t.admin.servicesView.subtitle} ({activeTab.toUpperCase()})
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData[`subtitle_${activeTab}` as keyof Service] as string || ''}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, [`subtitle_${activeTab}`]: e.target.value }))}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20"
+                                    placeholder={`${t.admin.servicesView.subtitle} (${activeTab.toUpperCase()})`}
+                                />
+                            </div>
+
+                            {/* Features */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    {t.admin.servicesView.features} ({activeTab.toUpperCase()})
+                                </label>
+                                <div className="space-y-2">
+                                    {(formData[`features_${activeTab}` as keyof Service] as string[] || []).map((feature, index) => (
+                                        <div key={index} className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={feature}
+                                                onChange={(e) => {
+                                                    const newFeatures = [...(formData[`features_${activeTab}` as keyof Service] as string[] || [])];
+                                                    newFeatures[index] = e.target.value;
+                                                    setFormData(prev => ({ ...prev, [`features_${activeTab}`]: newFeatures }));
+                                                }}
+                                                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20"
+                                            />
+                                            <button
+                                                onClick={() => {
+                                                    const newFeatures = [...(formData[`features_${activeTab}` as keyof Service] as string[] || [])];
+                                                    newFeatures.splice(index, 1);
+                                                    setFormData(prev => ({ ...prev, [`features_${activeTab}`]: newFeatures }));
+                                                }}
+                                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <button
+                                        onClick={() => {
+                                            const newFeatures = [...(formData[`features_${activeTab}` as keyof Service] as string[] || [])];
+                                            newFeatures.push('');
+                                            setFormData(prev => ({ ...prev, [`features_${activeTab}`]: newFeatures }));
+                                        }}
+                                        className="text-sm text-[#001F3F] hover:text-[#D4AF37] font-medium flex items-center gap-1"
+                                    >
+                                        <Plus className="h-4 w-4" />
+                                        {t.admin.servicesView.addFeature}
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Icon & URL (Only show on EN tab) */}
@@ -570,7 +664,7 @@ export default function AdminServicesPage() {
                                 <>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.services.icon' as any, language) || 'Icon'}</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">{t.admin.servicesView.icon}</label>
                                             <select
                                                 value={formData.icon}
                                                 onChange={(e) => setFormData(prev => ({ ...prev, icon: e.target.value }))}
@@ -582,7 +676,7 @@ export default function AdminServicesPage() {
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.services.order' as any, language) || 'Order'}</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">{t.admin.servicesView.order}</label>
                                             <input
                                                 type="number"
                                                 value={formData.display_order}
@@ -593,7 +687,7 @@ export default function AdminServicesPage() {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.services.url' as any, language) || 'Service URL'}</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">{t.admin.servicesView.url}</label>
                                         <input
                                             type="text"
                                             value={formData.href}
@@ -603,34 +697,101 @@ export default function AdminServicesPage() {
                                         />
                                     </div>
 
-                                    <div className="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.is_active}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.checked }))}
-                                            className="w-4 h-4 text-[#001F3F] border-gray-300 rounded focus:ring-[#001F3F]"
-                                        />
-                                        <label className="text-sm font-medium text-gray-700">{t('admin.services.active', language)}</label>
+                                    {/* Service Image */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            {t.admin.servicesView.image} {t.admin.servicesView.optional}
+                                        </label>
+                                        <div className="space-y-4">
+                                            {formData.image_url ? (
+                                                <div className="relative w-full h-40 rounded-lg overflow-hidden border border-gray-200 group">
+                                                    <img
+                                                        src={formData.image_url}
+                                                        alt="Service"
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setFormData({ ...formData, image_url: '' })}
+                                                        className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="w-full h-40 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center bg-gray-50">
+                                                    <Briefcase className="h-10 w-10 text-gray-300 mb-2" />
+                                                    <p className="text-xs text-gray-500">{t.admin.servicesView.noImage}</p>
+                                                </div>
+                                            )}
+
+                                            <div className="flex items-center gap-4">
+                                                <label className="cursor-pointer bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors flex items-center gap-2">
+                                                    <Plus className="h-4 w-4" />
+                                                    {formData.image_url ? t.admin.servicesView.changeImage : t.admin.servicesView.uploadImage}
+                                                    <input
+                                                        type="file"
+                                                        className="hidden"
+                                                        accept="image/*"
+                                                        onChange={async (e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (!file) return;
+
+                                                            setSaving(true);
+                                                            try {
+                                                                const fileExt = file.name.split('.').pop();
+                                                                const fileName = `services/${Date.now()}.${fileExt}`;
+
+                                                                const { error: uploadError } = await supabase.storage
+                                                                    .from('public')
+                                                                    .upload(fileName, file);
+
+                                                                if (uploadError) throw uploadError;
+
+                                                                const { data: { publicUrl } } = supabase.storage
+                                                                    .from('public')
+                                                                    .getPublicUrl(fileName);
+
+                                                                setFormData(prev => ({ ...prev, image_url: publicUrl }));
+                                                            } catch (err: any) {
+                                                                console.error('Error uploading image:', err);
+                                                                alert('Error uploading image: ' + err.message);
+                                                            } finally {
+                                                                setSaving(false);
+                                                            }
+                                                        }}
+                                                    />
+                                                </label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </>
                             )}
                         </div>
 
-                        <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+                        <div className="p-6 border-t border-gray-200 flex justify-end gap-3 rounded-b-2xl bg-gray-50">
                             <button
                                 onClick={() => setShowModal(false)}
-                                className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                                disabled={saving}
+                                className="px-6 py-2 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors font-medium"
                             >
-                                {t('common.cancel', language)}
+                                {t.common.cancel}
                             </button>
                             <button
                                 onClick={handleSave}
                                 disabled={saving}
-                                className="px-6 py-2 bg-[#D4AF37] text-white rounded-lg hover:bg-[#C5A028] transition-colors font-semibold flex items-center gap-2 disabled:opacity-50"
+                                className="flex items-center gap-2 px-6 py-2 bg-[#001F3F] text-white rounded-lg hover:bg-[#003366] transition-colors disabled:opacity-50 font-medium"
                             >
-                                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                                {saving ? t('common.saving', language) : (t('admin.services.saveService' as any, language) || 'Save Service')}
+                                {saving ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        {t.common.saving}
+                                    </>
+                                ) : (
+                                    <>
+                                        <Save className="h-4 w-4" />
+                                        {t.admin.servicesView.saveService}
+                                    </>
+                                )}
                             </button>
                         </div>
                     </div>

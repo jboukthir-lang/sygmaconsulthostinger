@@ -9,7 +9,7 @@ export async function createSheet(
   title: string,
   sheetTitles?: string[]
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const sheets = google.sheets({ version: 'v4', auth: oauth2Client });
 
   const resource: sheets_v4.Schema$Spreadsheet = {
@@ -38,7 +38,7 @@ export async function readSheet(
   spreadsheetId: string,
   range: string
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const sheets = google.sheets({ version: 'v4', auth: oauth2Client });
 
   const response = await sheets.spreadsheets.values.get({
@@ -58,7 +58,7 @@ export async function writeToSheet(
   range: string,
   values: any[][]
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const sheets = google.sheets({ version: 'v4', auth: oauth2Client });
 
   const response = await sheets.spreadsheets.values.update({
@@ -82,7 +82,7 @@ export async function appendToSheet(
   range: string,
   values: any[][]
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const sheets = google.sheets({ version: 'v4', auth: oauth2Client });
 
   const response = await sheets.spreadsheets.values.append({
@@ -105,7 +105,7 @@ export async function clearSheet(
   spreadsheetId: string,
   range: string
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const sheets = google.sheets({ version: 'v4', auth: oauth2Client });
 
   const response = await sheets.spreadsheets.values.clear({
@@ -124,7 +124,7 @@ export async function addSheetTab(
   spreadsheetId: string,
   sheetTitle: string
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const sheets = google.sheets({ version: 'v4', auth: oauth2Client });
 
   const response = await sheets.spreadsheets.batchUpdate({
@@ -166,7 +166,7 @@ export async function formatCells(
     horizontalAlignment?: 'LEFT' | 'CENTER' | 'RIGHT';
   }
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const sheets = google.sheets({ version: 'v4', auth: oauth2Client });
 
   const response = await sheets.spreadsheets.batchUpdate({
@@ -202,7 +202,7 @@ export async function getSpreadsheetInfo(
   tokens: GoogleTokens,
   spreadsheetId: string
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const sheets = google.sheets({ version: 'v4', auth: oauth2Client });
 
   const response = await sheets.spreadsheets.get({
@@ -220,7 +220,7 @@ export async function exportBookingsToSheet(
   spreadsheetId: string,
   bookings: any[]
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const sheets = google.sheets({ version: 'v4', auth: oauth2Client });
 
   // Prepare headers

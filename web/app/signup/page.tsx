@@ -9,7 +9,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export default function SignUpPage() {
-  const { t, language } = useLanguage();
+  const { t, language, logoUrl } = useLanguage();
   const { user, loading, signUpWithEmail, signInWithGoogle } = useAuth();
   const router = useRouter();
 
@@ -115,11 +115,12 @@ export default function SignUpPage() {
           <Link href="/" className="flex items-center gap-3 text-white mb-12">
             <div className="bg-white p-2 rounded-xl">
               <Image
-                src="/logo.png"
+                src={logoUrl || "/logo.png"}
                 alt="Sygma Consult"
-                width={120}
-                height={40}
-                className="h-10 w-auto"
+                width={60}
+                height={60}
+                className="h-10 md:h-12 w-auto"
+                priority
               />
             </div>
             <div>

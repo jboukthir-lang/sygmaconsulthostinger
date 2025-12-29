@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { Facebook, Linkedin, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import Image from 'next/image';
 import { useLanguage } from '@/context/LanguageContext';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from "react";
 
 
 interface SiteSettings {
@@ -28,7 +29,7 @@ interface SiteSettings {
 import settingsData from '@/data/settings.json';
 
 export default function Footer() {
-    const { t, language } = useLanguage();
+    const { t, language, logoUrl } = useLanguage();
     const [settings, setSettings] = useState<SiteSettings | null>(settingsData);
 
     // No effect needed as we load from JSON
@@ -60,6 +61,12 @@ export default function Footer() {
         }
     };
 
+    const [imgSrc, setImgSrc] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (logoUrl) setImgSrc(logoUrl);
+    }, [logoUrl]);
+
     return (
         <footer className="bg-[#001F3F] text-white pt-16 pb-8">
             <div className="container mx-auto px-4 md:px-6">
@@ -68,6 +75,16 @@ export default function Footer() {
                     {/* Brand Column */}
                     <div className="space-y-4">
                         <Link className="flex items-center gap-2 font-serif text-2xl font-bold text-white" href="/">
+                            {imgSrc ? (
+                                <Image
+                                    src={imgSrc}
+                                    alt="Sygma Consult"
+                                    width={40}
+                                    height={40}
+                                    className="h-10 w-auto brightness-0 invert"
+                                    onError={() => setImgSrc(null)}
+                                />
+                            ) : null}
                             SYGMA<span className="text-[#D4AF37]">CONSULT</span>
                         </Link>
                         <p className="text-gray-300 text-sm leading-relaxed">

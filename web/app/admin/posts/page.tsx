@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { supabase, Post } from '@/lib/supabase';
 import { useLanguage } from '@/context/LanguageContext';
-import { t } from '@/lib/translations';
 import {
     Plus,
     Edit,
@@ -21,7 +20,7 @@ import {
 import Link from 'next/link';
 
 export default function AdminPostsPage() {
-    const { language } = useLanguage();
+    const { language, t } = useLanguage();
     const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const [posts, setPosts] = useState<Post[]>([]);
@@ -89,12 +88,12 @@ export default function AdminPostsPage() {
             fetchPosts();
         } catch (error) {
             console.error('Error toggling publish status:', error);
-            alert(t('common.error', language));
+            alert(t.common.error);
         }
     };
 
     const deletePost = async (postId: string) => {
-        if (!confirm(t('admin.posts.deleteConfirm', language))) {
+        if (!confirm(t.admin.postsView.deleteConfirm)) {
             return;
         }
 
@@ -108,7 +107,7 @@ export default function AdminPostsPage() {
             fetchPosts();
         } catch (error) {
             console.error('Error deleting post:', error);
-            alert(t('common.error', language));
+            alert(t.common.error);
         }
     };
 
@@ -157,15 +156,15 @@ export default function AdminPostsPage() {
                 <div className="mb-8">
                     <div className="flex items-center justify-between mb-6">
                         <div>
-                            <h1 className="text-3xl font-bold text-[#001F3F]">{t('admin.posts.title', language)}</h1>
-                            <p className="text-gray-600 mt-1">{t('admin.posts.subtitle', language)}</p>
+                            <h1 className="text-3xl font-bold text-[#001F3F]">{t.admin.postsView.title}</h1>
+                            <p className="text-gray-600 mt-1">{t.admin.postsView.subtitle}</p>
                         </div>
                         <Link
                             href="/admin/posts/new"
                             className="flex items-center gap-2 px-6 py-3 bg-[#D4AF37] text-white rounded-lg hover:bg-[#C5A028] transition-colors font-semibold"
                         >
                             <Plus className="h-5 w-5" />
-                            {t('admin.posts.newPost', language)}
+                            {t.admin.postsView.newPost}
                         </Link>
                     </div>
 
@@ -174,7 +173,7 @@ export default function AdminPostsPage() {
                         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-gray-600 text-sm">{t('admin.posts.totalPosts', language)}</p>
+                                    <p className="text-gray-600 text-sm">{t.admin.postsView.totalPosts}</p>
                                     <p className="text-3xl font-bold text-[#001F3F] mt-1">{stats.total}</p>
                                 </div>
                                 <FileText className="h-10 w-10 text-blue-500 opacity-20" />
@@ -183,7 +182,7 @@ export default function AdminPostsPage() {
                         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-gray-600 text-sm">{t('admin.posts.published', language)}</p>
+                                    <p className="text-gray-600 text-sm">{t.admin.postsView.published}</p>
                                     <p className="text-3xl font-bold text-green-600 mt-1">{stats.published}</p>
                                 </div>
                                 <Eye className="h-10 w-10 text-green-500 opacity-20" />
@@ -192,7 +191,7 @@ export default function AdminPostsPage() {
                         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-gray-600 text-sm">{t('admin.posts.drafts', language)}</p>
+                                    <p className="text-gray-600 text-sm">{t.admin.postsView.drafts}</p>
                                     <p className="text-3xl font-bold text-orange-600 mt-1">{stats.drafts}</p>
                                 </div>
                                 <Calendar className="h-10 w-10 text-orange-500 opacity-20" />
@@ -201,7 +200,7 @@ export default function AdminPostsPage() {
                         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-gray-600 text-sm">{t('admin.posts.totalViews', language)}</p>
+                                    <p className="text-gray-600 text-sm">{t.admin.postsView.totalViews}</p>
                                     <p className="text-3xl font-bold text-purple-600 mt-1">{stats.totalViews}</p>
                                 </div>
                                 <TrendingUp className="h-10 w-10 text-purple-500 opacity-20" />
@@ -215,7 +214,7 @@ export default function AdminPostsPage() {
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                             <input
                                 type="text"
-                                placeholder={t('admin.posts.searchPlaceholder', language)}
+                                placeholder={t.admin.postsView.searchPlaceholder}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20"
@@ -225,29 +224,29 @@ export default function AdminPostsPage() {
                             <button
                                 onClick={() => setFilterStatus('all')}
                                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${filterStatus === 'all'
-                                        ? 'bg-[#001F3F] text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-[#001F3F] text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
-                                {t('common.all', language)}
+                                {t.common.all}
                             </button>
                             <button
                                 onClick={() => setFilterStatus('published')}
                                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${filterStatus === 'published'
-                                        ? 'bg-green-600 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-green-600 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
-                                {t('admin.posts.published', language)}
+                                {t.admin.postsView.published}
                             </button>
                             <button
                                 onClick={() => setFilterStatus('draft')}
                                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${filterStatus === 'draft'
-                                        ? 'bg-orange-600 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-orange-600 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
-                                {t('admin.posts.drafts', language)}
+                                {t.admin.postsView.drafts}
                             </button>
                         </div>
                     </div>
@@ -259,19 +258,19 @@ export default function AdminPostsPage() {
                         <table className="w-full">
                             <thead className="bg-gray-50 border-b border-gray-200">
                                 <tr>
-                                    <th className="text-left p-4 font-semibold text-gray-700">{t('common.title' as any, language) || 'Title'}</th>
-                                    <th className="text-left p-4 font-semibold text-gray-700">{t('common.category', language)}</th>
-                                    <th className="text-left p-4 font-semibold text-gray-700">{t('common.status', language)}</th>
-                                    <th className="text-left p-4 font-semibold text-gray-700">{t('common.views', language)}</th>
-                                    <th className="text-left p-4 font-semibold text-gray-700">{t('admin.consultations.date', language)}</th>
-                                    <th className="text-left p-4 font-semibold text-gray-700">{t('common.actions', language)}</th>
+                                    <th className="text-left p-4 font-semibold text-gray-700">{t.common.title}</th>
+                                    <th className="text-left p-4 font-semibold text-gray-700">{t.common.category}</th>
+                                    <th className="text-left p-4 font-semibold text-gray-700">{t.common.status}</th>
+                                    <th className="text-left p-4 font-semibold text-gray-700">{t.admin.postsView.totalViews}</th>
+                                    <th className="text-left p-4 font-semibold text-gray-700">{t.common.date}</th>
+                                    <th className="text-left p-4 font-semibold text-gray-700">{t.common.actions}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredPosts.length === 0 ? (
                                     <tr>
                                         <td colSpan={6} className="text-center py-12 text-gray-500">
-                                            {t('admin.posts.noPosts', language)}
+                                            {t.admin.postsView.noPosts}
                                         </td>
                                     </tr>
                                 ) : (
@@ -292,12 +291,12 @@ export default function AdminPostsPage() {
                                                 {post.published ? (
                                                     <span className="px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full flex items-center gap-1 w-fit">
                                                         <Eye className="h-3 w-3" />
-                                                        {t('admin.posts.published', language)}
+                                                        {t.admin.postsView.published}
                                                     </span>
                                                 ) : (
                                                     <span className="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-semibold rounded-full flex items-center gap-1 w-fit">
                                                         <EyeOff className="h-3 w-3" />
-                                                        {t('admin.posts.drafts', language).replace(/s$/, '')}
+                                                        {t.admin.postsView.drafts}
                                                     </span>
                                                 )}
                                             </td>
@@ -308,21 +307,21 @@ export default function AdminPostsPage() {
                                                     <Link
                                                         href={`/admin/posts/edit/${post.id}`}
                                                         className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                        title={t('common.edit', language)}
+                                                        title={t.common.edit}
                                                     >
                                                         <Edit className="h-4 w-4" />
                                                     </Link>
                                                     <button
                                                         onClick={() => togglePublish(post.id!, post.published!)}
                                                         className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                                                        title={post.published ? t('admin.posts.drafts', language).replace(/s$/, '') : t('admin.posts.published', language)}
+                                                        title={post.published ? t.admin.postsView.drafts : t.admin.postsView.published}
                                                     >
                                                         {post.published ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                                     </button>
                                                     <button
                                                         onClick={() => deletePost(post.id!)}
                                                         className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                        title={t('common.delete', language)}
+                                                        title={t.common.delete}
                                                     >
                                                         <Trash2 className="h-4 w-4" />
                                                     </button>
@@ -342,7 +341,7 @@ export default function AdminPostsPage() {
                         href="/admin"
                         className="text-[#001F3F] hover:text-[#D4AF37] font-medium"
                     >
-                        ← {t('admin.posts.backToDashboard', language)}
+                        ← {t.admin.postsView.backToDashboard}
                     </Link>
                 </div>
             </div>

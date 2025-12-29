@@ -45,7 +45,7 @@ export async function getMeetLinkFromEvent(
   tokens: GoogleTokens,
   eventId: string
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
   const event = await calendar.events.get({
@@ -89,7 +89,7 @@ export async function addMeetToExistingEvent(
   tokens: GoogleTokens,
   eventId: string
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
   const response = await calendar.events.patch({
@@ -115,5 +115,6 @@ export async function addMeetToExistingEvent(
     eventId: response.data.id,
     meetLink,
     event: response.data,
+    eventData: response.data,
   };
 }

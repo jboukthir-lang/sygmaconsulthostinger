@@ -27,7 +27,7 @@ const nextConfig = {
   trailingSlash: true,
   // Add generateBuildId to help with cache busting if needed
   generateBuildId: async () => {
-    return 'sygma-build-' + Date.now();
+    return 'sygma-premium-v1';
   },
 };
 

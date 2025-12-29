@@ -1,17 +1,19 @@
-import { resend, EMAIL_FROM } from './resend';
+import { getResendClient, EMAIL_FROM } from './resend';
 import type { Booking, Contact } from './supabase';
-import { 
-  bookingConfirmationEmail, 
-  bookingNotificationEmail, 
-  contactNotificationEmail, 
-  contactAutoReplyEmail 
+import {
+  bookingConfirmationEmail,
+  bookingNotificationEmail,
+  contactNotificationEmail,
+  contactAutoReplyEmail
 } from './email-templates';
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@sygma-consult.com';
 
 // Send booking confirmation email to client
 export const sendBookingConfirmation = async (booking: Booking) => {
-  if (!process.env.RESEND_API_KEY) {
+  const resend = await getResendClient();
+
+  if (!resend) {
     console.warn('Resend API key not configured. Emails will not be sent.');
     return null;
   }
@@ -41,7 +43,9 @@ export const sendBookingConfirmation = async (booking: Booking) => {
 
 // Send booking notification to admin
 export const sendBookingNotification = async (booking: Booking) => {
-  if (!process.env.RESEND_API_KEY) {
+  const resend = await getResendClient();
+
+  if (!resend) {
     console.warn('Resend API key not configured. Emails will not be sent.');
     return null;
   }
@@ -71,7 +75,9 @@ export const sendBookingNotification = async (booking: Booking) => {
 
 // Send contact notification to admin
 export const sendContactNotification = async (contact: Contact) => {
-  if (!process.env.RESEND_API_KEY) {
+  const resend = await getResendClient();
+
+  if (!resend) {
     console.warn('Resend API key not configured. Emails will not be sent.');
     return null;
   }
@@ -101,7 +107,9 @@ export const sendContactNotification = async (contact: Contact) => {
 
 // Send auto-reply to client after contact
 export const sendContactAutoReply = async (contact: Contact) => {
-  if (!process.env.RESEND_API_KEY) {
+  const resend = await getResendClient();
+
+  if (!resend) {
     console.warn('Resend API key not configured. Emails will not be sent.');
     return null;
   }

@@ -5,7 +5,6 @@ import { supabase } from '@/lib/supabase';
 import { Users, UserPlus, Shield, Trash2, Search, Eye, Bell, Calendar, MapPin } from 'lucide-react';
 import StatsCard from '@/components/admin/StatsCard';
 import { useLanguage } from '@/context/LanguageContext';
-import { t } from '@/lib/translations';
 import Image from 'next/image';
 
 interface User {
@@ -42,7 +41,7 @@ interface AdminUser {
 }
 
 export default function AdminUsersPage() {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const [users, setUsers] = useState<User[]>([]);
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -100,21 +99,15 @@ export default function AdminUsersPage() {
         .select('*')
         .order('created_at', { ascending: false });
 
-      console.log('📊 User profiles data:', data);
-      console.log('❌ User profiles error:', error);
-
       if (error) {
         console.error('❌ RLS Error or Permission Denied:', error);
         throw error;
       }
 
       if (!data || data.length === 0) {
-        console.warn('⚠️ No users found in database!');
         setUsers([]);
         return;
       }
-
-      console.log(`✅ Found ${data.length} users, fetching counts...`);
 
       // Get bookings and notifications count for each user
       const usersWithCounts = await Promise.all(
@@ -138,11 +131,10 @@ export default function AdminUsersPage() {
         })
       );
 
-      console.log('✅ Users with counts:', usersWithCounts);
       setUsers(usersWithCounts);
     } catch (error) {
       console.error('❌❌❌ Error fetching users:', error);
-      alert('Error fetching users: ' + (error as any).message);
+      alert(t.common.error);
     } finally {
       setLoading(false);
     }
@@ -198,15 +190,15 @@ export default function AdminUsersPage() {
       if (error) throw error;
 
       fetchAdminUsers();
-      alert('Admin user added successfully!');
+      alert(t.admin.usersView.adminAdded);
     } catch (error) {
       console.error('Error adding admin user:', error);
-      alert('Failed to add admin user');
+      alert(t.common.error);
     }
   }
 
   async function removeAdminUser(id: string) {
-    if (!confirm(t('admin.removeAdminPrivileges', language))) return;
+    if (!confirm(t.admin.usersView.removeAdminConfirm)) return;
 
     try {
       const { error } = await supabase
@@ -217,10 +209,10 @@ export default function AdminUsersPage() {
       if (error) throw error;
 
       fetchAdminUsers();
-      alert(t('admin.adminPrivilegesRemoved', language));
+      alert(t.admin.usersView.adminRemoved);
     } catch (error) {
       console.error('Error removing admin user:', error);
-      alert(t('admin.failedToRemoveAdmin', language));
+      alert(t.common.error);
     }
   }
 
@@ -239,7 +231,7 @@ export default function AdminUsersPage() {
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-[#001F3F] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">{t('admin.loadingUsers', language)}</p>
+          <p className="text-gray-600">{t.common.loading}</p>
         </div>
       </div>
     );
@@ -250,27 +242,27 @@ export default function AdminUsersPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[#001F3F]">{t('admin.userManagement', language)}</h1>
-          <p className="text-gray-600 mt-1">{t('admin.manageUsersAndPrivileges', language)}</p>
+          <h1 className="text-3xl font-bold text-[#001F3F]">{t.admin.usersView.title}</h1>
+          <p className="text-gray-600 mt-1">{t.admin.usersView.subtitle}</p>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatsCard
-          title={t('admin.totalUsers', language)}
+          title={t.admin.usersView.total}
           value={users.length.toString()}
           icon={Users}
           trend={{ value: 12, isPositive: true }}
         />
         <StatsCard
-          title={t('admin.adminUsers', language)}
+          title={t.admin.usersView.admins}
           value={adminUsers.length.toString()}
           icon={Shield}
-          subtitle={`${adminUsers.filter(a => a.role === 'super_admin').length} ${t('admin.superAdmins', language)}`}
+          subtitle={`${adminUsers.filter(a => a.role === 'super_admin').length} ${t.admin.usersView.superAdmin}`}
         />
         <StatsCard
-          title={t('admin.newThisMonth', language)}
+          title={t.admin.usersView.newThisMonth}
           value={users.filter(u => {
             const created = new Date(u.created_at);
             const now = new Date();
@@ -282,10 +274,10 @@ export default function AdminUsersPage() {
 
       {/* Admin Users Section */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-xl font-bold text-[#001F3F] mb-4">{t('admin.adminUsers', language)}</h2>
+        <h2 className="text-xl font-bold text-[#001F3F] mb-4">{t.admin.usersView.admins}</h2>
         <div className="space-y-3">
           {adminUsers.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">{t('admin.noAdminUsersFound', language)}</p>
+            <p className="text-gray-500 text-center py-8">{t.admin.usersView.noAdmins}</p>
           ) : (
             adminUsers.map((admin) => (
               <div key={admin.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
@@ -294,7 +286,7 @@ export default function AdminUsersPage() {
                   <div>
                     <p className="font-semibold text-gray-900">{admin.email}</p>
                     <p className="text-sm text-gray-500">
-                      {t('users.role', language)}: <span className="font-medium capitalize">{admin.role.replace('_', ' ')}</span>
+                      {t.admin.usersView.role}: <span className="font-medium capitalize">{admin.role.replace('_', ' ')}</span>
                     </p>
                   </div>
                 </div>
@@ -314,7 +306,7 @@ export default function AdminUsersPage() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100">
         <div className="p-6 border-b border-gray-100">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-[#001F3F]">{t('admin.allUsers', language)}</h2>
+            <h2 className="text-xl font-bold text-[#001F3F]">{t.admin.usersView.allUsers}</h2>
           </div>
 
           {/* Search */}
@@ -322,7 +314,7 @@ export default function AdminUsersPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="text"
-              placeholder={t('admin.searchByName', language)}
+              placeholder={t.admin.usersView.searchPlaceholder}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20"
@@ -335,20 +327,20 @@ export default function AdminUsersPage() {
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Photo</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('users.user', language)}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('admin.contact', language)}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('common.city', language)}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('common.bookings', language)}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('notifications.title', language)}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('users.role', language)}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t.admin.usersView.user}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t.common.contact}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">City</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bookings</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t.notifications.title}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t.admin.usersView.role}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t.common.actions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {filteredUsers.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
-                    {t('admin.noUsersFound', language)}
+                    {t.admin.usersView.noUsers}
                   </td>
                 </tr>
               ) : (
@@ -392,11 +384,11 @@ export default function AdminUsersPage() {
                     <td className="px-6 py-4">
                       {isUserAdmin(user.user_id) ? (
                         <span className="px-2 py-1 bg-[#D4AF37] text-white text-xs font-semibold rounded-full">
-                          {t('users.admin', language)}
+                          {t.admin.usersView.admin}
                         </span>
                       ) : (
                         <span className="px-2 py-1 bg-gray-200 text-gray-700 text-xs font-semibold rounded-full">
-                          {t('users.user', language)}
+                          {t.admin.usersView.user}
                         </span>
                       )}
                     </td>
@@ -404,7 +396,7 @@ export default function AdminUsersPage() {
                       <button
                         onClick={() => openUserModal(user)}
                         className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                        title={t('common.viewDetails', language)}
+                        title={t.common.view}
                       >
                         <Eye className="h-4 w-4 text-gray-600" />
                       </button>
@@ -422,7 +414,7 @@ export default function AdminUsersPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white rounded-xl max-w-4xl w-full p-6 my-8 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-[#001F3F]">{t('common.userDetails', language)}</h2>
+              <h2 className="text-2xl font-bold text-[#001F3F]">{t.common.name}</h2>
               <button
                 onClick={() => {
                   setSelectedUser(null);
@@ -469,7 +461,7 @@ export default function AdminUsersPage() {
                         <Shield className="h-4 w-4 text-[#001F3F]" />
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500">Téléphone</p>
+                        <p className="text-xs text-gray-500">{t.common.contact}</p>
                         <p className="text-sm font-medium">{selectedUser.phone || 'N/A'}</p>
                       </div>
                     </div>
@@ -478,7 +470,7 @@ export default function AdminUsersPage() {
                         <MapPin className="h-4 w-4 text-[#001F3F]" />
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500">{t('common.city', language)}</p>
+                        <p className="text-xs text-gray-500">City</p>
                         <p className="text-sm font-medium">{selectedUser.city || 'N/A'}</p>
                       </div>
                     </div>
@@ -487,7 +479,7 @@ export default function AdminUsersPage() {
                         <Calendar className="h-4 w-4 text-[#001F3F]" />
                       </div>
                       <div>
-                        <p className="text-xs text-gray-500">{t('common.registeredOn', language)}</p>
+                        <p className="text-xs text-gray-500">{t.common.date}</p>
                         <p className="text-sm font-medium">
                           {new Date(selectedUser.created_at).toLocaleDateString(language === 'fr' ? 'fr-FR' : language === 'ar' ? 'ar-TN' : 'en-US')}
                         </p>
@@ -496,7 +488,7 @@ export default function AdminUsersPage() {
                   </div>
                   {selectedUser.address && (
                     <div className="mt-4 p-3 bg-white rounded-lg">
-                      <p className="text-xs text-gray-500 mb-1">{t('common.fullAddress', language)}</p>
+                      <p className="text-xs text-gray-500 mb-1">Address</p>
                       <p className="text-sm text-gray-700">{selectedUser.address}</p>
                     </div>
                   )}
@@ -511,13 +503,12 @@ export default function AdminUsersPage() {
                       <Calendar className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-blue-900">{t('common.bookings', language)}</p>
+                      <p className="text-sm font-medium text-blue-900">Bookings</p>
                       <p className="text-3xl font-bold text-blue-600">
                         {selectedUser.bookings_count || 0}
                       </p>
                     </div>
                   </div>
-                  <p className="text-xs text-blue-700">Total des rendez-vous</p>
                 </div>
 
                 <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-xl border border-orange-200">
@@ -526,13 +517,12 @@ export default function AdminUsersPage() {
                       <Bell className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-orange-900">Notifications</p>
+                      <p className="text-sm font-medium text-orange-900">{t.notifications.title}</p>
                       <p className="text-3xl font-bold text-orange-600">
                         {userNotifications.filter(n => !n.is_read).length}
                       </p>
                     </div>
                   </div>
-                  <p className="text-xs text-orange-700">{t('common.unreadOn', language) || 'Unread on'} {userNotifications.length}</p>
                 </div>
               </div>
 
@@ -540,18 +530,17 @@ export default function AdminUsersPage() {
               <div className="bg-white border border-gray-200 rounded-xl p-6">
                 <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <Bell className="h-5 w-5 text-[#001F3F]" />
-                  {t('common.userNotifications', language)}
+                  {t.notifications.title}
                 </h3>
                 {loadingNotifications ? (
                   <div className="text-center py-12">
                     <div className="w-12 h-12 border-4 border-[#001F3F] border-t-transparent rounded-full animate-spin mx-auto"></div>
-                    <p className="text-gray-500 mt-4">{t('common.loadingNotifications', language)}</p>
+                    <p className="text-gray-500 mt-4">{t.common.loading}</p>
                   </div>
                 ) : userNotifications.length === 0 ? (
                   <div className="text-center py-12 bg-gray-50 rounded-lg">
                     <Bell className="h-16 w-16 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 font-medium">{t('admin.noNotifications', language)}</p>
-                    <p className="text-gray-400 text-sm mt-1">{t('common.noNotificationsYet', language)}</p>
+                    <p className="text-gray-500 font-medium">{t.notifications.noNotifications}</p>
                   </div>
                 ) : (
                   <div className="max-h-96 overflow-y-auto space-y-3">
@@ -581,7 +570,7 @@ export default function AdminUsersPage() {
                               </span>
                               {!notification.is_read && (
                                 <span className="px-2 py-0.5 bg-blue-600 text-white text-xs rounded-full font-medium">
-                                  {t('common.new', language)}
+                                  {t.admin.messagesView.new}
                                 </span>
                               )}
                             </div>

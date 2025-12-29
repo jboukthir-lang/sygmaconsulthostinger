@@ -12,14 +12,10 @@ import {
   DollarSign,
   Clock,
   User,
-  LayoutGrid,
-  List,
-  Video,
-  Calendar
+  Video
 } from 'lucide-react';
 import StatsCard from '@/components/admin/StatsCard';
 import { useLanguage } from '@/context/LanguageContext';
-import { t } from '@/lib/translations';
 
 interface Consultation {
   id: string;
@@ -45,7 +41,7 @@ interface AdminUser {
 }
 
 export default function AdminConsultationsPage() {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -128,7 +124,7 @@ export default function AdminConsultationsPage() {
   }
 
   async function handleDeleteConsultation(id: string) {
-    if (!confirm(t('admin.consultations.deleteConfirm', language))) {
+    if (!confirm(t.admin.consultationsView.deleteConfirm)) {
       return;
     }
 
@@ -146,7 +142,7 @@ export default function AdminConsultationsPage() {
       }
     } catch (err) {
       console.error('Error deleting consultation:', err);
-      alert(t('common.error', language) + ': ' + t('admin.services.deleteError', language));
+      alert(t.common.error + ': ' + t.admin.servicesView.deleteError);
     }
   }
 
@@ -168,6 +164,15 @@ export default function AdminConsultationsPage() {
     completed: consultations.filter(c => c.status === 'completed').length,
     totalRevenue: consultations.filter(c => c.status === 'completed').reduce((sum, c) => sum + (c.fee || 0), 0),
   };
+
+  function getStatusLabel(status: string) {
+    if (status === 'confirmed') return t.admin.consultationsView.scheduled;
+    if (status === 'in-progress') return t.admin.consultationsView.inProgress;
+    if (status === 'pending') return t.admin.consultationsView.pending;
+    if (status === 'completed') return t.admin.consultationsView.completed;
+    if (status === 'cancelled') return t.admin.bookings.cancelled;
+    return status;
+  }
 
   function getStatusColor(status: string) {
     switch (status) {
@@ -191,7 +196,7 @@ export default function AdminConsultationsPage() {
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-[#001F3F] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">{t('admin.consultations.loading', language)}</p>
+          <p className="text-gray-600">{t.admin.consultationsView.loading}</p>
         </div>
       </div>
     );
@@ -202,8 +207,8 @@ export default function AdminConsultationsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[#001F3F]">{t('admin.consultations.title', language)}</h1>
-          <p className="text-gray-600 mt-1">{t('admin.consultations.subtitle', language)}</p>
+          <h1 className="text-3xl font-bold text-[#001F3F]">{t.admin.consultationsView.title}</h1>
+          <p className="text-gray-600 mt-1">{t.admin.consultationsView.subtitle}</p>
         </div>
         <button
           onClick={() => {
@@ -228,39 +233,39 @@ export default function AdminConsultationsPage() {
           className="flex items-center gap-2 px-4 py-2 bg-[#001F3F] text-white rounded-lg hover:bg-[#003366] transition-colors"
         >
           <Plus className="h-5 w-5" />
-          {t('admin.consultations.new', language)}
+          {t.admin.consultationsView.new}
         </button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         <StatsCard
-          title={t('admin.consultations.total', language)}
+          title={t.admin.consultationsView.total}
           value={stats.total.toString()}
           icon={Briefcase}
         />
         <StatsCard
-          title={t('admin.consultations.scheduled', language)}
+          title={t.admin.consultationsView.scheduled}
           value={stats.scheduled.toString()}
           icon={Clock}
-          subtitle={t('admin.consultations.upcoming', language)}
+          subtitle={t.admin.consultationsView.upcoming}
         />
         <StatsCard
-          title={t('admin.consultations.inProgress', language)}
+          title={t.admin.consultationsView.inProgress}
           value={stats.inProgress.toString()}
           icon={User}
-          subtitle={t('admin.consultations.activeNow', language)}
+          subtitle={t.admin.consultationsView.activeNow}
         />
         <StatsCard
-          title={t('admin.consultations.completed', language)}
+          title={t.admin.consultationsView.completed}
           value={stats.completed.toString()}
           icon={Briefcase}
         />
         <StatsCard
-          title={t('admin.consultations.revenue', language)}
+          title={t.admin.consultationsView.revenue}
           value={`$${stats.totalRevenue.toLocaleString()}`}
           icon={DollarSign}
-          subtitle={t('admin.consultations.totalEarned', language)}
+          subtitle={t.admin.consultationsView.totalEarned}
         />
       </div>
 
@@ -272,7 +277,7 @@ export default function AdminConsultationsPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
               type="text"
-              placeholder={t('admin.consultations.searchPlaceholder', language)}
+              placeholder={t.admin.consultationsView.searchPlaceholder}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-11 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20"
@@ -290,7 +295,7 @@ export default function AdminConsultationsPage() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
               >
-                {status === 'all' ? t('common.all', language) : t(`admin.consultations.${status === 'confirmed' ? 'scheduled' : status === 'in-progress' ? 'inProgress' : status}`, language)}
+                {status === 'all' ? t.common.all : getStatusLabel(status)}
               </button>
             ))}
           </div>
@@ -304,20 +309,20 @@ export default function AdminConsultationsPage() {
           <table className="w-full text-left">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('consultations.client' as any, language) || t('admin.posts.title', language)}</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('common.service' as any, language) || 'Service'}</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('consultations.consultant' as any, language) || 'Consultant'}</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('common.dateAndTime', language)}</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('common.duration', language)}</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('common.status', language)}</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">{t('common.actions', language)}</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Client</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Service</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Consultant</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t.common.date} & Time</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Duration</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t.common.status}</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">{t.common.actions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {filteredConsultations.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
-                    {t('admin.consultations.noConsultations', language)}
+                    {t.admin.consultationsView.noConsultations}
                   </td>
                 </tr>
               ) : (
@@ -345,7 +350,7 @@ export default function AdminConsultationsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(consultation.status)}`}>
-                        {t(`admin.consultations.${consultation.status === 'confirmed' ? 'scheduled' : consultation.status === 'in-progress' ? 'inProgress' : consultation.status}`, language)}
+                        {getStatusLabel(consultation.status)}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
@@ -367,14 +372,14 @@ export default function AdminConsultationsPage() {
                             setShowModal(true);
                           }}
                           className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                          title={t('common.edit', language)}
+                          title={t.common.edit}
                         >
                           <Edit className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteConsultation(consultation.id)}
                           className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title={t('common.delete', language)}
+                          title={t.common.delete}
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -394,7 +399,7 @@ export default function AdminConsultationsPage() {
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-[#001F3F]">{t('admin.consultations.details', language)}</h2>
+                <h2 className="text-2xl font-bold text-[#001F3F]">{t.admin.consultationsView.details}</h2>
                 <button
                   onClick={() => setShowModal(false)}
                   className="text-gray-400 hover:text-gray-600"
@@ -407,27 +412,27 @@ export default function AdminConsultationsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Status Update */}
                 <div>
-                  <label className="text-sm font-medium text-gray-500 block mb-2">{t('admin.consultations.changeStatus', language)}</label>
+                  <label className="text-sm font-medium text-gray-500 block mb-2">{t.admin.consultationsView.changeStatus}</label>
                   <select
                     value={selectedConsultation.status}
                     onChange={(e) => updateConsultation(selectedConsultation.id, { status: e.target.value as any })}
                     className="w-full p-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-[#001F3F]/20"
                   >
                     {['pending', 'confirmed', 'in-progress', 'completed', 'cancelled'].map(s => (
-                      <option key={s} value={s}>{t(`admin.consultations.${s === 'confirmed' ? 'scheduled' : s === 'in-progress' ? 'inProgress' : s}`, language)}</option>
+                      <option key={s} value={s}>{getStatusLabel(s)}</option>
                     ))}
                   </select>
                 </div>
 
                 {/* Consultant Assignment */}
                 <div>
-                  <label className="text-sm font-medium text-gray-500 block mb-2">{t('admin.consultations.assignConsultant', language)}</label>
+                  <label className="text-sm font-medium text-gray-500 block mb-2">{t.admin.consultationsView.assignConsultant}</label>
                   <select
                     value={selectedConsultation.consultant_id}
                     onChange={(e) => updateConsultation(selectedConsultation.id, { consultant_id: e.target.value })}
                     className="w-full p-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-[#001F3F]/20"
                   >
-                    <option value="">{t('admin.consultations.unassigned', language)}</option>
+                    <option value="">{t.admin.consultationsView.unassigned}</option>
                     {admins.map(admin => (
                       <option key={admin.user_id} value={admin.user_id}>{admin.email}</option>
                     ))}
@@ -436,7 +441,7 @@ export default function AdminConsultationsPage() {
 
                 {/* Fee Management */}
                 <div>
-                  <label className="text-sm font-medium text-gray-500 block mb-2">Consultation Fee (€)</label>
+                  <label className="text-sm font-medium text-gray-500 block mb-2">{t.admin.consultationsView.fee}</label>
                   <input
                     type="number"
                     value={selectedConsultation.fee}
@@ -447,7 +452,7 @@ export default function AdminConsultationsPage() {
 
                 {/* Meeting Link */}
                 <div>
-                  <label className="text-sm font-medium text-gray-500 block mb-2">{t('admin.consultations.meetingLink', language)}</label>
+                  <label className="text-sm font-medium text-gray-500 block mb-2">{t.admin.consultationsView.meetingLink}</label>
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -462,9 +467,9 @@ export default function AdminConsultationsPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                        title={t('bookings.joinMeeting', language)}
+                        title="Join Meeting"
                       >
-                        <Eye className="h-5 w-5" />
+                        <Video className="h-5 w-5" />
                       </a>
                     )}
                   </div>
@@ -474,18 +479,18 @@ export default function AdminConsultationsPage() {
               {/* Notes Sections */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-sm font-medium text-gray-500 block mb-2">{t('admin.consultations.clientNotes', language)}</label>
+                  <label className="text-sm font-medium text-gray-500 block mb-2">{t.admin.consultationsView.clientNotes}</label>
                   <div className="p-4 bg-gray-50 rounded-lg text-sm text-gray-700 min-h-[100px]">
-                    {selectedConsultation.notes || t('admin.consultations.noClientNotes', language)}
+                    {selectedConsultation.notes || t.admin.consultationsView.noClientNotes}
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500 block mb-2">{t('admin.consultations.internalNotes', language)}</label>
+                  <label className="text-sm font-medium text-gray-500 block mb-2">{t.admin.consultationsView.internalNotes}</label>
                   <textarea
                     rows={4}
                     value={selectedConsultation.internal_notes}
                     onChange={(e) => updateConsultation(selectedConsultation.id, { internal_notes: e.target.value })}
-                    placeholder={t('admin.consultations.addInternalNotes', language)}
+                    placeholder={t.admin.consultationsView.addInternalNotes}
                     className="w-full p-3 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-[#001F3F]/20 text-sm"
                   />
                 </div>
@@ -497,7 +502,7 @@ export default function AdminConsultationsPage() {
                 className="px-6 py-2 bg-[#001F3F] text-white rounded-lg hover:bg-[#003366] transition-colors"
                 disabled={isSaving}
               >
-                {isSaving ? t('common.saving', language) : t('common.close', language)}
+                {isSaving ? t.common.saving : t.common.cancel}
               </button>
             </div>
           </div>

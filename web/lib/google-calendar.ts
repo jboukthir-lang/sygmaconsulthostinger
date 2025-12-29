@@ -16,7 +16,7 @@ export async function createCalendarEvent(
     conferenceData?: boolean;
   }
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
   const eventData: calendar_v3.Schema$Event = {
@@ -76,7 +76,7 @@ export async function updateCalendarEvent(
     attendees?: string[];
   }
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
   const eventData: calendar_v3.Schema$Event = {};
@@ -117,7 +117,7 @@ export async function deleteCalendarEvent(
   tokens: GoogleTokens,
   eventId: string
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
   await calendar.events.delete({
@@ -140,7 +140,7 @@ export async function listCalendarEvents(
     maxResults?: number;
   }
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
   const response = await calendar.events.list({
@@ -163,7 +163,7 @@ export async function getAvailableTimeSlots(
   date: Date,
   duration: number = 60 // in minutes
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
   const startOfDay = new Date(date);

@@ -15,6 +15,12 @@ interface Service {
     description_en: string;
     description_fr: string;
     description_ar: string;
+    subtitle_en?: string;
+    subtitle_fr?: string;
+    subtitle_ar?: string;
+    features_en?: string[];
+    features_fr?: string[];
+    features_ar?: string[];
     icon: string;
     href: string;
     image_url?: string;
@@ -69,7 +75,7 @@ export default function ServiceDetailView({ slug }: { slug: string }) {
 
     async function loadOtherServices() {
         try {
-            const { data, error} = await supabase
+            const { data, error } = await supabase
                 .from('services')
                 .select('id, title_en, title_fr, title_ar, href')
                 .eq('is_active', true)
@@ -116,10 +122,9 @@ export default function ServiceDetailView({ slug }: { slug: string }) {
 
     const title = language === 'ar' ? service.title_ar : language === 'fr' ? service.title_fr : service.title_en;
     const description = language === 'ar' ? service.description_ar : language === 'fr' ? service.description_fr : service.description_en;
+    const subtitle = language === 'ar' ? service.subtitle_ar : language === 'fr' ? service.subtitle_fr : service.subtitle_en;
+    const features = language === 'ar' ? service.features_ar : language === 'fr' ? service.features_fr : service.features_en;
 
-    // Note: Features are not in database yet - using fallback from translations if available
-    const fallbackService = t.serviceDetails?.[slug];
-    const features = fallbackService?.features || [];
 
     return (
         <main className="min-h-screen bg-[#F8F9FA]">
@@ -140,8 +145,8 @@ export default function ServiceDetailView({ slug }: { slug: string }) {
                             {language === 'ar' ? 'الخدمات' : language === 'fr' ? 'Services' : 'Services'}
                         </Link>
                         <h1 className="text-4xl md:text-5xl font-serif font-bold text-white mb-4">{title}</h1>
-                        {fallbackService?.subtitle && (
-                            <p className="text-xl text-blue-100 max-w-2xl">{fallbackService.subtitle}</p>
+                        {subtitle && (
+                            <p className="text-xl text-blue-100 max-w-2xl">{subtitle}</p>
                         )}
                     </div>
                 </div>
@@ -153,8 +158,8 @@ export default function ServiceDetailView({ slug }: { slug: string }) {
                             {language === 'ar' ? 'الخدمات' : language === 'fr' ? 'Services' : 'Services'}
                         </Link>
                         <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">{title}</h1>
-                        {fallbackService?.subtitle && (
-                            <p className="text-xl text-blue-100 max-w-2xl">{fallbackService.subtitle}</p>
+                        {subtitle && (
+                            <p className="text-xl text-blue-100 max-w-2xl">{subtitle}</p>
                         )}
                     </div>
                 </div>

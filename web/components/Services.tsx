@@ -9,7 +9,8 @@ import {
     TrendingUp,
     Users2,
     ShieldCheck,
-    Building2
+    Building2,
+    ArrowRight
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { supabase } from '@/lib/supabase';
@@ -146,54 +147,70 @@ export default function Services() {
     }
 
     return (
-        <section className="py-20 bg-[#F8F9FA]" id="services">
+        <section className="py-24 bg-white" id="services">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-                    <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-[#001F3F] font-serif">
+                <div className="flex flex-col items-center justify-center space-y-4 text-center mb-16">
+                    <div className="inline-block rounded-full bg-[#F8F9FA] px-3 py-1 text-sm font-semibold text-[#D4AF37] border border-[#D4AF37]/20 mb-2">
+                        {language === 'ar' ? 'خدماتنا' : language === 'fr' ? 'Nos Services' : 'Our Services'}
+                    </div>
+                    <h2 className="text-4xl font-bold tracking-tight sm:text-5xl text-[#001F3F] font-serif">
                         {t.services.title}
                     </h2>
-                    <p className="max-w-[700px] text-[#4A4A4A] md:text-lg">
+                    <p className="max-w-[800px] text-gray-600 md:text-lg leading-relaxed">
                         {t.services.subtitle}
                     </p>
                 </div>
-                <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {services.map((service, index) => (
                         <Link
                             key={index}
                             href={service.href}
-                            className="group relative overflow-hidden rounded-2xl bg-white shadow-sm transition-all hover:shadow-md border border-gray-100 hover:border-[#D4AF37]/30"
+                            className="group relative flex flex-col overflow-hidden rounded-[2rem] bg-white shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 border border-gray-100"
                         >
-                            {/* Image Header (if available) */}
-                            {service.image_url && (
-                                <div className="relative h-48 w-full overflow-hidden">
+                            {/* Image Header */}
+                            <div className="relative h-64 w-full overflow-hidden bg-gray-100">
+                                {service.image_url ? (
                                     <img
                                         src={service.image_url}
                                         alt={service.title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                </div>
-                            )}
-
-                            <div className="p-8 flex flex-col space-y-4">
-                                <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-[#001F3F]/5 text-[#001F3F] group-hover:bg-[#D4AF37] group-hover:text-white transition-colors duration-300">
-                                    <service.icon className="h-6 w-6" />
-                                </div>
-                                <h3 className="text-xl font-bold text-[#001F3F] group-hover:text-[#D4AF37] transition-colors">
-                                    {service.title}
-                                </h3>
-                                <p className="text-[#4A4A4A] leading-relaxed">
-                                    {service.description}
-                                </p>
-
-                                {/* Price Badge (if available) */}
-                                {service.price && service.price > 0 && (
-                                    <div className="pt-4 border-t border-gray-100">
-                                        <span className="inline-block px-3 py-1 text-sm font-semibold text-[#D4AF37] bg-[#D4AF37]/10 rounded-full">
-                                            {language === 'ar' ? 'من' : language === 'fr' ? 'À partir de' : 'From'} €{service.price}
-                                        </span>
+                                ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-[#001F3F]/5">
+                                        <service.icon className="h-16 w-16 text-[#001F3F]/20" />
                                     </div>
                                 )}
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#001F3F] via-transparent to-transparent opacity-60"></div>
+
+                                {/* Floating Icon */}
+                                <div className="absolute bottom-4 left-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-white/90 backdrop-blur text-[#001F3F] shadow-lg">
+                                    <service.icon className="h-6 w-6" />
+                                </div>
+                            </div>
+
+                            <div className="flex flex-1 flex-col justify-between p-8">
+                                <div>
+                                    <h3 className="mb-3 text-2xl font-bold text-[#001F3F] group-hover:text-[#D4AF37] transition-colors font-serif">
+                                        {service.title}
+                                    </h3>
+                                    <p className="text-gray-600 leading-relaxed text-sm line-clamp-3">
+                                        {service.description}
+                                    </p>
+                                </div>
+
+                                <div className="mt-6 flex items-center justify-between border-t border-gray-100 pt-6">
+                                    <span className="text-sm font-semibold text-[#D4AF37] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                        {language === 'ar' ? 'تفاصيل أكثر' : language === 'fr' ? 'Voir détails' : 'Learn more'}
+                                        <ArrowRight className="h-4 w-4" />
+                                    </span>
+
+                                    {service.price && service.price > 0 && (
+                                        <span className="text-sm font-medium text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
+                                            €{service.price}+
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                         </Link>
                     ))}

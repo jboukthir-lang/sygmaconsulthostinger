@@ -8,7 +8,7 @@ export async function createDoc(
   tokens: GoogleTokens,
   title: string
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const docs = google.docs({ version: 'v1', auth: oauth2Client });
 
   const response = await docs.documents.create({
@@ -27,7 +27,7 @@ export async function readDoc(
   tokens: GoogleTokens,
   documentId: string
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const docs = google.docs({ version: 'v1', auth: oauth2Client });
 
   const response = await docs.documents.get({
@@ -46,7 +46,7 @@ export async function insertText(
   text: string,
   index: number = 1 // Index 1 is the start of the document
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const docs = google.docs({ version: 'v1', auth: oauth2Client });
 
   const requests: docs_v1.Schema$Request[] = [
@@ -79,7 +79,7 @@ export async function replaceText(
   searchText: string,
   replacementText: string
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const docs = google.docs({ version: 'v1', auth: oauth2Client });
 
   const requests: docs_v1.Schema$Request[] = [
@@ -119,7 +119,7 @@ export async function formatText(
     foregroundColor?: { red: number; green: number; blue: number };
   }
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const docs = google.docs({ version: 'v1', auth: oauth2Client });
 
   const textStyle: docs_v1.Schema$TextStyle = {};
@@ -177,7 +177,7 @@ export async function createContractDoc(
     terms: string[];
   }
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const docs = google.docs({ version: 'v1', auth: oauth2Client });
 
   // Create the document
@@ -224,7 +224,7 @@ Sygma Consult                   ${clientName}
   return {
     documentId: documentId,
     title: title,
-    webViewLink: document.documentUrl,
+    webViewLink: `https://docs.google.com/document/d/${documentId}/edit`,
   };
 }
 
@@ -235,7 +235,7 @@ export async function exportDocAsPdf(
   tokens: GoogleTokens,
   documentId: string
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
   const response = await drive.files.export(
@@ -284,7 +284,7 @@ export async function insertImage(
   imageUri: string,
   index: number = 1
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const docs = google.docs({ version: 'v1', auth: oauth2Client });
 
   const requests: docs_v1.Schema$Request[] = [

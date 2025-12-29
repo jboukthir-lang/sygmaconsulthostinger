@@ -2,16 +2,21 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, Phone, LogIn, LogOut, User, X } from 'lucide-react';
+import { Menu, Phone, LogIn, LogOut, User, X, Globe } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import NotificationBell from './NotificationBell';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Header() {
-    const { t, language, setLanguage } = useLanguage();
+    const { t, language, setLanguage, logoUrl } = useLanguage();
     const { user, signOut } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [imgSrc, setImgSrc] = useState<string | null>(null);
+
+    useEffect(() => {
+        setImgSrc(logoUrl || "/logo.png");
+    }, [logoUrl]);
 
     const handleSignOut = async () => {
         try {
@@ -22,128 +27,187 @@ export default function Header() {
     };
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+        <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="flex h-20 items-center justify-between">
-                    <Link className="flex items-center gap-2" href="/">
+                <div className="flex h-16 md:h-20 items-center justify-between">
+                    {/* Logo */}
+                    <Link className="flex items-center gap-2 flex-shrink-0" href="/">
                         <Image
-                            src="/logo.png"
+                            src={imgSrc || "/logo.png"}
                             alt="Sygma Consult"
                             width={120}
                             height={120}
-                            className="h-10 md:h-12 w-auto"
+                            className="h-8 md:h-12 w-auto"
                             priority
+                            onError={() => setImgSrc("/logo.png")}
                         />
-                        <span className="hidden sm:inline-block font-serif text-lg md:text-xl font-bold text-[#001F3F]">
+                        <span className="hidden sm:inline-block font-serif text-base md:text-xl font-bold text-[#001F3F]">
                             SYGMA<span className="text-[#D4AF37]">CONSULT</span>
                         </span>
                     </Link>
 
-                    <nav className="hidden md:flex gap-8 text-sm font-medium text-[#4A4A4A]">
-                        <Link className="hover:text-[#001F3F] transition-colors" href="/">{t.nav.home}</Link>
-                        <Link className="hover:text-[#001F3F] transition-colors" href="/services">{t.nav.services}</Link>
-                        <Link className="hover:text-[#001F3F] transition-colors" href="/about">{t.nav.about}</Link>
-                        <Link className="hover:text-[#001F3F] transition-colors" href="/insights">{t.nav.insights}</Link>
-                        <Link className="hover:text-[#001F3F] transition-colors" href="/contact">{t.nav.contact}</Link>
+                    {/* Desktop Navigation */}
+                    <nav className="hidden lg:flex gap-6 xl:gap-8 text-sm font-medium text-[#4A4A4A]">
+                        <Link className="hover:text-[#D4AF37] transition-colors" href="/">{t.nav.home}</Link>
+                        <Link className="hover:text-[#D4AF37] transition-colors" href="/services">{t.nav.services}</Link>
+                        <Link className="hover:text-[#D4AF37] transition-colors" href="/about">{t.nav.about}</Link>
+                        <Link className="hover:text-[#D4AF37] transition-colors" href="/insights">{t.nav.insights}</Link>
+                        <Link className="hover:text-[#D4AF37] transition-colors" href="/contact">{t.nav.contact}</Link>
                     </nav>
 
-                    <div className="flex items-center gap-4">
-                        <Link
-                            className="hidden lg:inline-flex items-center justify-center rounded-lg border border-[#001F3F] bg-transparent px-4 lg:px-6 py-2 text-sm font-medium text-[#001F3F] shadow-sm transition-colors hover:bg-[#F8F9FA] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#001F3F]"
-                            href="/contact"
-                        >
-                            <Phone className="mr-2 h-4 w-4" />
-                            <span className="hidden lg:inline">{t.nav.contact}</span>
-                        </Link>
-
+                    {/* Desktop Actions */}
+                    <div className="hidden lg:flex items-center gap-3">
                         {/* Language Switcher */}
-                        <div className="hidden md:flex items-center gap-2 text-sm font-medium text-[#001F3F] border-r border-gray-200 pr-4 mr-2">
-                            <button onClick={() => setLanguage('en')} className={`${language === 'en' ? 'text-[#D4AF37] font-bold' : 'hover:text-[#D4AF37]'} transition-colors`}>EN</button>
+                        <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
+                            <Globe className="h-4 w-4 text-gray-400" />
+                            <button onClick={() => setLanguage('en')} className={`text-xs font-semibold ${language === 'en' ? 'text-[#D4AF37]' : 'text-gray-500 hover:text-[#D4AF37]'} transition-colors`}>EN</button>
                             <span className="text-gray-300">|</span>
-                            <button onClick={() => setLanguage('fr')} className={`${language === 'fr' ? 'text-[#D4AF37] font-bold' : 'hover:text-[#D4AF37] opacity-60'} transition-colors`}>FR</button>
+                            <button onClick={() => setLanguage('fr')} className={`text-xs font-semibold ${language === 'fr' ? 'text-[#D4AF37]' : 'text-gray-500 hover:text-[#D4AF37]'} transition-colors`}>FR</button>
                             <span className="text-gray-300">|</span>
-                            <button onClick={() => setLanguage('ar')} className={`${language === 'ar' ? 'text-[#D4AF37] font-bold' : 'hover:text-[#D4AF37] opacity-60'} transition-colors`}>AR</button>
+                            <button onClick={() => setLanguage('ar')} className={`text-xs font-semibold ${language === 'ar' ? 'text-[#D4AF37]' : 'text-gray-500 hover:text-[#D4AF37]'} transition-colors`}>AR</button>
                         </div>
 
-                        {/* Auth Button */}
+                        {/* Auth */}
                         {user ? (
-                            <div className="hidden md:flex items-center gap-3">
+                            <div className="flex items-center gap-3">
                                 <NotificationBell />
-                                <Link
-                                    href="/profile"
-                                    className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                                >
+                                <Link href="/profile" className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                                     {user.photoURL ? (
-                                        <img src={user.photoURL} alt="Profile" className="h-8 w-8 rounded-full" />
+                                        <img src={user.photoURL} alt="Profile" className="h-7 w-7 rounded-full" />
                                     ) : (
                                         <User className="h-4 w-4 text-[#001F3F]" />
                                     )}
-                                    <span className="text-sm font-medium text-[#001F3F] max-w-[100px] truncate">
-                                        {user.displayName || user.email}
-                                    </span>
+                                    <span className="text-sm font-medium text-[#001F3F] max-w-[100px] truncate">{user.displayName || user.email}</span>
                                 </Link>
-                                <button
-                                    onClick={handleSignOut}
-                                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#001F3F] hover:text-[#D4AF37] transition-colors"
-                                >
+                                <button onClick={handleSignOut} className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                                     <LogOut className="h-4 w-4" />
-                                    {t.nav.signOut}
                                 </button>
                             </div>
                         ) : (
-                            <Link
-                                href="/login"
-                                className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#001F3F] text-sm font-medium text-[#001F3F] hover:bg-[#F8F9FA] transition-colors"
-                            >
+                            <Link href="/login" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#001F3F] text-sm font-medium text-[#001F3F] hover:bg-[#F8F9FA] transition-colors">
                                 <LogIn className="h-4 w-4" />
                                 {t.nav.signIn}
                             </Link>
                         )}
 
-                        <Link
-                            className="hidden md:inline-flex items-center justify-center rounded-lg bg-[#D4AF37] px-6 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-[#C5A028] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#D4AF37]"
-                            href="/booking"
-                        >
+                        {/* Book Button */}
+                        <Link href="/booking" className="inline-flex items-center justify-center rounded-lg bg-[#D4AF37] px-5 py-2 text-sm font-semibold text-white shadow-md hover:bg-[#C5A028] transition-all hover:shadow-lg">
                             {t.nav.book}
                         </Link>
-                        <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                            {isMenuOpen ? <X className="h-6 w-6 text-[#001F3F]" /> : <Menu className="h-6 w-6 text-[#001F3F]" />}
-                        </button>
                     </div>
+
+                    {/* Mobile Menu Button */}
+                    <button
+                        className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        aria-label="Toggle menu"
+                    >
+                        {isMenuOpen ? <X className="h-6 w-6 text-[#001F3F]" /> : <Menu className="h-6 w-6 text-[#001F3F]" />}
+                    </button>
                 </div>
             </div>
 
-            {/* Mobile Menu */}
+            {/* Mobile Menu - Improved Design */}
             {isMenuOpen && (
-                <div className="md:hidden bg-white border-t border-gray-100 p-4 space-y-4 absolute top-20 left-0 w-full shadow-lg z-50">
-                    <nav className="flex flex-col gap-4">
-                        <Link onClick={() => setIsMenuOpen(false)} className="hover:text-[#001F3F] transition-colors font-medium" href="/">{t.nav.home}</Link>
-                        <Link onClick={() => setIsMenuOpen(false)} className="hover:text-[#001F3F] transition-colors font-medium" href="/services">{t.nav.services}</Link>
-                        <Link onClick={() => setIsMenuOpen(false)} className="hover:text-[#001F3F] transition-colors font-medium" href="/about">{t.nav.about}</Link>
-                        <Link onClick={() => setIsMenuOpen(false)} className="hover:text-[#001F3F] transition-colors font-medium" href="/insights">{t.nav.insights}</Link>
-                        <Link onClick={() => setIsMenuOpen(false)} className="hover:text-[#001F3F] transition-colors font-medium" href="/contact">{t.nav.contact}</Link>
-                    </nav>
-                    <div className="flex flex-col gap-4 pt-4 border-t border-gray-100">
-                        <div className="flex gap-4">
-                            <button onClick={() => { setLanguage('en'); setIsMenuOpen(false); }} className={`${language === 'en' ? 'text-[#D4AF37] font-bold' : 'text-gray-500'}`}>EN</button>
-                            <button onClick={() => { setLanguage('fr'); setIsMenuOpen(false); }} className={`${language === 'fr' ? 'text-[#D4AF37] font-bold' : 'text-gray-500'}`}>FR</button>
-                            <button onClick={() => { setLanguage('ar'); setIsMenuOpen(false); }} className={`${language === 'ar' ? 'text-[#D4AF37] font-bold' : 'text-gray-500'}`}>AR</button>
+                <div className="lg:hidden fixed inset-0 top-16 md:top-20 bg-white z-50 overflow-y-auto">
+                    <div className="container mx-auto px-4 py-6 space-y-6">
+                        {/* Navigation Links */}
+                        <nav className="space-y-1">
+                            <Link
+                                onClick={() => setIsMenuOpen(false)}
+                                className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
+                                href="/"
+                            >
+                                <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.home}</span>
+                                <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
+                            </Link>
+                            <Link
+                                onClick={() => setIsMenuOpen(false)}
+                                className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
+                                href="/services"
+                            >
+                                <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.services}</span>
+                                <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
+                            </Link>
+                            <Link
+                                onClick={() => setIsMenuOpen(false)}
+                                className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
+                                href="/about"
+                            >
+                                <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.about}</span>
+                                <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
+                            </Link>
+                            <Link
+                                onClick={() => setIsMenuOpen(false)}
+                                className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
+                                href="/insights"
+                            >
+                                <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.insights}</span>
+                                <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
+                            </Link>
+                            <Link
+                                onClick={() => setIsMenuOpen(false)}
+                                className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
+                                href="/contact"
+                            >
+                                <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.contact}</span>
+                                <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
+                            </Link>
+                        </nav>
+
+                        {/* Language Switcher */}
+                        <div className="bg-gray-50 rounded-2xl p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Globe className="h-5 w-5 text-[#D4AF37]" />
+                                <span className="text-sm font-semibold text-gray-700">Language</span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2">
+                                <button
+                                    onClick={() => { setLanguage('en'); setIsMenuOpen(false); }}
+                                    className={`px-4 py-3 rounded-xl font-semibold transition-all ${language === 'en' ? 'bg-[#D4AF37] text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+                                >
+                                    🇬🇧 EN
+                                </button>
+                                <button
+                                    onClick={() => { setLanguage('fr'); setIsMenuOpen(false); }}
+                                    className={`px-4 py-3 rounded-xl font-semibold transition-all ${language === 'fr' ? 'bg-[#D4AF37] text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+                                >
+                                    🇫🇷 FR
+                                </button>
+                                <button
+                                    onClick={() => { setLanguage('ar'); setIsMenuOpen(false); }}
+                                    className={`px-4 py-3 rounded-xl font-semibold transition-all ${language === 'ar' ? 'bg-[#D4AF37] text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+                                >
+                                    🇹🇳 AR
+                                </button>
+                            </div>
                         </div>
+
+                        {/* User Section */}
                         {user ? (
-                            <div className="flex flex-col gap-3">
+                            <div className="bg-gray-50 rounded-2xl p-4 space-y-3">
                                 <Link
                                     href="/profile"
                                     onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg"
+                                    className="flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-gray-100 transition-colors"
                                 >
-                                    <User className="h-4 w-4 text-[#001F3F]" />
-                                    <span>{user.displayName || user.email}</span>
+                                    {user.photoURL ? (
+                                        <img src={user.photoURL} alt="Profile" className="h-10 w-10 rounded-full" />
+                                    ) : (
+                                        <div className="h-10 w-10 rounded-full bg-[#D4AF37] flex items-center justify-center">
+                                            <User className="h-5 w-5 text-white" />
+                                        </div>
+                                    )}
+                                    <div className="flex-1">
+                                        <p className="font-semibold text-gray-900">{user.displayName || 'User'}</p>
+                                        <p className="text-xs text-gray-500">{user.email}</p>
+                                    </div>
                                 </Link>
                                 <button
                                     onClick={() => { handleSignOut(); setIsMenuOpen(false); }}
-                                    className="flex items-center gap-2 p-2 text-red-600"
+                                    className="w-full flex items-center justify-center gap-2 p-3 bg-red-50 text-red-600 rounded-xl font-semibold hover:bg-red-100 transition-colors"
                                 >
-                                    <LogOut className="h-4 w-4" />
+                                    <LogOut className="h-5 w-5" />
                                     {t.nav.signOut}
                                 </button>
                             </div>
@@ -151,12 +215,30 @@ export default function Header() {
                             <Link
                                 href="/login"
                                 onClick={() => setIsMenuOpen(false)}
-                                className="flex items-center gap-2 p-3 bg-[#001F3F] text-white rounded-lg justify-center font-bold"
+                                className="flex items-center justify-center gap-2 p-4 bg-[#001F3F] text-white rounded-2xl font-bold shadow-lg hover:bg-[#003366] transition-all"
                             >
-                                <LogIn className="h-4 w-4" />
+                                <LogIn className="h-5 w-5" />
                                 {t.nav.signIn}
                             </Link>
                         )}
+
+                        {/* CTA Button */}
+                        <Link
+                            href="/booking"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="flex items-center justify-center gap-2 p-4 bg-gradient-to-r from-[#D4AF37] to-[#C5A028] text-white rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all"
+                        >
+                            <Phone className="h-5 w-5" />
+                            {t.nav.book}
+                        </Link>
+
+                        {/* Contact Info */}
+                        <div className="pt-4 border-t border-gray-200 text-center">
+                            <p className="text-sm text-gray-500 mb-2">Need help?</p>
+                            <a href="tel:+33752034786" className="text-[#D4AF37] font-semibold text-lg">
+                                +33 7 52 03 47 86
+                            </a>
+                        </div>
                     </div>
                 </div>
             )}

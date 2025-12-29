@@ -115,7 +115,7 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-[#F4F6F9]">
       <AdminSidebar />
 
       <div className="flex-1 flex flex-col">

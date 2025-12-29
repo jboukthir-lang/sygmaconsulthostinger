@@ -14,7 +14,7 @@ export async function uploadFileToDrive(
     folderId?: string;
   }
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
   const fileMetadata: drive_v3.Schema$File = {
@@ -44,7 +44,7 @@ export async function createDriveFolder(
   folderName: string,
   parentFolderId?: string
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
   const fileMetadata: drive_v3.Schema$File = {
@@ -72,7 +72,7 @@ export async function listDriveFiles(
     query?: string;
   }
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
   let query = options?.query || '';
@@ -97,7 +97,7 @@ export async function downloadDriveFile(
   tokens: GoogleTokens,
   fileId: string
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
   const response = await drive.files.get(
@@ -118,7 +118,7 @@ export async function deleteDriveFile(
   tokens: GoogleTokens,
   fileId: string
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
   await drive.files.delete({
@@ -137,7 +137,7 @@ export async function shareDriveFile(
   emailAddress: string,
   role: 'reader' | 'writer' | 'commenter' = 'reader'
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
   const response = await drive.permissions.create({
@@ -160,7 +160,7 @@ export async function makeFilePublic(
   tokens: GoogleTokens,
   fileId: string
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
   const response = await drive.permissions.create({
@@ -191,7 +191,7 @@ export async function searchDriveFiles(
   tokens: GoogleTokens,
   searchQuery: string
 ) {
-  const oauth2Client = setCredentials(tokens);
+  const oauth2Client = await setCredentials(tokens);
   const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
   const response = await drive.files.list({
