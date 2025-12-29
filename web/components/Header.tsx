@@ -48,28 +48,27 @@ export default function Header() {
         }
     };
 
-    const services = [
-        {
-            name: { en: 'Strategic Market Analysis', fr: 'Analyse Stratégique du Marché', ar: 'تحليل استراتيجي للسوق' },
-            href: '/services/market-analysis',
-            icon: '📊'
-        },
-        {
-            name: { en: 'Digital Transformation', fr: 'Transformation Digitale', ar: 'التحول الرقمي' },
-            href: '/services/digital-transformation',
-            icon: '💻'
-        },
-        {
-            name: { en: 'Cross-Border Development', fr: 'Développement Transfrontalier', ar: 'التطوير عبر الحدود' },
-            href: '/services/cross-border',
-            icon: '🌍'
-        },
-        {
-            name: { en: 'Regulatory Compliance', fr: 'Conformité Réglementaire', ar: 'الامتثال التنظيمي' },
-            href: '/services/compliance',
-            icon: '⚖️'
-        },
-    ];
+    const [services, setServices] = useState<any[]>([]);
+    const [servicesLoading, setServicesLoading] = useState(true);
+
+    // Fetch services from MySQL API
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const response = await fetch('/api/services');
+                if (response.ok) {
+                    const data = await response.json();
+                    // Take only first 4 services for header dropdown
+                    setServices(data.slice(0, 4));
+                }
+            } catch (error) {
+                console.error('Failed to fetch services for header:', error);
+            } finally {
+                setServicesLoading(false);
+            }
+        };
+        fetchServices();
+    }, []);
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm">
@@ -122,21 +121,17 @@ export default function Header() {
                                                 <div className="space-y-4">
                                                     {services.slice(0, 2).map((service, idx) => (
                                                         <Link
-                                                            key={idx}
+                                                            key={service.id || idx}
                                                             href={service.href}
                                                             className="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 transition-all group"
                                                         >
-                                                            <span className="text-2xl mt-1">{service.icon}</span>
+                                                            <span className="text-2xl mt-1">{service.icon || '📋'}</span>
                                                             <div>
                                                                 <h4 className="font-bold text-[#001F3F] group-hover:text-[#D4AF37] transition-colors">
-                                                                    {service.name[language as keyof typeof service.name]}
+                                                                    {language === 'ar' ? service.title_ar : language === 'fr' ? service.title_fr : service.title_en}
                                                                 </h4>
                                                                 <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                                                                    {language === 'ar'
-                                                                        ? 'حلول مخصصة لتنمية أعمالك وتحقيق أهدافك'
-                                                                        : language === 'fr'
-                                                                            ? 'Solutions sur mesure pour développer votre entreprise.'
-                                                                            : 'Tailored solutions to grow your business.'}
+                                                                    {language === 'ar' ? service.description_ar : language === 'fr' ? service.description_fr : service.description_en}
                                                                 </p>
                                                             </div>
                                                         </Link>
@@ -151,21 +146,17 @@ export default function Header() {
                                                 <div className="space-y-4">
                                                     {services.slice(2, 4).map((service, idx) => (
                                                         <Link
-                                                            key={idx}
+                                                            key={service.id || idx}
                                                             href={service.href}
                                                             className="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 transition-all group"
                                                         >
-                                                            <span className="text-2xl mt-1">{service.icon}</span>
+                                                            <span className="text-2xl mt-1">{service.icon || '📋'}</span>
                                                             <div>
                                                                 <h4 className="font-bold text-[#001F3F] group-hover:text-[#D4AF37] transition-colors">
-                                                                    {service.name[language as keyof typeof service.name]}
+                                                                    {language === 'ar' ? service.title_ar : language === 'fr' ? service.title_fr : service.title_en}
                                                                 </h4>
                                                                 <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                                                                    {language === 'ar'
-                                                                        ? 'خبرة دولية لضمان نجاحك في جميع الأسواق'
-                                                                        : language === 'fr'
-                                                                            ? 'Expertise internationale pour assurer votre succès.'
-                                                                            : 'International expertise to ensure your success.'}
+                                                                    {language === 'ar' ? service.description_ar : language === 'fr' ? service.description_fr : service.description_en}
                                                                 </p>
                                                             </div>
                                                         </Link>
