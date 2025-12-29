@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { executeQuery, queryOne } from '@/lib/mysql';
 
+export const dynamic = 'force-dynamic';
+
+
 // Helper to get Supabase Admin client
 function getSupabaseAdmin() {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
