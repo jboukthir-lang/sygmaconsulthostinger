@@ -1,13 +1,27 @@
 import { NextResponse } from 'next/server';
-import { queryOne } from '@/lib/mysql';
+import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
     try {
-        const settings = await queryOne('SELECT * FROM calendar_settings LIMIT 1');
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-        if (!settings) {
+        if (!supabaseUrl || !supabaseKey) {
+            throw new Error('Missing Supabase credentials');
+        }
+
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        const { data: settings, error } = await supabase
+            .from('calendar_settings')
+            .select('*')
+            .limit(1)
+            .single();
+
+        if (error || !settings) { // Added !settings check here as well, in case single() returns null data without an explicit error object for "not found"
+            console.error('Supabase error:', error);
             // Return default settings if none exist
             return NextResponse.json({
                 slot_duration: 30,

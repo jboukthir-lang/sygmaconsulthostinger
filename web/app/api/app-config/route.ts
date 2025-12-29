@@ -1,13 +1,27 @@
 import { NextResponse } from 'next/server';
-import { queryOne } from '@/lib/mysql';
+import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
     try {
-        const config = await queryOne('SELECT * FROM app_config LIMIT 1');
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-        if (!config) {
+        if (!supabaseUrl || !supabaseKey) {
+            throw new Error('Missing Supabase credentials');
+        }
+
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        const { data: config, error } = await supabase
+            .from('app_config')
+            .select('*')
+            .limit(1)
+            .single();
+
+        if (error) {
+            console.error('Supabase error:', error);
             // Return default config if none exists
             return NextResponse.json({
                 logo_url: '/logo.png',
