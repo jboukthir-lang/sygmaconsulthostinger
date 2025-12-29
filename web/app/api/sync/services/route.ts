@@ -2,17 +2,23 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { executeQuery, queryOne } from '@/lib/mysql';
 
-// Create a Supabase client with Service Role for admin access
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// Helper to get Supabase Admin client
+function getSupabaseAdmin() {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!url || !key) {
+        throw new Error('Missing Supabase credentials (URL or Service Role Key)');
+    }
+    return createClient(url, key);
+}
 
 export async function GET() {
     try {
         console.log('Starting Sync: Supabase -> MySQL (Services)');
 
         // 1. Fetch from Supabase
+        const supabaseAdmin = getSupabaseAdmin();
         const { data: services, error } = await supabaseAdmin
             .from('services')
             .select('*')
