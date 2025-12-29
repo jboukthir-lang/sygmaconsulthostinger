@@ -64,7 +64,8 @@ export default function BookingCalendar() {
     const { user } = useAuth();
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
-    const [step, setStep] = useState(1);
+    const [selectedService, setSelectedService] = useState<Service | null>(null);
+    const [step, setStep] = useState(0);
     const [services, setServices] = useState<Service[]>([]);
     const [timeSlots, setTimeSlots] = useState<string[]>([]);
     const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -117,9 +118,10 @@ export default function BookingCalendar() {
                 // Filter for bookable services only
                 const bookableServices = data.filter((s: any) => s.is_bookable);
                 setServices(bookableServices);
-                if (bookableServices.length > 0) {
-                    setFormData(prev => ({ ...prev, serviceId: bookableServices[0].id }));
-                }
+                // Don't auto-select service - let user choose in Step 0
+                // if (bookableServices.length > 0) {
+                //     setFormData(prev => ({ ...prev, serviceId: bookableServices[0].id }));
+                // }
             }
         } catch (error) {
             console.error('Error loading services:', error);
@@ -150,9 +152,18 @@ export default function BookingCalendar() {
 
     // loadBlockedDates removed as it is combined with calendar-settings API
 
+    // Helper to get local date string YYYY-MM-DD
+    function getLocalDateString(date: Date): string {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
     async function loadBookedSlots(date: Date) {
         try {
-            const dateStr = date.toISOString().split('T')[0];
+            // Fix: Use local date string instead of ISO (which converts to UTC and might shift day)
+            const dateStr = getLocalDateString(date);
             const { data, error } = await supabase
                 .from('bookings')
                 .select('time')
@@ -171,6 +182,7 @@ export default function BookingCalendar() {
     }
 
     function generateTimeSlots(date: Date) {
+        setTimeSlots([]);
         if (!calendarSettings) {
             console.log('⚠️ Calendar settings not ready');
             return;
@@ -234,7 +246,8 @@ export default function BookingCalendar() {
     }
 
     function isDateBlocked(date: Date): boolean {
-        const dateStr = date.toISOString().split('T')[0];
+        // Fix: Use local date string instead of ISO
+        const dateStr = getLocalDateString(date);
         return blockedDates.some(bd => bd.date === dateStr);
     }
 
@@ -434,6 +447,89 @@ export default function BookingCalendar() {
             {/* Main Content */}
             <div className="p-4 sm:p-6 md:p-8 md:w-2/3">
 
+
+                {/* Step 0: Service Selection */}
+                {step === 0 && (
+                    <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                        <h2 className="text-2xl font-bold text-[#001F3F] mb-2">
+                            {language === 'ar' ? 'اختر الخدمة' : language === 'fr' ? 'Choisissez votre service' : 'Choose Your Service'}
+                        </h2>
+                        <p className="text-gray-600 mb-6 text-sm">
+                            {language === 'ar' ? 'اختر الخدمة التي تحتاجها من القائمة أدناه' : language === 'fr' ? 'Sélectionnez le service dont vous avez besoin dans la liste ci-dessous' : 'Select the service you need from the list below'}
+                        </p>
+
+                        {/* Services Grid */}
+                        <div className="grid grid-cols-1 gap-4 max-h-[500px] overflow-y-auto pr-2">
+                            {services.map((service) => {
+                                const isSelected = selectedService?.id === service.id;
+                                return (
+                                    <button
+                                        key={service.id}
+                                        onClick={() => {
+                                            setSelectedService(service);
+                                            setFormData(prev => ({ ...prev, serviceId: service.id }));
+                                        }}
+                                        className={`group relative bg-white/80 backdrop-blur-xl border-2 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden text-left ${isSelected
+                                            ? 'border-[#D4AF37] bg-[#D4AF37]/5'
+                                            : 'border-gray-200 hover:border-[#001F3F]/30'
+                                            }`}
+                                    >
+                                        <div className="flex gap-4 p-4">
+                                            {/* Service Image */}
+                                            {service.image_url && (
+                                                <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+                                                    <img
+                                                        src={service.image_url}
+                                                        alt={language === 'ar' ? service.title_ar : language === 'fr' ? service.title_fr : service.title_en}
+                                                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {/* Service Info */}
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="text-lg font-bold text-[#001F3F] mb-1 line-clamp-1">
+                                                    {language === 'ar' ? service.title_ar : language === 'fr' ? service.title_fr : service.title_en}
+                                                </h3>
+                                                <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                                                    {language === 'ar' ? service.description_ar : language === 'fr' ? service.description_fr : service.description_en}
+                                                </p>
+                                                <div className="flex items-center gap-4 text-xs text-gray-500">
+                                                    <span className="flex items-center gap-1">
+                                                        <Clock className="h-3 w-3" />
+                                                        {service.duration_minutes} min
+                                                    </span>
+                                                    <span className="font-semibold text-[#D4AF37]">
+                                                        {service.price > 0 ? `${service.price}€` : (language === 'ar' ? 'مجاني' : language === 'fr' ? 'Gratuit' : 'Free')}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {/* Selection Indicator */}
+                                            {isSelected && (
+                                                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#D4AF37] text-white flex-shrink-0">
+                                                    <CheckCircle2 className="h-5 w-5" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* Next Button */}
+                        <div className="mt-6 flex justify-end">
+                            <button
+                                disabled={!selectedService}
+                                onClick={() => setStep(1)}
+                                className="px-6 py-2 bg-[#001F3F] text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#003366] transition-colors"
+                            >
+                                {language === 'ar' ? 'التالي' : language === 'fr' ? 'Suivant' : 'Next'}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {step === 1 && (
                     <div className="animate-in fade-in slide-in-from-right-4 duration-300">
                         <h2 className="text-2xl font-bold text-[#001F3F] mb-6">{t.booking.step1.title}</h2>
@@ -487,24 +583,30 @@ export default function BookingCalendar() {
                         {/* Time Slots */}
                         {selectedDate && (
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
-                                {timeSlots.map(time => {
-                                    const isBooked = bookedSlots.includes(time);
-                                    return (
-                                        <button
-                                            key={time}
-                                            onClick={() => !isBooked && setSelectedTime(time)}
-                                            disabled={isBooked}
-                                            className={`py-2 px-3 sm:px-4 rounded-full text-sm border transition-all ${selectedTime === time
-                                                ? 'border-[#D4AF37] bg-[#D4AF37] text-white'
-                                                : isBooked
-                                                    ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed line-through'
-                                                    : 'border-gray-200 hover:border-[#001F3F] hover:text-[#001F3F]'
-                                                }`}
-                                        >
-                                            {time}
-                                        </button>
-                                    );
-                                })}
+                                {timeSlots.length > 0 ? (
+                                    timeSlots.map(time => {
+                                        const isBooked = bookedSlots.includes(time);
+                                        return (
+                                            <button
+                                                key={time}
+                                                onClick={() => !isBooked && setSelectedTime(time)}
+                                                disabled={isBooked}
+                                                className={`py-2 px-3 sm:px-4 rounded-full text-sm border transition-all ${selectedTime === time
+                                                    ? 'border-[#D4AF37] bg-[#D4AF37] text-white'
+                                                    : isBooked
+                                                        ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed line-through'
+                                                        : 'border-gray-200 hover:border-[#001F3F] hover:text-[#001F3F]'
+                                                    }`}
+                                            >
+                                                {time}
+                                            </button>
+                                        );
+                                    })
+                                ) : (
+                                    <div className="col-span-full text-center py-4 text-gray-500 text-sm">
+                                        {language === 'ar' ? 'لا توجد مواعيد متاحة في هذا اليوم' : language === 'fr' ? 'Aucun créneau disponible ce jour-là' : 'No available slots on this day'}
+                                    </div>
+                                )}
                             </div>
                         )}
 

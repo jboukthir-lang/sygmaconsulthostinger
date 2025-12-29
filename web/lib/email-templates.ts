@@ -2,7 +2,7 @@ import type { Booking, Contact } from './supabase';
 
 // Booking Confirmation Email Template (to client)
 export const bookingConfirmationEmail = (booking: Booking) => ({
-  subject: 'Booking Confirmation - Sygma Consult',
+  subject: 'Confirmation de réservation - Sygma Consult',
   html: `
     <!DOCTYPE html>
     <html>
@@ -23,60 +23,60 @@ export const bookingConfirmationEmail = (booking: Booking) => ({
       <body>
         <div class="container">
           <div class="header">
-            <h1>Booking Confirmed!</h1>
-            <p>Your consultation has been scheduled</p>
+            <h1>Réservation Confirmée !</h1>
+            <p>Votre consultation a été programmée</p>
           </div>
           <div class="content">
-            <p>Dear ${booking.name},</p>
-            <p>Thank you for booking a consultation with Sygma Consult. We're excited to help you achieve your business goals.</p>
+            <p>Cher(e) ${booking.name},</p>
+            <p>Merci d'avoir réservé une consultation avec Sygma Consult. Nous sommes ravis de vous accompagner dans vos projets.</p>
 
             <div class="booking-details">
-              <h3 style="color: #001F3F; margin-top: 0;">Consultation Details</h3>
+              <h3 style="color: #001F3F; margin-top: 0;">Détails de la consultation</h3>
               <div class="detail-row">
-                <span class="detail-label">Date:</span>
+                <span class="detail-label">Date :</span>
                 <span>${booking.date}</span>
               </div>
               <div class="detail-row">
-                <span class="detail-label">Time:</span>
+                <span class="detail-label">Heure :</span>
                 <span>${booking.time} (CET)</span>
               </div>
               <div class="detail-row">
-                <span class="detail-label">Topic:</span>
+                <span class="detail-label">Sujet :</span>
                 <span>${booking.topic}</span>
               </div>
               <div class="detail-row" ${booking.meet_link ? '' : 'style="border-bottom: none;"'}>
-                <span class="detail-label">Email:</span>
+                <span class="detail-label">Email :</span>
                 <span>${booking.email}</span>
               </div>
               ${booking.meet_link ? `
               <div class="detail-row" style="border-bottom: none;">
-                <span class="detail-label">Meeting Link:</span>
-                <span><a href="${booking.meet_link}" style="color: #D4AF37;">Join Google Meet</a></span>
+                <span class="detail-label">Lien de réunion :</span>
+                <span><a href="${booking.meet_link}" style="color: #D4AF37;">Rejoindre Google Meet</a></span>
               </div>
               ` : ''}
             </div>
 
-            <p><strong>What's Next?</strong></p>
+            <p><strong>Prochaines étapes</strong></p>
             <ul>
-              <li>You will receive a calendar invitation shortly</li>
-              ${booking.meet_link ? '<li>Use the Google Meet link above to join your consultation</li>' : ''}
-              <li>A reminder will be sent 24 hours before your consultation</li>
-              <li>If you need to reschedule, please contact us at least 24 hours in advance</li>
+              <li>Vous recevrez bientôt une invitation calendrier</li>
+              ${booking.meet_link ? '<li>Utilisez le lien Google Meet ci-dessus pour rejoindre votre consultation</li>' : ''}
+              <li>Un rappel sera envoyé 24h avant votre rendez-vous</li>
+              <li>En cas d'empêchement, merci de nous prévenir au moins 24h à l'avance</li>
             </ul>
 
             <center>
-              ${booking.meet_link ? `<a href="${booking.meet_link}" class="button">Join Google Meet</a>` : ''}
-              <a href="https://sygmaconsult.com/contact" class="button">Contact Us</a>
+              ${booking.meet_link ? `<a href="${booking.meet_link}" class="button">Rejoindre Google Meet</a>` : ''}
+              <a href="https://sygmaconsult.com/contact" class="button">Nous Contacter</a>
             </center>
 
-            <p>If you have any questions, please don't hesitate to reach out.</p>
+            <p>N'hésitez pas à nous contacter pour toute question.</p>
 
-            <p>Best regards,<br><strong>The Sygma Consult Team</strong></p>
+            <p>Cordialement,<br><strong>L'équipe Sygma Consult</strong></p>
           </div>
           <div class="footer">
             <p>Sygma Consult | Paris & Tunis</p>
             <p>+33 7 52 03 47 86 | contact@sygma-consult.com</p>
-            <p style="font-size: 12px; color: #999;">This is an automated message. Please do not reply directly to this email.</p>
+            <p style="font-size: 12px; color: #999;">Ceci est un message automatique. Merci de ne pas répondre directement à cet email.</p>
           </div>
         </div>
       </body>
