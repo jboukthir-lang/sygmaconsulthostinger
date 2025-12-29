@@ -30,7 +30,7 @@ export async function GET() {
         if (error) throw new Error(`Supabase Fetch Error: ${error.message}`);
         if (!services || services.length === 0) return NextResponse.json({ message: 'No services found in Supabase.' });
 
-        // 2. Ensure MySQL Table Exists
+        // 2. Ensure MySQL Table Exists & Has Correct Schema
         await executeQuery(`
             CREATE TABLE IF NOT EXISTS services (
                 id VARCHAR(36) PRIMARY KEY,
@@ -60,6 +60,26 @@ export async function GET() {
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
         `);
+
+        // Check and Add Missing Columns (Schema Migration)
+        try {
+            await executeQuery("ALTER TABLE services ADD COLUMN subtitle_en TEXT;");
+        } catch (e) { /* Column likely exists */ }
+        try {
+            await executeQuery("ALTER TABLE services ADD COLUMN subtitle_fr TEXT;");
+        } catch (e) { /* Column likely exists */ }
+        try {
+            await executeQuery("ALTER TABLE services ADD COLUMN subtitle_ar TEXT;");
+        } catch (e) { /* Column likely exists */ }
+        try {
+            await executeQuery("ALTER TABLE services ADD COLUMN features_en JSON;");
+        } catch (e) { /* Column likely exists */ }
+        try {
+            await executeQuery("ALTER TABLE services ADD COLUMN features_fr JSON;");
+        } catch (e) { /* Column likely exists */ }
+        try {
+            await executeQuery("ALTER TABLE services ADD COLUMN features_ar JSON;");
+        } catch (e) { /* Column likely exists */ }
 
         // 3. Insert/Update Data
         let synchronizedCount = 0;
