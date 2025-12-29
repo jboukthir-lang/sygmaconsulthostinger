@@ -5,14 +5,15 @@ import { X, Save, Loader2, Calendar, Clock, User, Mail, Phone, Video, MapPin, Do
 import { supabase } from '@/lib/supabase'
 import { useLanguage } from '@/context/LanguageContext'
 
-interface AppointmentType {
+interface Service {
   id: string
-  name_en: string
-  name_fr: string
-  name_ar: string
-  duration: number
+  title_en: string
+  title_fr: string
+  title_ar: string
+  duration_minutes: number
   price: number
   color: string
+  image_url?: string
 }
 
 interface Appointment {
@@ -26,6 +27,7 @@ interface Appointment {
   client_phone?: string
   status?: string
   appointment_type_id?: string
+  service_id?: string
   notes?: string
   is_online?: boolean
   price?: number
@@ -40,13 +42,13 @@ export default function AppointmentModal({ appointment, onClose }: AppointmentMo
   const { language } = useLanguage()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
-  const [appointmentTypes, setAppointmentTypes] = useState<AppointmentType[]>([])
+  const [services, setServices] = useState<Service[]>([])
 
   const [formData, setFormData] = useState({
     client_name: appointment?.client_name || '',
     client_email: appointment?.client_email || '',
     client_phone: appointment?.client_phone || '',
-    appointment_type_id: appointment?.appointment_type_id || '',
+    service_id: appointment?.service_id || '',
     appointment_date: appointment?.appointment_date || '',
     start_time: appointment?.start_time || '',
     end_time: appointment?.end_time || '',
@@ -57,47 +59,48 @@ export default function AppointmentModal({ appointment, onClose }: AppointmentMo
   })
 
   useEffect(() => {
-    fetchAppointmentTypes()
+    fetchServices()
   }, [])
 
-  async function fetchAppointmentTypes() {
+  async function fetchServices() {
     try {
       const { data, error } = await supabase
-        .from('appointment_types')
+        .from('services')
         .select('*')
         .eq('is_active', true)
-        .order('name_en')
+        .eq('is_bookable', true)
+        .order('display_order')
 
       if (error) throw error
-      setAppointmentTypes(data || [])
+      setServices(data || [])
 
-      if (data && data.length > 0 && !formData.appointment_type_id) {
-        setFormData(prev => ({ ...prev, appointment_type_id: data[0].id }))
+      if (data && data.length > 0 && !formData.service_id) {
+        setFormData(prev => ({ ...prev, service_id: data[0].id }))
       }
     } catch (error) {
-      console.error('Error fetching appointment types:', error)
+      console.error('Error fetching services:', error)
     }
   }
 
   async function handleSubmit() {
     setLoading(true)
     try {
-      const selectedType = appointmentTypes.find(t => t.id === formData.appointment_type_id)
+      const selectedService = services.find(s => s.id === formData.service_id)
 
       const appointmentData = {
         client_name: formData.client_name,
         client_email: formData.client_email,
         client_phone: formData.client_phone,
-        appointment_type_id: formData.appointment_type_id,
+        service_id: formData.service_id,
         appointment_date: formData.appointment_date,
         start_time: formData.start_time,
         end_time: formData.end_time,
         is_online: formData.is_online,
         notes: formData.notes,
         status: formData.status,
-        title: selectedType?.[`name_${language}` as keyof AppointmentType] || 'Appointment',
-        price: selectedType?.price || 0,
-        duration: selectedType?.duration || 60
+        title: selectedService?.[`title_${language}` as keyof Service] || 'Appointment',
+        price: selectedService?.price || 0,
+        duration: selectedService?.duration_minutes || 60
       }
 
       let result
@@ -122,7 +125,7 @@ export default function AppointmentModal({ appointment, onClose }: AppointmentMo
 
         // Add to Google Calendar if checkbox is checked
         if (formData.add_to_google_calendar && result) {
-          await createGoogleCalendarEvent(result, selectedType)
+          await createGoogleCalendarEvent(result, selectedService)
         }
       }
 
@@ -135,14 +138,14 @@ export default function AppointmentModal({ appointment, onClose }: AppointmentMo
     }
   }
 
-  async function createGoogleCalendarEvent(appointmentData: any, serviceType: AppointmentType | undefined) {
+  async function createGoogleCalendarEvent(appointmentData: any, service: Service | undefined) {
     try {
       const response = await fetch('/api/bookings/create-with-calendar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           appointmentId: appointmentData.id,
-          title: serviceType?.[`name_${language}` as keyof AppointmentType] || 'Appointment',
+          title: service?.[`title_${language}` as keyof Service] || 'Appointment',
           description: formData.notes || `Appointment with ${formData.client_name}`,
           startTime: `${formData.appointment_date}T${formData.start_time}:00`,
           endTime: `${formData.appointment_date}T${formData.end_time}:00`,
@@ -159,7 +162,7 @@ export default function AppointmentModal({ appointment, onClose }: AppointmentMo
     }
   }
 
-  const selectedType = appointmentTypes.find(t => t.id === formData.appointment_type_id)
+  const selectedService = services.find(s => s.id === formData.service_id)
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -177,9 +180,8 @@ export default function AppointmentModal({ appointment, onClose }: AppointmentMo
                 {[1, 2, 3, 4].map((s) => (
                   <div
                     key={s}
-                    className={`h-1 w-12 rounded-full transition-all ${
-                      s <= step ? 'bg-white' : 'bg-white/30'
-                    }`}
+                    className={`h-1 w-12 rounded-full transition-all ${s <= step ? 'bg-white' : 'bg-white/30'
+                      }`}
                   />
                 ))}
               </div>
@@ -268,39 +270,45 @@ export default function AppointmentModal({ appointment, onClose }: AppointmentMo
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {appointmentTypes.map((type) => (
+                {services.map((service) => (
                   <button
-                    key={type.id}
-                    onClick={() => setFormData({ ...formData, appointment_type_id: type.id })}
-                    className={`p-4 rounded-xl border-2 transition-all text-left ${
-                      formData.appointment_type_id === type.id
-                        ? 'border-blue-500 bg-blue-50 shadow-md'
-                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                    }`}
+                    key={service.id}
+                    onClick={() => setFormData({ ...formData, service_id: service.id })}
+                    className={`p-4 rounded-xl border-2 transition-all text-left ${formData.service_id === service.id
+                      ? 'border-blue-500 bg-blue-50 shadow-md'
+                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                      }`}
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div
                         className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: type.color }}
+                        style={{ backgroundColor: service.color || '#001F3F' }}
                       />
-                      {formData.appointment_type_id === type.id && (
+                      {formData.service_id === service.id && (
                         <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
                           <div className="w-2 h-2 bg-white rounded-full" />
                         </div>
                       )}
                     </div>
-                    <h4 className="font-semibold text-gray-900 mb-1">
-                      {type[`name_${language}` as keyof AppointmentType]}
-                    </h4>
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        {type.duration} min
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <DollarSign className="w-4 h-4" />
-                        {type.price}€
-                      </span>
+                    <div className="flex items-start gap-3">
+                      {service.image_url && (
+                        <img src={service.image_url} alt="" className="w-12 h-12 rounded-lg object-cover" />
+                      )}
+                      <div>
+                        <h4 className="font-semibold text-gray-900 mb-1">
+                          {service[`title_${language}` as keyof Service]}
+                        </h4>
+                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-4 h-4" />
+                            {service.duration_minutes} min
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <DollarSign className="w-4 h-4" />
+                            {service.price}€
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </button>
                 ))}
@@ -313,11 +321,10 @@ export default function AppointmentModal({ appointment, onClose }: AppointmentMo
                 <div className="grid grid-cols-2 gap-4">
                   <button
                     onClick={() => setFormData({ ...formData, is_online: true })}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      formData.is_online
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${formData.is_online
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                      }`}
                   >
                     <Video className="w-6 h-6 mx-auto mb-2 text-blue-600" />
                     <div className="text-sm font-medium text-gray-900">
@@ -326,11 +333,10 @@ export default function AppointmentModal({ appointment, onClose }: AppointmentMo
                   </button>
                   <button
                     onClick={() => setFormData({ ...formData, is_online: false })}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      !formData.is_online
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${!formData.is_online
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                      }`}
                   >
                     <MapPin className="w-6 h-6 mx-auto mb-2 text-blue-600" />
                     <div className="text-sm font-medium text-gray-900">
@@ -441,10 +447,10 @@ export default function AppointmentModal({ appointment, onClose }: AppointmentMo
                         {language === 'ar' ? 'الخدمة' : language === 'fr' ? 'Service' : 'Service'}
                       </div>
                       <div className="font-semibold text-gray-900">
-                        {selectedType?.[`name_${language}` as keyof AppointmentType]}
+                        {selectedService?.[`title_${language}` as keyof Service]}
                       </div>
                       <div className="text-sm text-gray-600">
-                        {selectedType?.duration} min • {selectedType?.price}€
+                        {selectedService?.duration_minutes} min • {selectedService?.price}€
                       </div>
                     </div>
                   </div>

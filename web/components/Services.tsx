@@ -55,16 +55,10 @@ export default function Services() {
         try {
             console.log('🔍 Loading services from database...');
 
-            const { data, error } = await supabase
-                .from('services')
-                .select('*')
-                .eq('is_active', true)
-                .order('display_order', { ascending: true });
+            const response = await fetch('/api/services');
+            if (!response.ok) throw new Error('Failed to fetch services');
 
-            if (error) {
-                console.error('❌ Error loading services:', error);
-                throw error;
-            }
+            const data = await response.json();
 
             if (data && data.length > 0) {
                 console.log(`✅ Loaded ${data.length} services from database`);

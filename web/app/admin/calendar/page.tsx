@@ -35,6 +35,7 @@ interface Appointment {
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
   price: number
   appointment_type_id: string
+  service_id?: string
   appointment_types?: {
     id: string
     name_en: string
@@ -43,6 +44,15 @@ interface Appointment {
     color: string
     duration: number
     price: number
+  }
+  services?: {
+    id: string
+    title_en: string
+    title_fr: string
+    title_ar: string
+    color: string
+    price: number
+    image_url: string
   }
 }
 
@@ -98,6 +108,15 @@ export default function CalendarPage() {
             color,
             duration,
             price
+          ),
+          services (
+            id,
+            title_en,
+            title_fr,
+            title_ar,
+            color,
+            price,
+            image_url
           )
         `)
         .order('appointment_date', { ascending: true })
@@ -206,11 +225,10 @@ export default function CalendarPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveView(tab.id as any)}
-                  className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-all ${
-                    activeView === tab.id
-                      ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/50'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
+                  className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-all ${activeView === tab.id
+                    ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/50'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    }`}
                 >
                   <Icon className="w-4 h-4" />
                   {tab.label}
@@ -394,7 +412,17 @@ export default function CalendarPage() {
                           <div className="text-xs text-gray-500">{appointment.client_email}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {appointment.appointment_types && (
+                          {appointment.services ? (
+                            <span
+                              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                              style={{
+                                backgroundColor: `${appointment.services.color || '#3B82F6'}20`,
+                                color: appointment.services.color || '#3B82F6'
+                              }}
+                            >
+                              {appointment.services[`title_${language}` as keyof typeof appointment.services] as string}
+                            </span>
+                          ) : appointment.appointment_types ? (
                             <span
                               className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                               style={{
@@ -404,6 +432,8 @@ export default function CalendarPage() {
                             >
                               {appointment.appointment_types[`name_${language}` as keyof typeof appointment.appointment_types] as string}
                             </span>
+                          ) : (
+                            <span className="text-gray-400 text-xs">No Service</span>
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">

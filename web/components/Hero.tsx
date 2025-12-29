@@ -174,6 +174,26 @@ export default function Hero() {
                                     )}
                                 </div>
                             )}
+
+                            {heroContent?.hero_type === 'video' && (
+                                <div className="relative w-full h-full rounded-[2rem] overflow-hidden shadow-2xl ring-1 ring-black/5">
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#001F3F]/40 via-transparent to-transparent z-10"></div>
+                                    {heroContent.hero_media_url ? (
+                                        <video
+                                            src={heroContent.hero_media_url}
+                                            className="w-full h-full object-cover"
+                                            autoPlay
+                                            loop
+                                            muted
+                                            playsInline
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
+                                            <span>No Video URL</span>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                         {/* Floating Card - Only show on Globe or if configured */}

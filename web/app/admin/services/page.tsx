@@ -47,6 +47,9 @@ interface Service {
     is_active: boolean;
     display_order: number;
     image_url?: string;
+    price?: number;
+    duration_minutes?: number;
+    is_bookable?: boolean;
     created_at?: string;
     updated_at?: string;
 }
@@ -103,6 +106,9 @@ export default function AdminServicesPage() {
         is_active: true,
         display_order: 0,
         image_url: '',
+        price: 0,
+        duration_minutes: 60,
+        is_bookable: true,
     });
 
     useEffect(() => {
@@ -142,10 +148,11 @@ export default function AdminServicesPage() {
                     features_ar: service.features_ar || [],
                     icon: service.icon || 'Briefcase',
                     href: service.href || '/services/',
-                    color: service.color || '#001F3F',
-                    is_active: service.is_active ?? true,
                     display_order: service.display_order || 0,
                     image_url: service.image_url || '',
+                    price: service.price || 0,
+                    duration_minutes: service.duration_minutes || 60,
+                    is_bookable: service.is_bookable ?? true,
                 }));
                 setServices(sanitizedData);
             }
@@ -177,6 +184,9 @@ export default function AdminServicesPage() {
             color: '#001F3F',
             is_active: true,
             display_order: services.length + 1,
+            price: 0,
+            duration_minutes: 60,
+            is_bookable: true,
         });
         setShowModal(true);
     };
@@ -186,6 +196,9 @@ export default function AdminServicesPage() {
         setFormData({
             ...service,
             image_url: service.image_url || '',
+            price: service.price || 0,
+            duration_minutes: service.duration_minutes || 60,
+            is_bookable: service.is_bookable ?? true,
         });
         setShowModal(true);
     };
@@ -695,6 +708,46 @@ export default function AdminServicesPage() {
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20"
                                             placeholder="/services/service-name"
                                         />
+                                    </div>
+
+                                    {/* Booking Details */}
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">{(t.admin.servicesView as any).price || 'Price'}</label>
+                                            <div className="relative">
+                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                                                <input
+                                                    type="number"
+                                                    value={formData.price}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
+                                                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20"
+                                                    min="0"
+                                                    step="0.01"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">{(t.admin.servicesView as any).duration || 'Duration (min)'}</label>
+                                            <input
+                                                type="number"
+                                                value={formData.duration_minutes}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, duration_minutes: parseInt(e.target.value) || 0 }))}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20"
+                                                min="0"
+                                                step="15"
+                                            />
+                                        </div>
+                                        <div className="flex items-end pb-2">
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.is_bookable}
+                                                    onChange={(e) => setFormData(prev => ({ ...prev, is_bookable: e.target.checked }))}
+                                                    className="w-4 h-4 text-[#001F3F] border-gray-300 rounded focus:ring-[#001F3F]"
+                                                />
+                                                <span className="text-sm font-medium text-gray-700">{(t.admin.servicesView as any).bookable || 'Bookable'}</span>
+                                            </label>
+                                        </div>
                                     </div>
 
                                     {/* Service Image */}

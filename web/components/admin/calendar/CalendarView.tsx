@@ -11,12 +11,29 @@ interface Appointment {
   start_time: string
   end_time: string
   client_name: string
-  status: string
+  client_email: string
+  client_phone: string
+  price: number
+  appointment_type_id: string
+  service_id?: string
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
   appointment_types?: {
+    id: string
     name_en: string
     name_fr: string
     name_ar: string
     color: string
+    duration: number
+    price: number
+  }
+  services?: {
+    id: string
+    title_en: string
+    title_fr: string
+    title_ar: string
+    color: string
+    price: number
+    image_url: string
   }
 }
 
@@ -90,8 +107,8 @@ export default function CalendarView({ appointments, onEditAppointment, onRefres
   const weekDays = language === 'ar'
     ? ['الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد']
     : language === 'fr'
-    ? ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
-    : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      ? ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
+      : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
@@ -125,31 +142,28 @@ export default function CalendarView({ appointments, onEditAppointment, onRefres
           <div className="flex items-center gap-2 bg-white/10 rounded-lg p-1">
             <button
               onClick={() => setViewMode('month')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                viewMode === 'month'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-white/80 hover:text-white'
-              }`}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${viewMode === 'month'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-white/80 hover:text-white'
+                }`}
             >
               <Grid className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode('week')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                viewMode === 'week'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-white/80 hover:text-white'
-              }`}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${viewMode === 'week'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-white/80 hover:text-white'
+                }`}
             >
               <CalendarIcon className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode('day')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                viewMode === 'day'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-white/80 hover:text-white'
-              }`}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${viewMode === 'day'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-white/80 hover:text-white'
+                }`}
             >
               <List className="w-4 h-4" />
             </button>
@@ -178,22 +192,20 @@ export default function CalendarView({ appointments, onEditAppointment, onRefres
               return (
                 <div
                   key={index}
-                  className={`min-h-[120px] border rounded-xl p-2 transition-all hover:shadow-md ${
-                    dayObj.isCurrentMonth
-                      ? 'bg-white border-gray-200'
-                      : 'bg-gray-50 border-gray-100'
-                  } ${isToday ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
+                  className={`min-h-[120px] border rounded-xl p-2 transition-all hover:shadow-md ${dayObj.isCurrentMonth
+                    ? 'bg-white border-gray-200'
+                    : 'bg-gray-50 border-gray-100'
+                    } ${isToday ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
                 >
                   {/* Day Number */}
                   <div className="flex items-center justify-between mb-2">
                     <span
-                      className={`text-sm font-semibold ${
-                        dayObj.isCurrentMonth
-                          ? isToday
-                            ? 'text-white bg-blue-600 w-6 h-6 rounded-full flex items-center justify-center'
-                            : 'text-gray-900'
-                          : 'text-gray-400'
-                      }`}
+                      className={`text-sm font-semibold ${dayObj.isCurrentMonth
+                        ? isToday
+                          ? 'text-white bg-blue-600 w-6 h-6 rounded-full flex items-center justify-center'
+                          : 'text-gray-900'
+                        : 'text-gray-400'
+                        }`}
                     >
                       {dayObj.date.getDate()}
                     </span>
@@ -212,8 +224,8 @@ export default function CalendarView({ appointments, onEditAppointment, onRefres
                         onClick={() => onEditAppointment(apt)}
                         className="w-full text-left px-2 py-1 rounded-md text-xs font-medium transition-all hover:shadow-sm"
                         style={{
-                          backgroundColor: `${apt.appointment_types?.color}20`,
-                          color: apt.appointment_types?.color || '#000'
+                          backgroundColor: `${(apt.services?.color || apt.appointment_types?.color) || '#3B82F6'}20`,
+                          color: (apt.services?.color || apt.appointment_types?.color) || '#3B82F6'
                         }}
                       >
                         <div className="truncate">{apt.start_time}</div>

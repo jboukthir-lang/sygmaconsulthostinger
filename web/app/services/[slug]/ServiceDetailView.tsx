@@ -49,46 +49,31 @@ export default function ServiceDetailView({ slug }: { slug: string }) {
     async function loadService() {
         try {
             console.log(`🔍 Loading service: ${slug}`);
+            const response = await fetch(`/api/services/${slug}`);
 
-            const { data, error } = await supabase
-                .from('services')
-                .select('*')
-                .or(`href.eq./services/${slug},href.eq./services/${slug}/`)
-                .eq('is_active', true)
-                .single();
-
-            if (error) throw error;
-
-            if (data) {
-                console.log('✅ Service loaded:', data.title_en);
-                setService(data);
+            if (!response.ok) {
+                if (response.status === 404) console.warn('Service not found');
+                throw new Error('Failed to fetch service');
             }
-        } catch (error: any) {
+
+            const data = await response.json();
+
+            if (data.service) {
+                console.log('✅ Service loaded:', data.service.title_en);
+                setService(data.service);
+            }
+            if (data.otherServices) {
+                setOtherServices(data.otherServices);
+            }
+        } catch (error) {
             console.error('❌ Error loading service:', error);
-            if (error.code === 'PGRST116') {
-                console.warn('Service not found in database');
-            }
         } finally {
             setLoading(false);
         }
     }
 
     async function loadOtherServices() {
-        try {
-            const { data, error } = await supabase
-                .from('services')
-                .select('id, title_en, title_fr, title_ar, href')
-                .eq('is_active', true)
-                .neq('href', `/services/${slug}`)
-                .neq('href', `/services/${slug}/`)
-                .order('display_order')
-                .limit(5);
-
-            if (error) throw error;
-            setOtherServices(data || []);
-        } catch (error) {
-            console.error('❌ Error loading other services:', error);
-        }
+        // Combined into loadService via single API call
     }
 
     if (loading) {

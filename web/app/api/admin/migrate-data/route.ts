@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { executeQuery } from '@/lib/mysql';
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const secret = searchParams.get('secret');

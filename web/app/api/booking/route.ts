@@ -69,6 +69,7 @@ export async function POST(req: Request) {
             duration = 30,
             appointment_type = 'consultation',
             appointment_type_id,
+            service_id,
             specialization,
             is_online = true,
             notes,
@@ -107,6 +108,7 @@ export async function POST(req: Request) {
             duration,
             appointment_type,
             appointment_type_id: appointment_type_id || null,
+            service_id: service_id || null,
             specialization: specialization || topic,
             is_online,
             notes: notes || '',
@@ -129,6 +131,9 @@ export async function POST(req: Request) {
 
         // Create Google Calendar event
         let calendarData: any = null;
+        /* 
+        // TODO: Implement token retrieval from database for public bookings
+        // Currently tokens are only in admin cookies, so this fails for public users.
         try {
             calendarData = await createCalendarEvent(data as any);
             if (calendarData) {
@@ -150,6 +155,7 @@ export async function POST(req: Request) {
             console.error('⚠️ Failed to create calendar event:', calendarError);
             // Don't fail the booking if calendar fails
         }
+        */
 
         // Send confirmation email to client
         try {

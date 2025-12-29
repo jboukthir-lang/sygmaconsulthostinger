@@ -95,41 +95,120 @@ export default function Header() {
                     <nav className="hidden lg:flex gap-6 xl:gap-8 text-sm font-medium text-[#4A4A4A]">
                         <Link className="hover:text-[#D4AF37] transition-colors" href="/">{t.nav.home}</Link>
 
-                        {/* Services Dropdown */}
+                        {/* Services Mega Menu */}
                         <div
                             className="relative"
                             onMouseEnter={() => setIsServicesOpen(true)}
                             onMouseLeave={() => setIsServicesOpen(false)}
                         >
-                            <button className="flex items-center gap-1 hover:text-[#D4AF37] transition-colors">
+                            <button className="flex items-center gap-1 py-4 hover:text-[#D4AF37] transition-colors group">
                                 {t.nav.services}
-                                <ChevronDown className={`h-4 w-4 transition-transform ${isServicesOpen ? 'rotate-180' : ''}`} />
+                                <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${isServicesOpen ? 'rotate-180 text-[#D4AF37]' : 'text-gray-400 group-hover:text-[#D4AF37]'}`} />
                             </button>
 
-                            {isServicesOpen && (
-                                <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 space-y-2">
-                                    {services.map((service, idx) => (
-                                        <Link
-                                            key={idx}
-                                            href={service.href}
-                                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
-                                        >
-                                            <span className="text-2xl">{service.icon}</span>
+                            {/* Mega Menu Container */}
+                            <div className={`
+                                fixed top-[64px] md:top-[80px] left-0 w-full bg-white border-t border-gray-100 shadow-xl transition-all duration-300 ease-in-out z-40
+                                ${isServicesOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}
+                            `}>
+                                <div className="container mx-auto">
+                                    <div className="flex">
+                                        {/* Main Content Area */}
+                                        <div className="flex-1 p-8 grid grid-cols-2 gap-8">
                                             <div>
-                                                <p className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">
-                                                    {service.name[language as keyof typeof service.name]}
-                                                </p>
+                                                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-6">
+                                                    {language === 'ar' ? 'الخدمات الاستراتيجية' : language === 'fr' ? 'Services Stratégiques' : 'Strategic Services'}
+                                                </h3>
+                                                <div className="space-y-4">
+                                                    {services.slice(0, 2).map((service, idx) => (
+                                                        <Link
+                                                            key={idx}
+                                                            href={service.href}
+                                                            className="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 transition-all group"
+                                                        >
+                                                            <span className="text-2xl mt-1">{service.icon}</span>
+                                                            <div>
+                                                                <h4 className="font-bold text-[#001F3F] group-hover:text-[#D4AF37] transition-colors">
+                                                                    {service.name[language as keyof typeof service.name]}
+                                                                </h4>
+                                                                <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                                                                    {language === 'ar'
+                                                                        ? 'حلول مخصصة لتنمية أعمالك وتحقيق أهدافك'
+                                                                        : language === 'fr'
+                                                                            ? 'Solutions sur mesure pour développer votre entreprise.'
+                                                                            : 'Tailored solutions to grow your business.'}
+                                                                </p>
+                                                            </div>
+                                                        </Link>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </Link>
-                                    ))}
-                                    <Link
-                                        href="/services"
-                                        className="block text-center py-3 mt-2 text-[#D4AF37] font-semibold hover:bg-[#D4AF37]/10 rounded-xl transition-colors"
-                                    >
-                                        {language === 'en' ? 'View All Services' : language === 'fr' ? 'Voir Tous les Services' : 'عرض جميع الخدمات'} →
-                                    </Link>
+
+                                            <div>
+                                                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-6">
+                                                    {language === 'ar' ? 'التطوير و الامتثال' : language === 'fr' ? 'Développement & Conformité' : 'Development & Compliance'}
+                                                </h3>
+                                                <div className="space-y-4">
+                                                    {services.slice(2, 4).map((service, idx) => (
+                                                        <Link
+                                                            key={idx}
+                                                            href={service.href}
+                                                            className="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 transition-all group"
+                                                        >
+                                                            <span className="text-2xl mt-1">{service.icon}</span>
+                                                            <div>
+                                                                <h4 className="font-bold text-[#001F3F] group-hover:text-[#D4AF37] transition-colors">
+                                                                    {service.name[language as keyof typeof service.name]}
+                                                                </h4>
+                                                                <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                                                                    {language === 'ar'
+                                                                        ? 'خبرة دولية لضمان نجاحك في جميع الأسواق'
+                                                                        : language === 'fr'
+                                                                            ? 'Expertise internationale pour assurer votre succès.'
+                                                                            : 'International expertise to ensure your success.'}
+                                                                </p>
+                                                            </div>
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Featured Side Panel */}
+                                        <div className="w-80 bg-gray-50 p-8 border-l border-gray-100 flex flex-col justify-between">
+                                            <div>
+                                                <h3 className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider mb-4">
+                                                    {language === 'ar' ? 'مميز' : language === 'fr' ? 'En Vedette' : 'Featured'}
+                                                </h3>
+                                                <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+                                                    <div className="w-10 h-10 bg-[#001F3F]/10 rounded-lg flex items-center justify-center text-[#001F3F] mb-4">
+                                                        <Globe className="h-5 w-5" />
+                                                    </div>
+                                                    <h4 className="font-bold text-[#001F3F] mb-2">
+                                                        {language === 'ar' ? 'ابدأ عالمياً' : language === 'fr' ? 'Lancez-vous à l\'International' : 'Go Global'}
+                                                    </h4>
+                                                    <p className="text-xs text-gray-500 mb-4">
+                                                        {language === 'ar' ? 'استشارة مجانية لمدة 30 دقيقة' : language === 'fr' ? 'Consultation gratuite de 30 minutes.' : 'Free 30-minute consultation.'}
+                                                    </p>
+                                                    <Link
+                                                        href="/booking"
+                                                        className="text-sm font-semibold text-[#D4AF37] hover:text-[#C5A028] flex items-center gap-1"
+                                                    >
+                                                        {t.nav.book} <span className="text-lg">→</span>
+                                                    </Link>
+                                                </div>
+                                            </div>
+
+                                            <Link
+                                                href="/services"
+                                                className="block w-full py-3 text-center text-sm font-semibold text-[#001F3F] border border-[#001F3F]/20 rounded-xl hover:bg-[#001F3F] hover:text-white transition-all"
+                                            >
+                                                {language === 'en' ? 'View All Services' : language === 'fr' ? 'Voir Tous les Services' : 'عرض جميع الخدمات'}
+                                            </Link>
+                                        </div>
+                                    </div>
                                 </div>
-                            )}
+                            </div>
                         </div>
 
                         <Link className="hover:text-[#D4AF37] transition-colors" href="/about">{t.nav.about}</Link>
