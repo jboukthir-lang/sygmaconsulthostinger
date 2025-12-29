@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS app_config (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
--- Insert default app config (update these values with your actual data from Supabase)
+-- Insert default app config (if table is empty)
 INSERT INTO app_config (
         logo_url,
         favicon_url,
@@ -22,26 +22,17 @@ INSERT INTO app_config (
         contact_email,
         contact_phone
     )
-VALUES (
-        'https://ldbsacdpkinbpcguvgai.supabase.co/storage/v1/object/public/public/logo.png',
-        'https://ldbsacdpkinbpcguvgai.supabase.co/storage/v1/object/public/public/favicon.ico',
-        'SYGMA CONSULT',
-        'Expert consulting services',
-        'contact@sygmaconsult.com',
-        '+33 1 23 45 67 89'
-    ) ON DUPLICATE KEY
-UPDATE logo_url =
-VALUES(logo_url),
-    favicon_url =
-VALUES(favicon_url),
-    site_name =
-VALUES(site_name),
-    site_description =
-VALUES(site_description),
-    contact_email =
-VALUES(contact_email),
-    contact_phone =
-VALUES(contact_phone);
+SELECT 'https://ldbsacdpkinbpcguvgai.supabase.co/storage/v1/object/public/public/logo.png',
+    'https://ldbsacdpkinbpcguvgai.supabase.co/storage/v1/object/public/public/favicon.ico',
+    'SYGMA CONSULT',
+    'Expert consulting services',
+    'contact@sygmaconsult.com',
+    '+33 1 23 45 67 89'
+WHERE NOT EXISTS (
+        SELECT 1
+        FROM app_config
+        LIMIT 1
+    );
 -- Verify
 SELECT *
 FROM app_config;

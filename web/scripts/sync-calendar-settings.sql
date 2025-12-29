@@ -11,7 +11,11 @@ CREATE TABLE IF NOT EXISTS calendar_settings (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
--- Insert default calendar settings
+-- Insert default calendar settings (if table is empty)
+-- First, check if table has data
+SELECT COUNT(*) as count
+FROM calendar_settings;
+-- If count is 0, insert default settings
 INSERT INTO calendar_settings (
         slot_duration,
         start_time,
@@ -19,17 +23,16 @@ INSERT INTO calendar_settings (
         working_days,
         buffer_time
     )
-VALUES (30, '09:00', '17:00', '["1","2","3","4","5"]', 0) ON DUPLICATE KEY
-UPDATE slot_duration =
-VALUES(slot_duration),
-    start_time =
-VALUES(start_time),
-    end_time =
-VALUES(end_time),
-    working_days =
-VALUES(working_days),
-    buffer_time =
-VALUES(buffer_time);
+SELECT 30,
+    '09:00',
+    '17:00',
+    '["1","2","3","4","5"]',
+    0
+WHERE NOT EXISTS (
+        SELECT 1
+        FROM calendar_settings
+        LIMIT 1
+    );
 -- Verify
 SELECT *
 FROM calendar_settings;

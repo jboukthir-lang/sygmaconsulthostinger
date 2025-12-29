@@ -1,0 +1,3 @@
+// Force deployment restart - ${new Date().toISOString()}
+// This file triggers a new build on Hostinger
+export const DEPLOYMENT_ID = '${Date.now()}';
