@@ -1,19 +1,11 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
     try {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-        if (!supabaseUrl || !supabaseKey) {
-            throw new Error('Missing Supabase credentials');
-        }
-
-        const supabase = createClient(supabaseUrl, supabaseKey);
-
+        // Use shared client
         const { data: config, error } = await supabase
             .from('app_config')
             .select('*')
