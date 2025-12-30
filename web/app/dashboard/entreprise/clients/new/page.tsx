@@ -6,6 +6,7 @@ import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 
 export default function NewClientPage() {
     const router = useRouter();
@@ -23,12 +24,14 @@ export default function NewClientPage() {
         tva_number: ''
     });
 
+    const { showToast } = useToast();
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
         if (!user || !user.uid) {
-            alert("Erreur: Utilisateur non connecté ou ID manquant.");
+            showToast("Erreur: Utilisateur non connecté ou ID manquant.", "error");
             setLoading(false);
             return;
         }
@@ -48,17 +51,17 @@ export default function NewClientPage() {
             if (res.ok) {
                 const data = await res.json();
                 console.log("Client created:", data);
-                alert('Client créé avec succès !');
+                showToast('Client créé avec succès !', 'success');
                 router.push('/dashboard/entreprise/clients');
                 router.refresh();
             } else {
                 const errData = await res.json();
                 console.error("API Error:", errData);
-                alert(`Erreur lors de la création: ${errData.error || res.statusText}`);
+                showToast(`Erreur lors de la création: ${errData.error || res.statusText}`, "error");
             }
         } catch (error: any) {
             console.error("Fetch Error:", error);
-            alert(`Une erreur technique est survenue: ${error.message}`);
+            showToast(`Une erreur technique est survenue: ${error.message}`, "error");
         } finally {
             setLoading(false);
         }

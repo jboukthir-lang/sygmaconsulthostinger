@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 import { User, Mail, Phone, MapPin, Camera, Save, Lock, Loader2 } from 'lucide-react';
 
 export default function ProfilePage() {
@@ -16,7 +17,10 @@ export default function ProfilePage() {
         phone: '',
         address: '',
         city: '',
-        photo_url: ''
+        photo_url: '',
+        company_name: '',
+        job_title: '',
+        website: ''
     });
 
     // Password Data
@@ -37,7 +41,18 @@ export default function ProfilePage() {
             });
             if (res.ok) {
                 const data = await res.json();
-                setFormData(prev => ({ ...prev, ...data }));
+                setFormData(prev => ({
+                    ...prev,
+                    full_name: data.full_name || '',
+                    email: data.email || '',
+                    phone: data.phone || '',
+                    address: data.address || '',
+                    city: data.city || '',
+                    photo_url: data.photo_url || '',
+                    company_name: data.company_name || '',
+                    job_title: data.job_title || '',
+                    website: data.website || ''
+                }));
             }
         } catch (error) {
             console.error(error);
@@ -45,6 +60,8 @@ export default function ProfilePage() {
             setFetching(false);
         }
     };
+
+    const { showToast } = useToast();
 
     const handleUpdateProfile = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -60,13 +77,13 @@ export default function ProfilePage() {
             });
 
             if (res.ok) {
-                alert('Profil mis à jour avec succès !');
+                showToast('Profil mis à jour avec succès !', 'success');
             } else {
-                alert('Erreur lors de la mise à jour.');
+                showToast('Erreur lors de la mise à jour.', 'error');
             }
         } catch (error) {
             console.error(error);
-            alert('Erreur technique.');
+            showToast('Erreur technique.', 'error');
         } finally {
             setLoading(false);
         }
@@ -75,18 +92,18 @@ export default function ProfilePage() {
     const handleUpdatePassword = async (e: React.FormEvent) => {
         e.preventDefault();
         if (passData.newPassword !== passData.confirmPassword) {
-            alert('Les mots de passe ne correspondent pas.');
+            showToast('Les mots de passe ne correspondent pas.', 'error');
             return;
         }
 
         setLoading(true);
         try {
             await updatePassword(passData.newPassword);
-            alert('Mot de passe modifié avec succès !');
+            showToast('Mot de passe modifié avec succès !', 'success');
             setPassData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         } catch (error: any) {
             console.error(error);
-            alert('Erreur: ' + error.message);
+            showToast('Erreur: ' + error.message, 'error');
         } finally {
             setLoading(false);
         }
@@ -119,6 +136,9 @@ export default function ProfilePage() {
                         </div>
                         <h2 className="text-xl font-bold text-gray-900">{formData.full_name || 'Utilisateur'}</h2>
                         <p className="text-sm text-gray-500">{formData.email}</p>
+                        {formData.company_name && (
+                            <p className="text-xs text-blue-600 font-semibold mt-1">{formData.company_name}</p>
+                        )}
                     </div>
                 </div>
 
@@ -143,15 +163,15 @@ export default function ProfilePage() {
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email <span className="text-xs text-red-500 ml-2">(Attention : changer l'email nécessitera une reconnexion)</span></label>
                                     <div className="relative">
                                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                         <input
                                             type="email"
                                             value={formData.email}
-                                            disabled
-                                            className="w-full pl-10 pr-4 py-2 border border-gray-200 bg-gray-50 rounded-lg text-gray-500 cursor-not-allowed"
+                                            onChange={e => setFormData({ ...formData, email: e.target.value })}
+                                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         />
                                     </div>
                                 </div>
@@ -167,6 +187,15 @@ export default function ProfilePage() {
                                         />
                                     </div>
                                 </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Ville</label>
+                                    <input
+                                        type="text"
+                                        value={formData.city}
+                                        onChange={e => setFormData({ ...formData, city: e.target.value })}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    />
+                                </div>
                                 <div className="col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Adresse</label>
                                     <div className="relative">
@@ -179,13 +208,39 @@ export default function ProfilePage() {
                                         />
                                     </div>
                                 </div>
+
+                                {/* New Professional Fields */}
+                                <div className="col-span-2 pt-4 border-t border-gray-100">
+                                    <h4 className="text-sm font-semibold text-gray-900 mb-3">Informations Professionnelles</h4>
+                                </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Ville</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nom de l'Entreprise</label>
                                     <input
                                         type="text"
-                                        value={formData.city}
-                                        onChange={e => setFormData({ ...formData, city: e.target.value })}
+                                        value={formData.company_name}
+                                        onChange={e => setFormData({ ...formData, company_name: e.target.value })}
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="Ex: Sygma Corp"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Poste / Fonction</label>
+                                    <input
+                                        type="text"
+                                        value={formData.job_title}
+                                        onChange={e => setFormData({ ...formData, job_title: e.target.value })}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="Ex: CEO"
+                                    />
+                                </div>
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Site Web</label>
+                                    <input
+                                        type="url"
+                                        value={formData.website}
+                                        onChange={e => setFormData({ ...formData, website: e.target.value })}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="https://www.example.com"
                                     />
                                 </div>
                             </div>

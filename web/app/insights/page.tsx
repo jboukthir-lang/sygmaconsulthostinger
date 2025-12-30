@@ -91,14 +91,14 @@ export default function InsightsPage() {
             <Header />
 
             {/* Hero Section */}
-            <div className="bg-gradient-to-br from-[#001F3F] to-[#003366] text-white py-20 text-center relative overflow-hidden">
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute transform rotate-45 bg-white w-96 h-96 -top-48 -right-48"></div>
-                    <div className="absolute transform -rotate-45 bg-white w-96 h-96 -bottom-48 -left-48"></div>
+            <div className="bg-white text-[#001F3F] py-20 text-center relative overflow-hidden border-b border-gray-100">
+                <div className="absolute inset-0 opacity-5">
+                    <div className="absolute transform rotate-45 bg-[#001F3F] w-96 h-96 -top-48 -right-48 opacity-20"></div>
+                    <div className="absolute transform -rotate-45 bg-[#D4AF37] w-96 h-96 -bottom-48 -left-48 opacity-20"></div>
                 </div>
                 <div className="container mx-auto px-4 relative z-10">
                     <h1 className="text-4xl md:text-6xl font-serif font-bold mb-4">{t.insights.title}</h1>
-                    <p className="text-xl text-blue-200 max-w-2xl mx-auto">
+                    <p className="text-xl text-gray-600 max-w-2xl mx-auto">
                         {t.insights.subtitle}
                     </p>
                 </div>
@@ -113,8 +113,8 @@ export default function InsightsPage() {
                                 key={category}
                                 onClick={() => setSelectedCategory(category)}
                                 className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${selectedCategory === category
-                                        ? 'bg-[#001F3F] text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-[#001F3F] text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
                                 {category === 'all' ? t.insights.all_posts : category}

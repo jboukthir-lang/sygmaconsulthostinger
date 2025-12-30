@@ -82,43 +82,74 @@ export default function InvoicesPage() {
                     </div>
                 </div>
             ) : (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <table className="w-full">
-                        <thead className="bg-gray-50 border-b border-gray-100">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Numéro</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Client</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Montant</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {invoices.map((invoice) => (
-                                <tr key={invoice.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4 text-sm font-medium text-gray-900">{invoice.number}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">
-                                        <div className="font-medium text-gray-900">{invoice.client_name}</div>
-                                        <div className="text-xs text-gray-500">{invoice.client_email}</div>
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">{new Date(invoice.issue_date).toLocaleDateString('fr-FR')}</td>
-                                    <td className="px-6 py-4 text-sm font-bold text-gray-900">{invoice.total?.toFixed(2)} €</td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2.5 py-0.5 text-xs font-medium rounded-full border ${getStatusColor(invoice.status)}`}>
-                                            {invoice.status}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <Link href={`/dashboard/entreprise/invoices/${invoice.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
-                                            <Eye className="h-5 w-5" />
-                                        </Link>
-                                    </td>
+                <>
+                    {/* Desktop View: Table */}
+                    <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <table className="w-full">
+                            <thead className="bg-gray-50 border-b border-gray-100">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Numéro</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Client</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Montant</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {invoices.map((invoice) => (
+                                    <tr key={invoice.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-6 py-4 text-sm font-medium text-gray-900">{invoice.number}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-600">
+                                            <div className="font-medium text-gray-900">{invoice.client_name}</div>
+                                            <div className="text-xs text-gray-500">{invoice.client_email}</div>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-600">{new Date(invoice.issue_date).toLocaleDateString('fr-FR')}</td>
+                                        <td className="px-6 py-4 text-sm font-bold text-gray-900">{invoice.total?.toFixed(2)} €</td>
+                                        <td className="px-6 py-4">
+                                            <span className={`px-2.5 py-0.5 text-xs font-medium rounded-full border ${getStatusColor(invoice.status)}`}>
+                                                {invoice.status}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <Link href={`/dashboard/entreprise/invoices/${invoice.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
+                                                <Eye className="h-5 w-5" />
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Mobile View: Cards */}
+                    <div className="grid grid-cols-1 gap-4 md:hidden">
+                        {invoices.map((invoice) => (
+                            <div key={invoice.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 space-y-3">
+                                <div className="flex justify-between items-start">
+                                    <span className="font-mono text-sm font-bold text-gray-500">{invoice.number}</span>
+                                    <span className={`px-2 py-0.5 text-xs font-medium rounded-full border ${getStatusColor(invoice.status)}`}>
+                                        {invoice.status}
+                                    </span>
+                                </div>
+                                <div>
+                                    <div className="font-medium text-gray-900">{invoice.client_name}</div>
+                                    <div className="text-xs text-gray-500">{invoice.client_email}</div>
+                                </div>
+                                <div className="flex justify-between items-center pt-2 border-t border-gray-50">
+                                    <span className="text-sm text-gray-600">{new Date(invoice.issue_date).toLocaleDateString('fr-FR')}</span>
+                                    <span className="text-lg font-bold text-gray-900">{invoice.total?.toFixed(2)} €</span>
+                                </div>
+                                <Link
+                                    href={`/dashboard/entreprise/invoices/${invoice.id}`}
+                                    className="block w-full text-center py-2 bg-gray-50 hover:bg-gray-100 text-blue-600 text-sm font-medium rounded-lg transition-colors"
+                                >
+                                    Voir les détails
+                                </Link>
+                            </div>
+                        ))}
+                    </div>
+                </>
             )}
         </div>
     );

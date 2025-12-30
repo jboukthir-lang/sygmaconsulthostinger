@@ -121,30 +121,30 @@ export default function ServiceDetailView({ slug }: { slug: string }) {
                     <img
                         src={service.image_url}
                         alt={title}
-                        className="absolute inset-0 w-full h-full object-cover opacity-30"
+                        className="absolute inset-0 w-full h-full object-cover opacity-40"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#001F3F] to-transparent" />
                     <div className="relative container mx-auto px-4 md:px-6 h-full flex flex-col justify-end pb-20">
-                        <Link href="/services" className="inline-flex items-center text-blue-300 hover:text-[#D4AF37] mb-6 transition-colors">
+                        <Link href="/services" className="inline-flex items-center text-white/80 hover:text-[#D4AF37] mb-6 transition-colors">
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             {language === 'ar' ? 'الخدمات' : language === 'fr' ? 'Services' : 'Services'}
                         </Link>
                         <h1 className="text-4xl md:text-5xl font-serif font-bold text-white mb-4">{title}</h1>
                         {subtitle && (
-                            <p className="text-xl text-blue-100 max-w-2xl">{subtitle}</p>
+                            <p className="text-xl text-white/90 max-w-2xl">{subtitle}</p>
                         )}
                     </div>
                 </div>
             ) : (
-                <div className="bg-[#001F3F] text-white py-20">
+                <div className="bg-white text-[#001F3F] py-20 border-b border-gray-100">
                     <div className="container mx-auto px-4 md:px-6">
-                        <Link href="/services" className="inline-flex items-center text-blue-300 hover:text-[#D4AF37] mb-6 transition-colors">
+                        <Link href="/services" className="inline-flex items-center text-gray-500 hover:text-[#D4AF37] mb-6 transition-colors">
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             {language === 'ar' ? 'الخدمات' : language === 'fr' ? 'Services' : 'Services'}
                         </Link>
                         <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">{title}</h1>
                         {subtitle && (
-                            <p className="text-xl text-blue-100 max-w-2xl">{subtitle}</p>
+                            <p className="text-xl text-gray-600 max-w-2xl">{subtitle}</p>
                         )}
                     </div>
                 </div>
@@ -197,11 +197,11 @@ export default function ServiceDetailView({ slug }: { slug: string }) {
 
                     {/* Sidebar CTA */}
                     <div className="space-y-6">
-                        <div className="bg-[#001F3F] text-white p-8 rounded-2xl shadow-lg">
+                        <div className="bg-white text-[#001F3F] p-8 rounded-2xl shadow-lg border border-gray-100">
                             <h3 className="text-xl font-bold mb-4">
                                 {language === 'ar' ? 'هل أنت مستعد للبدء؟' : language === 'fr' ? 'Prêt à commencer?' : 'Ready to Get Started?'}
                             </h3>
-                            <p className="text-blue-200 mb-6 text-sm">
+                            <p className="text-gray-600 mb-6 text-sm">
                                 {language === 'ar'
                                     ? 'احجز استشارة مع خبرائنا اليوم'
                                     : language === 'fr'
@@ -210,7 +210,7 @@ export default function ServiceDetailView({ slug }: { slug: string }) {
                             </p>
                             <Link
                                 href="/booking"
-                                className="block w-full text-center bg-[#D4AF37] hover:bg-[#C5A028] text-white font-bold py-3 px-6 rounded-lg transition-colors"
+                                className="block w-full text-center bg-[#D4AF37] hover:bg-[#C5A028] text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md shadow-[#D4AF37]/20"
                             >
                                 {language === 'ar' ? 'احجز استشارة' : language === 'fr' ? 'Réserver une consultation' : 'Book a Consultation'}
                             </Link>

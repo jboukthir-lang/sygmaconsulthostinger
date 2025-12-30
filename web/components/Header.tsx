@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, Phone, LogIn, LogOut, User, X, Globe, ChevronDown } from 'lucide-react';
+import { Menu, Phone, LogIn, LogOut, User, X, Globe, ChevronDown, ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import NotificationBell from './NotificationBell';
@@ -12,8 +12,13 @@ export default function Header() {
     const { t, language, setLanguage, logoUrl } = useLanguage();
     const { user, signOut } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isCompanyOpen, setIsCompanyOpen] = useState(false);
+
+    // Restore missing state
     const [isServicesOpen, setIsServicesOpen] = useState(false);
     const [imgSrc, setImgSrc] = useState<string | null>(null);
+    const [services, setServices] = useState<any[]>([]);
+    const [servicesLoading, setServicesLoading] = useState(true);
 
     useEffect(() => {
         setImgSrc(logoUrl || "/logo.png");
@@ -48,9 +53,6 @@ export default function Header() {
         }
     };
 
-    const [services, setServices] = useState<any[]>([]);
-    const [servicesLoading, setServicesLoading] = useState(true);
-
     // Fetch services from MySQL API
     useEffect(() => {
         const fetchServices = async () => {
@@ -71,364 +73,183 @@ export default function Header() {
     }, []);
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm">
+        <header className="hidden md:block sticky top-0 z-50 w-full bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/90 border-b border-gray-100 shadow-sm transition-all duration-300">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="flex h-16 md:h-20 items-center justify-between">
-                    {/* Left Side: Logo + Navigation */}
+                <div className="flex h-20 items-center justify-between">
+                    {/* Logo Section */}
                     <div className="flex items-center gap-12">
-                        {/* Logo */}
-                        <Link className="flex items-center gap-2 flex-shrink-0" href="/">
+                        <Link className="flex items-center gap-2 group" href="/">
                             <Image
                                 src={imgSrc || "/logo.png"}
                                 alt="Sygma Consult"
                                 width={120}
                                 height={120}
-                                className="h-8 md:h-12 w-auto"
+                                className="h-10 w-auto transition-transform group-hover:scale-105"
                                 priority
                                 onError={() => setImgSrc("/logo.png")}
                             />
-                            <span className="hidden sm:inline-block font-serif text-base md:text-xl font-bold text-[#001F3F]">
-                                SYGMA<span className="text-[#D4AF37]">CONSULT</span>
-                            </span>
+                            <div className="hidden sm:block">
+                                <span className="font-serif text-xl font-bold text-[#001F3F] tracking-tight">SYGMA</span>
+                                <span className="font-serif text-xl font-bold text-[#D4AF37] tracking-tight">CONSULT</span>
+                            </div>
                         </Link>
 
                         {/* Desktop Navigation */}
-                        <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-base font-medium text-[#4A4A4A]">
-                            <Link className="hover:text-[#D4AF37] transition-colors" href="/">{t.nav.home}</Link>
+                        <nav className="hidden lg:flex items-center gap-8">
+                            <Link
+                                href="/"
+                                className="text-sm font-medium text-gray-700 hover:text-[#001F3F] relative after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:w-0 after:h-0.5 after:bg-[#D4AF37] after:transition-all hover:after:w-full"
+                            >
+                                {t.nav.home}
+                            </Link>
 
-                            {/* Services Mega Menu */}
+                            {/* Services Dropdown */}
                             <div
-                                className="relative flex items-center h-full"
+                                className="relative group h-20 flex items-center"
                                 onMouseEnter={() => setIsServicesOpen(true)}
                                 onMouseLeave={() => setIsServicesOpen(false)}
                             >
-                                <button className="flex items-center gap-1 py-4 hover:text-[#D4AF37] transition-colors group h-full">
+                                <button className="flex items-center gap-1 text-sm font-medium text-gray-700 group-hover:text-[#001F3F]">
                                     {t.nav.services}
-                                    <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${isServicesOpen ? 'rotate-180 text-[#D4AF37]' : 'text-gray-400 group-hover:text-[#D4AF37]'}`} />
+                                    <ChevronDown className={`h-3 w-3 transition-transform ${isServicesOpen ? 'rotate-180 text-[#D4AF37]' : ''}`} />
                                 </button>
 
-                                {/* Mega Menu Container */}
-                                <div className={`
-                                    fixed top-[64px] md:top-[80px] left-0 w-full bg-white border-t border-gray-100 shadow-xl transition-all duration-300 ease-in-out z-40
-                                    ${isServicesOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}
-                                `}>
-                                    <div className="container mx-auto">
-                                        <div className="flex">
-                                            {/* Main Content Area */}
-                                            <div className="flex-1 p-8 grid grid-cols-2 gap-8">
-                                                <div>
-                                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-6">
-                                                        {language === 'ar' ? 'الخدمات الاستراتيجية' : language === 'fr' ? 'Services Stratégiques' : 'Strategic Services'}
-                                                    </h3>
-                                                    <div className="space-y-4">
-                                                        {services.slice(0, 2).map((service, idx) => (
-                                                            <Link
-                                                                key={service.id || idx}
-                                                                href={service.href || '#'}
-                                                                className="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 transition-all group"
-                                                            >
-                                                                <span className="text-2xl mt-1">{service.icon || '📋'}</span>
-                                                                <div>
-                                                                    <h4 className="font-bold text-[#001F3F] group-hover:text-[#D4AF37] transition-colors">
-                                                                        {language === 'ar' ? service.title_ar : language === 'fr' ? service.title_fr : service.title_en}
-                                                                    </h4>
-                                                                    <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                                                                        {language === 'ar' ? service.description_ar : language === 'fr' ? service.description_fr : service.description_en}
-                                                                    </p>
-                                                                </div>
-                                                            </Link>
-                                                        ))}
+                                {/* Mega Menu */}
+                                <div className={`absolute top-full left-0 w-[600px] bg-white rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden transition-all duration-200 ${isServicesOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-2'}`}>
+                                    <div className="p-6 grid grid-cols-2 gap-6">
+                                        <div className="space-y-4">
+                                            <h4 className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">Expertise</h4>
+                                            {services.slice(0, 3).map((service, idx) => (
+                                                <Link key={idx} href={service.href || '#'} className="block group/item">
+                                                    <div className="font-semibold text-[#001F3F] group-hover/item:text-[#D4AF37] transition-colors text-sm">
+                                                        {language === 'ar' ? service.title_ar : language === 'fr' ? service.title_fr : service.title_en}
                                                     </div>
-                                                </div>
-
-                                                <div>
-                                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-6">
-                                                        {language === 'ar' ? 'التطوير و الامتثال' : language === 'fr' ? 'Développement & Conformité' : 'Development & Compliance'}
-                                                    </h3>
-                                                    <div className="space-y-4">
-                                                        {services.slice(2, 4).map((service, idx) => (
-                                                            <Link
-                                                                key={service.id || idx}
-                                                                href={service.href || '#'}
-                                                                className="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 transition-all group"
-                                                            >
-                                                                <span className="text-2xl mt-1">{service.icon || '📋'}</span>
-                                                                <div>
-                                                                    <h4 className="font-bold text-[#001F3F] group-hover:text-[#D4AF37] transition-colors">
-                                                                        {language === 'ar' ? service.title_ar : language === 'fr' ? service.title_fr : service.title_en}
-                                                                    </h4>
-                                                                    <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                                                                        {language === 'ar' ? service.description_ar : language === 'fr' ? service.description_fr : service.description_en}
-                                                                    </p>
-                                                                </div>
-                                                            </Link>
-                                                        ))}
+                                                    <div className="text-xs text-gray-500 mt-0.5 line-clamp-1">
+                                                        {language === 'ar' ? service.description_ar : language === 'fr' ? service.description_fr : service.description_en}
                                                     </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Featured Side Panel */}
-                                            <div className="w-80 bg-gray-50 p-8 border-l border-gray-100 flex flex-col justify-between">
-                                                <div>
-                                                    <h3 className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider mb-4">
-                                                        {language === 'ar' ? 'مميز' : language === 'fr' ? 'En Vedette' : 'Featured'}
-                                                    </h3>
-                                                    <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-                                                        <div className="w-10 h-10 bg-[#001F3F]/10 rounded-lg flex items-center justify-center text-[#001F3F] mb-4">
-                                                            <Globe className="h-5 w-5" />
-                                                        </div>
-                                                        <h4 className="font-bold text-[#001F3F] mb-2">
-                                                            {language === 'ar' ? 'ابدأ عالمياً' : language === 'fr' ? 'Lancez-vous à l\'International' : 'Go Global'}
-                                                        </h4>
-                                                        <p className="text-xs text-gray-500 mb-4">
-                                                            {language === 'ar' ? 'استشارة مجانية لمدة 30 دقيقة' : language === 'fr' ? 'Consultation gratuite de 30 minutes.' : 'Free 30-minute consultation.'}
-                                                        </p>
-                                                        <Link
-                                                            href="/booking"
-                                                            className="text-sm font-semibold text-[#D4AF37] hover:text-[#C5A028] flex items-center gap-1"
-                                                        >
-                                                            {t.nav.book} <span className="text-lg">→</span>
-                                                        </Link>
-                                                    </div>
-                                                </div>
-
-                                                <Link
-                                                    href="/services"
-                                                    className="block w-full py-3 text-center text-sm font-semibold text-[#001F3F] border border-[#001F3F]/20 rounded-xl hover:bg-[#001F3F] hover:text-white transition-all"
-                                                >
-                                                    {language === 'en' ? 'View All Services' : language === 'fr' ? 'Voir Tous les Services' : 'عرض جميع الخدمات'}
                                                 </Link>
-                                            </div>
+                                            ))}
+                                        </div>
+                                        <div className="bg-gray-50 p-4 rounded-lg">
+                                            <h4 className="text-xs font-bold text-[#001F3F] uppercase tracking-wider mb-2">À la une</h4>
+                                            <p className="text-xs text-gray-600 mb-3">Découvrez nos solutions digitales pour optimiser votre trésorerie.</p>
+                                            <Link href="/services/digital" className="text-xs font-bold text-[#D4AF37] flex items-center gap-1 hover:gap-2 transition-all">
+                                                En savoir plus <ArrowRight className="h-3 w-3" />
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <Link className="hover:text-[#D4AF37] transition-colors" href="/about">{t.nav.about}</Link>
-                            <Link className="hover:text-[#D4AF37] transition-colors" href="/insights">{t.nav.insights}</Link>
-                            <Link className="hover:text-[#D4AF37] transition-colors" href="/pricing">{language === 'fr' ? 'Tarifs' : language === 'ar' ? 'الأسعار' : 'Pricing'}</Link>
-                            <Link className="hover:text-[#D4AF37] transition-colors" href="/contact">{t.nav.contact}</Link>
+                            {/* Company Dropdown */}
+                            <div
+                                className="relative group h-20 flex items-center"
+                                onMouseEnter={() => setIsCompanyOpen(true)}
+                                onMouseLeave={() => setIsCompanyOpen(false)}
+                            >
+                                <button className="flex items-center gap-1 text-sm font-medium text-gray-700 group-hover:text-[#001F3F]">
+                                    {language === 'ar' ? 'الشركة' : language === 'fr' ? 'Entreprise' : 'Company'}
+                                    <ChevronDown className={`h-3 w-3 transition-transform ${isCompanyOpen ? 'rotate-180 text-[#D4AF37]' : ''}`} />
+                                </button>
+
+                                <div className={`absolute top-full left-0 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 transition-all duration-200 ${isCompanyOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-2'}`}>
+                                    <Link href="/about" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#D4AF37]">
+                                        {t.nav.about}
+                                    </Link>
+                                    <Link href="/team" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#D4AF37]">
+                                        {language === 'ar' ? 'فريقنا' : language === 'fr' ? 'Notre Équipe' : 'Our Team'}
+                                    </Link>
+                                    <Link href="/partners" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#D4AF37]">
+                                        {language === 'ar' ? 'الشركاء' : language === 'fr' ? 'Partenaires' : 'Partners'}
+                                    </Link>
+                                </div>
+                            </div>
+
+                            <Link
+                                href="/contact"
+                                className="text-sm font-medium text-gray-700 hover:text-[#001F3F] relative after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:w-0 after:h-0.5 after:bg-[#D4AF37] after:transition-all hover:after:w-full"
+                            >
+                                {t.nav.contact}
+                            </Link>
+
                         </nav>
                     </div>
 
-                    {/* Desktop Actions */}
-                    <div className="hidden lg:flex items-center gap-3">
-                        {/* Language Switcher */}
-                        <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
-                            <Globe className="h-4 w-4 text-gray-400" />
-                            <button onClick={() => setLanguage('en')} className={`text-xs font-semibold ${language === 'en' ? 'text-[#D4AF37]' : 'text-gray-500 hover:text-[#D4AF37]'} transition-colors`}>EN</button>
-                            <span className="text-gray-300">|</span>
-                            <button onClick={() => setLanguage('fr')} className={`text-xs font-semibold ${language === 'fr' ? 'text-[#D4AF37]' : 'text-gray-500 hover:text-[#D4AF37]'} transition-colors`}>FR</button>
-                            <span className="text-gray-300">|</span>
-                            <button onClick={() => setLanguage('ar')} className={`text-xs font-semibold ${language === 'ar' ? 'text-[#D4AF37]' : 'text-gray-500 hover:text-[#D4AF37]'} transition-colors`}>AR</button>
+                    {/* Right Side: Actions */}
+                    <div className="flex items-center gap-4">
+
+                        {/* Language - Compact */}
+                        <div className="hidden md:flex items-center bg-gray-100 rounded-full px-1 py-1">
+                            {['en', 'fr', 'ar'].map((lang) => (
+                                <button
+                                    key={lang}
+                                    onClick={() => setLanguage(lang as any)}
+                                    className={`px-3 py-1 text-xs font-bold rounded-full transition-all ${language === lang ? 'bg-white text-[#001F3F] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                                >
+                                    {lang.toUpperCase()}
+                                </button>
+                            ))}
                         </div>
 
-                        {user ? (
-                            <div className="flex items-center gap-3">
-                                <Link
-                                    href="/dashboard/entreprise"
-                                    className="hidden lg:inline-flex items-center gap-2 px-4 py-2 bg-[#001F3F] text-white rounded-lg hover:bg-[#003366] transition-colors font-medium shadow-sm"
-                                >
-                                    Tableau de bord
-                                </Link>
-                                <NotificationBell />
-                                <Link href="/profile" className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                    {user.photoURL ? (
-                                        <img src={user.photoURL} alt="Profile" className="h-7 w-7 rounded-full" />
-                                    ) : (
-                                        <User className="h-4 w-4 text-[#001F3F]" />
-                                    )}
-                                    <span className="text-sm font-medium text-[#001F3F] max-w-[100px] truncate">{user.displayName || user.email}</span>
-                                </Link>
-                                <button onClick={handleSignOut} className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                                    <LogOut className="h-4 w-4" />
-                                </button>
-                            </div>
-                        ) : (
-                            <Link href="/login" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#001F3F] text-sm font-medium text-[#001F3F] hover:bg-[#F8F9FA] transition-colors">
-                                <LogIn className="h-4 w-4" />
-                                {t.nav.signIn}
-                            </Link>
-                        )}
+                        {/* Client Portal Button */}
+                        <Link
+                            href="/login"
+                            className="hidden md:inline-flex items-center gap-2 rounded-lg bg-[#D4AF37] px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#B4941F] hover:-translate-y-0.5 shadow-lg shadow-[#D4AF37]/20"
+                        >
+                            <User className="h-4 w-4" />
+                            <span className="hidden lg:inline">{language === 'ar' ? 'منطقة العملاء' : language === 'fr' ? 'Espace Client' : 'Client Portal'}</span>
+                        </Link>
 
-                        {/* Book Button */}
-                        <Link href="/booking" className="inline-flex items-center justify-center rounded-lg bg-[#D4AF37] px-5 py-2 text-sm font-semibold text-white shadow-md hover:bg-[#C5A028] transition-all hover:shadow-lg">
+                        {/* CTA */}
+                        <Link
+                            href="/booking"
+                            className="hidden md:inline-flex items-center justify-center rounded-full bg-[#D4AF37] px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#D4AF37]/20 hover:bg-[#B4941F] hover:-translate-y-0.5 transition-all"
+                        >
                             {t.nav.book}
                         </Link>
-                    </div>
 
-                    {/* Mobile Menu Button */}
-                    <button
-                        className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        aria-label="Toggle menu"
-                    >
-                        {isMenuOpen ? <X className="h-6 w-6 text-[#001F3F]" /> : <Menu className="h-6 w-6 text-[#001F3F]" />}
-                    </button>
+                        {/* Mobile Menu Toggle */}
+                        <button
+                            className="lg:hidden p-2 text-[#001F3F]"
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        >
+                            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {/* Mobile Menu - FIXED VERSION */}
+            {/* Mobile Menu Overlay */}
             {isMenuOpen && (
-                <div className="lg:hidden">
-                    {/* Backdrop */}
-                    <div
-                        className="fixed inset-0 bg-black/50 z-40"
-                        onClick={() => setIsMenuOpen(false)}
-                    />
+                <div className="fixed inset-0 top-20 bg-white z-40 overflow-y-auto lg:hidden">
+                    <div className="p-6 space-y-6">
+                        <div className="space-y-4">
+                            <Link href="/" onClick={() => setIsMenuOpen(false)} className="block text-lg font-bold text-[#001F3F]">{t.nav.home}</Link>
+                            <Link href="/services" onClick={() => setIsMenuOpen(false)} className="block text-lg font-bold text-[#001F3F]">{t.nav.services}</Link>
+                            <Link href="/about" onClick={() => setIsMenuOpen(false)} className="block text-lg font-bold text-[#001F3F]">{t.nav.about}</Link>
+                            <Link href="/contact" onClick={() => setIsMenuOpen(false)} className="block text-lg font-bold text-[#001F3F]">{t.nav.contact}</Link>
+                        </div>
 
-                    {/* Menu Panel */}
-                    <div className="fixed top-16 md:top-20 left-0 right-0 h-[calc(100vh-4rem)] md:h-[calc(100vh-5rem)] bg-white z-50 overflow-y-auto">
-                        <div className="container mx-auto px-4 py-6 space-y-6">
-                            {/* Navigation Links */}
-                            <nav className="space-y-1">
-                                <Link
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
-                                    href="/"
+                        {/* Mobile Language Switcher */}
+                        <div className="flex justify-center gap-4 bg-gray-50 p-2 rounded-xl">
+                            {['en', 'fr', 'ar'].map((lang) => (
+                                <button
+                                    key={lang}
+                                    onClick={() => setLanguage(lang as any)}
+                                    className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${language === lang ? 'bg-white text-[#001F3F] shadow-sm' : 'text-gray-500'}`}
                                 >
-                                    <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.home}</span>
-                                    <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
-                                </Link>
+                                    {lang.toUpperCase()}
+                                </button>
+                            ))}
+                        </div>
 
-                                {/* Services Expandable */}
-                                <div>
-                                    <button
-                                        onClick={() => setIsServicesOpen(!isServicesOpen)}
-                                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors"
-                                    >
-                                        <span className="font-semibold text-gray-900">{t.nav.services}</span>
-                                        <ChevronDown className={`h-5 w-5 text-gray-400 transition-transform ${isServicesOpen ? 'rotate-180' : ''}`} />
-                                    </button>
-                                    {isServicesOpen && (
-                                        <div className="ml-4 mt-2 space-y-2">
-                                            {services.map((service, idx) => (
-                                                <Link
-                                                    key={service.id || idx}
-                                                    href={service.href || '#'}
-                                                    onClick={() => setIsMenuOpen(false)}
-                                                    className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-50"
-                                                >
-                                                    <span className="text-xl">{service.icon || '📋'}</span>
-                                                    <span className="text-sm text-gray-700">
-                                                        {language === 'ar' ? service.title_ar : language === 'fr' ? service.title_fr : service.title_en}
-                                                    </span>
-                                                </Link>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-
-                                <Link
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
-                                    href="/about"
-                                >
-                                    <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.about}</span>
-                                    <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
-                                </Link>
-                                <Link
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
-                                    href="/insights"
-                                >
-                                    <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.insights}</span>
-                                    <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
-                                </Link>
-                                <Link
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
-                                    href="/contact"
-                                >
-                                    <span className="font-semibold text-gray-900 group-hover:text-[#D4AF37]">{t.nav.contact}</span>
-                                    <span className="text-gray-400 group-hover:text-[#D4AF37]">→</span>
-                                </Link>
-                            </nav>
-
-                            {/* Language Switcher */}
-                            <div className="bg-gray-50 rounded-2xl p-4">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <Globe className="h-5 w-5 text-[#D4AF37]" />
-                                    <span className="text-sm font-semibold text-gray-700">Language</span>
-                                </div>
-                                <div className="grid grid-cols-3 gap-2">
-                                    <button
-                                        onClick={() => { setLanguage('en'); setIsMenuOpen(false); }}
-                                        className={`px-4 py-3 rounded-xl font-semibold transition-all ${language === 'en' ? 'bg-[#D4AF37] text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
-                                    >
-                                        🇬🇧 EN
-                                    </button>
-                                    <button
-                                        onClick={() => { setLanguage('fr'); setIsMenuOpen(false); }}
-                                        className={`px-4 py-3 rounded-xl font-semibold transition-all ${language === 'fr' ? 'bg-[#D4AF37] text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
-                                    >
-                                        🇫🇷 FR
-                                    </button>
-                                    <button
-                                        onClick={() => { setLanguage('ar'); setIsMenuOpen(false); }}
-                                        className={`px-4 py-3 rounded-xl font-semibold transition-all ${language === 'ar' ? 'bg-[#D4AF37] text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
-                                    >
-                                        🇹🇳 AR
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* User Section */}
-                            {user ? (
-                                <div className="bg-gray-50 rounded-2xl p-4 space-y-3">
-                                    <Link
-                                        href="/profile"
-                                        onClick={() => setIsMenuOpen(false)}
-                                        className="flex items-center gap-3 p-3 bg-white rounded-xl hover:bg-gray-100 transition-colors"
-                                    >
-                                        {user.photoURL ? (
-                                            <img src={user.photoURL} alt="Profile" className="h-10 w-10 rounded-full" />
-                                        ) : (
-                                            <div className="h-10 w-10 rounded-full bg-[#D4AF37] flex items-center justify-center">
-                                                <User className="h-5 w-5 text-white" />
-                                            </div>
-                                        )}
-                                        <div className="flex-1">
-                                            <p className="font-semibold text-gray-900">{user.displayName || 'User'}</p>
-                                            <p className="text-xs text-gray-500">{user.email}</p>
-                                        </div>
-                                    </Link>
-                                    <button
-                                        onClick={() => { handleSignOut(); setIsMenuOpen(false); }}
-                                        className="w-full flex items-center justify-center gap-2 p-3 bg-red-50 text-red-600 rounded-xl font-semibold hover:bg-red-100 transition-colors"
-                                    >
-                                        <LogOut className="h-5 w-5" />
-                                        {t.nav.signOut}
-                                    </button>
-                                </div>
-                            ) : (
-                                <Link
-                                    href="/login"
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center justify-center gap-2 p-4 bg-[#001F3F] text-white rounded-2xl font-bold shadow-lg hover:bg-[#003366] transition-all"
-                                >
-                                    <LogIn className="h-5 w-5" />
-                                    {t.nav.signIn}
-                                </Link>
-                            )}
-
-                            {/* CTA Button */}
-                            <Link
-                                href="/booking"
-                                onClick={() => setIsMenuOpen(false)}
-                                className="flex items-center justify-center gap-2 p-4 bg-gradient-to-r from-[#D4AF37] to-[#C5A028] text-white rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all"
-                            >
-                                <Phone className="h-5 w-5" />
+                        <div className="pt-6 border-t border-gray-100 space-y-4">
+                            <Link href="/login" className="flex w-full items-center justify-center gap-2 px-6 py-3 rounded-xl border border-[#001F3F] text-[#001F3F] font-bold">
+                                {t.nav.signIn}
+                            </Link>
+                            <Link href="/booking" className="flex w-full items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#D4AF37] text-white font-bold">
                                 {t.nav.book}
                             </Link>
-
-                            {/* Contact Info */}
-                            <div className="pt-4 border-t border-gray-200 text-center">
-                                <p className="text-sm text-gray-500 mb-2">Need help?</p>
-                                <a href="tel:+33752034786" className="text-[#D4AF37] font-semibold text-lg">
-                                    +33 7 52 03 47 86
-                                </a>
-                            </div>
                         </div>
                     </div>
                 </div>

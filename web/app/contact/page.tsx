@@ -43,12 +43,12 @@ export default function ContactPage() {
         <main className="min-h-screen bg-[#F8F9FA]">
             <Header />
 
-            <div className="bg-[#001F3F] text-white py-20 text-center">
+            <div className="bg-white text-[#001F3F] py-20 text-center border-b border-gray-100 hidden md:block">
                 <h1 className="text-4xl font-serif font-bold">{t.nav.contact}</h1>
-                <p className="text-blue-200 mt-4">{t.contact.subtitle}</p>
+                <p className="text-gray-600 mt-4">{t.contact.subtitle}</p>
             </div>
 
-            <div className="container mx-auto px-4 py-16 -mt-10">
+            <div className="container mx-auto px-4 py-6 md:py-16 mt-6 md:-mt-10">
                 <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
 
                     {/* Contact Info Card */}

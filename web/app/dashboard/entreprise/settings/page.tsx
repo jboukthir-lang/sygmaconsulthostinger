@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 import { Building2, Save, Loader2, Link as LinkIcon, Mail, Phone, MapPin, Search } from 'lucide-react';
 
 export default function SettingsPage() {
@@ -22,6 +23,8 @@ export default function SettingsPage() {
         website: ''
     });
 
+    const { showToast } = useToast();
+
     useEffect(() => {
         if (user) {
             fetchCompanyData();
@@ -36,11 +39,25 @@ export default function SettingsPage() {
             if (res.ok) {
                 const data = await res.json();
                 if (Object.keys(data).length > 0) {
-                    setFormData(prev => ({ ...prev, ...data }));
+                    setFormData(prev => ({
+                        ...prev,
+                        name: data.name || '',
+                        legal_form: data.legal_form || '',
+                        siret: data.siret || '',
+                        tva_number: data.tva_number || '',
+                        address: data.address || '',
+                        city: data.city || '',
+                        postal_code: data.postal_code || '',
+                        country: data.country || 'France',
+                        email: data.email || '',
+                        phone: data.phone || '',
+                        website: data.website || ''
+                    }));
                 }
             }
         } catch (error) {
             console.error('Error fetching settings:', error);
+            showToast('Erreur lors du chargement des paramètres', 'error');
         }
     };
 
@@ -62,12 +79,13 @@ export default function SettingsPage() {
                     postal_code: data.postalCode,
                     tva_number: data.tvaNumber || prev.tva_number
                 }));
+                showToast('Données trouvées et remplies', 'success');
             } else {
-                alert('Entreprise non trouvée');
+                showToast('Entreprise non trouvée', 'info');
             }
         } catch (error) {
             console.error(error);
-            alert('Erreur lors de la recherche SIRET');
+            showToast('Erreur lors de la recherche SIRET', 'error');
         } finally {
             setSiretLoading(false);
         }
@@ -87,13 +105,13 @@ export default function SettingsPage() {
             });
 
             if (res.ok) {
-                // Success message
+                showToast('Paramètres sauvegardés avec succès', 'success');
             } else {
-                alert('Erreur lors de la sauvegarde');
+                showToast('Erreur lors de la sauvegarde', 'error');
             }
         } catch (error) {
             console.error('Error saving settings:', error);
-            alert('Erreur lors de la sauvegarde');
+            showToast('Erreur lors de la sauvegarde', 'error');
         } finally {
             setLoading(false);
         }

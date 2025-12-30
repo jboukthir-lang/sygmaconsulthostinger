@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2, Package } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 
 export default function NewProductPage() {
     const router = useRouter();
@@ -17,6 +18,8 @@ export default function NewProductPage() {
         currency: 'EUR',
         type: 'service'
     });
+
+    const { showToast } = useToast();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -36,14 +39,15 @@ export default function NewProductPage() {
             });
 
             if (res.ok) {
+                showToast('Produit créé avec succès', 'success');
                 router.push('/dashboard/entreprise/products');
                 router.refresh();
             } else {
-                alert('Erreur lors de la création du produit');
+                showToast('Erreur lors de la création du produit', 'error');
             }
         } catch (error) {
             console.error(error);
-            alert('Une erreur est survenue');
+            showToast('Une erreur est survenue', 'error');
         } finally {
             setLoading(false);
         }

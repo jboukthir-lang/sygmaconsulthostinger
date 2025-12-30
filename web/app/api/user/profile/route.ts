@@ -25,7 +25,10 @@ export async function GET(request: Request) {
                     id: userId,
                     full_name: user.user.user_metadata?.full_name || '',
                     email: user.user.email,
-                    role: 'owner'
+                    role: 'owner',
+                    company_name: '',
+                    job_title: '',
+                    website: ''
                 }])
                 .select()
                 .single();
@@ -49,16 +52,32 @@ export async function PUT(request: Request) {
 
     try {
         const body = await request.json();
-        const { full_name, phone, address, city, photo_url } = body;
+        const { full_name, email, phone, address, city, photo_url, company_name, job_title, website } = body;
 
+        // 1. Handle Email Update (Auth System)
+        if (email) {
+            const { data: user, error: userError } = await supabaseAdmin.auth.admin.getUserById(userId);
+            if (!userError && user && user.user.email !== email) {
+                const { error: updateAuthError } = await supabaseAdmin.auth.admin.updateUserById(userId, { email: email });
+                if (updateAuthError) {
+                    throw new Error(`Email update failed: ${updateAuthError.message}`);
+                }
+            }
+        }
+
+        // 2. Update Profile Data (Database)
         const { data, error } = await supabaseAdmin
             .from('user_profiles')
             .update({
                 full_name,
+                email, // Keep DB email in sync
                 phone,
                 address,
                 city,
                 photo_url,
+                company_name,
+                job_title,
+                website,
                 updated_at: new Date().toISOString()
             })
             .eq('id', userId)

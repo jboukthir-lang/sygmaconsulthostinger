@@ -12,17 +12,18 @@ export default function ServicesPage() {
             <Header />
 
             {/* Hero Section */}
-            <div className="bg-[#001F3F] text-white py-20 text-center">
-                <div className="container mx-auto px-4">
+            <div className="bg-white text-[#001F3F] py-20 text-center relative overflow-hidden hidden md:block">
+                <div className="absolute inset-0 opacity-5 bg-[url('/grid.svg')] bg-center"></div>
+                <div className="container mx-auto px-4 relative z-10">
                     <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">{t.servicesPage.hero_title}</h1>
-                    <p className="text-xl text-blue-200 max-w-2xl mx-auto">
+                    <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
                         {t.servicesPage.hero_subtitle}
                     </p>
                 </div>
             </div>
 
             {/* Services List */}
-            <div className="-mt-12 relative z-10">
+            <div className="mt-6 md:-mt-12 relative z-10">
                 {/* We reuse the component but might need to adjust spacing if it has its own padding */}
                 <Services />
             </div>

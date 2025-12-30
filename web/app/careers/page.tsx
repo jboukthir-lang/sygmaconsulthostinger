@@ -11,8 +11,8 @@ export default function CareersPage() {
     return (
         <main className="min-h-screen bg-[#F8F9FA]">
             <Header />
-            <div className="pt-32 pb-16 max-w-4xl mx-auto px-4">
-                <div className="text-center mb-16">
+            <div className="pt-6 md:pt-32 pb-16 max-w-4xl mx-auto px-4">
+                <div className="text-center mb-6 md:mb-16 hidden md:block">
                     <h1 className="text-4xl md:text-5xl font-bold text-[#001F3F] mb-4">{t.careers.title}</h1>
                     <p className="text-xl text-gray-600">{t.careers.subtitle}</p>
                 </div>

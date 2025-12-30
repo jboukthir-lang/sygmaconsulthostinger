@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import { FileText, Users, Package, Settings, LayoutDashboard, LogOut, CreditCard, Briefcase, Users2 } from 'lucide-react';
+import MobileBottomNav from '@/components/ui/MobileBottomNav';
 
 export default function EntrepriseLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -38,14 +39,14 @@ export default function EntrepriseLayout({ children }: { children: React.ReactNo
 
     return (
         <div className="min-h-screen bg-gray-50 flex">
-            {/* Sidebar */}
-            <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
+            {/* Sidebar - Hidden on mobile, Flex on desktop */}
+            <div className="hidden md:flex w-64 bg-white border-r border-gray-200 flex-col fixed inset-y-0 z-30">
                 <div className="p-6 border-b">
                     <h1 className="text-2xl font-bold text-[#001F3F]">SYGMAINVOICE</h1>
                     <p className="text-sm text-gray-600 mt-1">Espace Entreprise</p>
                 </div>
 
-                <nav className="flex-1 p-4 space-y-2">
+                <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
                     {menuItems.map((item) => (
                         <Link
                             key={item.href}
@@ -69,12 +70,23 @@ export default function EntrepriseLayout({ children }: { children: React.ReactNo
                 </div>
             </div>
 
+            {/* Mobile Top Header */}
+            <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-30 flex items-center px-4 justify-between">
+                <span className="text-xl font-bold text-[#001F3F]">SYGMAINVOICE</span>
+                <div className="w-8 h-8 bg-[#001F3F] rounded-full text-white flex items-center justify-center font-bold">
+                    {user?.email?.[0].toUpperCase()}
+                </div>
+            </div>
+
             {/* Main Content */}
-            <div className="flex-1 overflow-auto">
-                <div className="p-8">
+            <div className="flex-1 md:pl-64 flex flex-col min-h-screen pt-16 md:pt-0">
+                <div className="p-4 md:p-8 pb-24 md:pb-8 flex-1">
                     {children}
                 </div>
             </div>
+
+            {/* Mobile Bottom Navigation */}
+            <MobileBottomNav />
         </div>
     );
 }

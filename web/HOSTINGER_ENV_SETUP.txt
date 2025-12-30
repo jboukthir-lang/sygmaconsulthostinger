@@ -25,8 +25,7 @@ NEXT_PUBLIC_URL=https://sygmaconsult.com
 SMTP_HOST=smtp.hostinger.com
 SMTP_PORT=465
 SMTP_USER=contact@sygmaconsult.com
-SMTP_PASSWORD=JamelGZK446uj%
-ADMIN_EMAIL=contact@sygmaconsult.com
+SMTP_PASSWORD=GZK446uj%
 
 # ------------------------------
 # 4. إعدادات GOOGLE (للدخول والمواعيد)

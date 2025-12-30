@@ -37,11 +37,11 @@ export default function Stats() {
     const { language } = useLanguage();
 
     return (
-        <section className="py-12 bg-[#001F3F] border-t border-white/10 overflow-hidden relative">
+        <section className="py-12 bg-white border-t border-gray-100 overflow-hidden relative">
             {/* Background Effects */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
-                <div className="absolute -top-24 -left-24 w-64 h-64 bg-[#D4AF37] rounded-full blur-[100px]"></div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500 rounded-full blur-[120px]"></div>
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-30 pointer-events-none">
+                <div className="absolute -top-24 -left-24 w-64 h-64 bg-[#D4AF37]/20 rounded-full blur-[100px]"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px]"></div>
             </div>
 
             <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -58,7 +58,7 @@ export default function Stats() {
                             <div className="text-4xl md:text-5xl font-bold text-[#D4AF37] mb-2 font-serif group-hover:scale-110 transition-transform duration-300">
                                 {stat.value}
                             </div>
-                            <div className="text-blue-200 text-sm md:text-base font-medium">
+                            <div className="text-gray-600 text-sm md:text-base font-medium">
                                 {language === 'ar' ? stat.label_ar : language === 'fr' ? stat.label_fr : stat.label_en}
                             </div>
                         </motion.div>

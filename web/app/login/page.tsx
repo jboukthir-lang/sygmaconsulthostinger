@@ -82,29 +82,29 @@ export default function LoginPage() {
   if (user) return null;
 
   return (
-    <div className="min-h-screen flex font-sans bg-[#F4F6F9]">
+    <div className="min-h-screen flex font-sans bg-white">
       {/* Left Side - Branding & Value Prop - Changes based on Role */}
-      <div className={`hidden lg:flex lg:w-5/12 ${role === 'entreprise' ? 'bg-[#001F3F]' : 'bg-emerald-800'} relative overflow-hidden flex-col justify-between p-12 text-white transition-colors duration-500`}>
+      <div className={`hidden lg:flex lg:w-5/12 ${role === 'entreprise' ? 'bg-[#F0F4F8]' : 'bg-[#ECFDF5]'} relative overflow-hidden flex-col justify-between p-12 transition-colors duration-500`}>
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10 bg-[url('/grid-pattern.svg')]"></div>
-        <div className={`absolute top-0 right-0 w-96 h-96 ${role === 'entreprise' ? 'bg-blue-500' : 'bg-emerald-500'} rounded-full blur-3xl opacity-20 -mr-20 -mt-20`}></div>
-        <div className={`absolute bottom-0 left-0 w-64 h-64 ${role === 'entreprise' ? 'bg-indigo-500' : 'bg-green-500'} rounded-full blur-3xl opacity-20 -ml-10 -mb-10`}></div>
+        <div className="absolute inset-0 opacity-40 bg-[url('/grid-pattern.svg')]"></div>
+        <div className={`absolute top-0 right-0 w-96 h-96 ${role === 'entreprise' ? 'bg-blue-200' : 'bg-emerald-200'} rounded-full blur-3xl opacity-50 -mr-20 -mt-20`}></div>
+        <div className={`absolute bottom-0 left-0 w-64 h-64 ${role === 'entreprise' ? 'bg-indigo-200' : 'bg-green-200'} rounded-full blur-3xl opacity-50 -ml-10 -mb-10`}></div>
 
         <div className="relative z-10">
           <Link href="/" className="flex items-center gap-3 mb-10">
-            <div className="bg-white/10 p-2 rounded-xl backdrop-blur-sm border border-white/10">
-              <span className="text-2xl font-bold">SC</span>
+            <div className="bg-white p-2 rounded-xl shadow-sm border border-gray-100">
+              <span className="text-2xl font-bold text-[#001F3F]">SC</span>
             </div>
-            <span className="text-xl font-bold tracking-tight">Sygma Consult</span>
+            <span className="text-xl font-bold tracking-tight text-[#001F3F]">Sygma Consult</span>
           </Link>
 
-          <h1 className="text-4xl font-bold leading-tight mb-6">
+          <h1 className="text-4xl font-bold leading-tight mb-6 text-[#001F3F]">
             Bienvenue sur votre <br />
-            <span className={role === 'entreprise' ? 'text-blue-400' : 'text-emerald-300'}>
+            <span className={role === 'entreprise' ? 'text-[#D4AF37]' : 'text-emerald-600'}>
               {role === 'entreprise' ? 'Espace Entreprise' : 'Espace Particulier'}
             </span>
           </h1>
-          <p className={`text-lg leading-relaxed max-w-md ${role === 'entreprise' ? 'text-blue-100/80' : 'text-emerald-100/80'}`}>
+          <p className={`text-lg leading-relaxed max-w-md ${role === 'entreprise' ? 'text-gray-600' : 'text-emerald-800'}`}>
             {role === 'entreprise'
               ? "Gérez votre activité, vos factures et vos projets en toute simplicité."
               : "Suivez vos dossiers, consultez vos documents et échangez avec nous."}
@@ -112,24 +112,24 @@ export default function LoginPage() {
         </div>
 
         <div className="relative z-10 space-y-6">
-          <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${role === 'entreprise' ? 'bg-blue-500/20 text-blue-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
+          <div className="flex items-center gap-4 bg-white/60 backdrop-blur-sm p-4 rounded-2xl border border-gray-200 shadow-sm">
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${role === 'entreprise' ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'}`}>
               <Check className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-semibold">Accès Sécurisé</h3>
-              <p className={`text-sm ${role === 'entreprise' ? 'text-blue-200/70' : 'text-emerald-200/70'}`}>Vos données sont protégées.</p>
+              <h3 className="font-semibold text-[#001F3F]">Accès Sécurisé</h3>
+              <p className={`text-sm ${role === 'entreprise' ? 'text-gray-500' : 'text-emerald-600/70'}`}>Vos données sont protégées.</p>
             </div>
           </div>
         </div>
 
-        <div className={`relative z-10 text-xs ${role === 'entreprise' ? 'text-blue-300/50' : 'text-emerald-300/50'}`}>
+        <div className={`relative z-10 text-xs ${role === 'entreprise' ? 'text-gray-400' : 'text-emerald-600/50'}`}>
           © 2025 Sygma Consult.
         </div>
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-12 overflow-y-auto">
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-12 overflow-y-auto bg-white">
         <div className="w-full max-w-md space-y-8">
 
           <div className="text-center lg:text-left">
@@ -138,12 +138,12 @@ export default function LoginPage() {
           </div>
 
           {/* Role Selection Toggles */}
-          <div className="grid grid-cols-2 gap-4 p-1 bg-gray-100 rounded-xl">
+          <div className="grid grid-cols-2 gap-4 p-1 bg-gray-50 rounded-xl border border-gray-100">
             <button
               onClick={() => setRole('entreprise')}
-              className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${role === 'entreprise'
-                  ? 'bg-white text-[#001F3F] shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+              className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all ${role === 'entreprise'
+                ? 'bg-white text-[#001F3F] shadow-md border border-gray-100'
+                : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
               <Building2 className="w-4 h-4" />
@@ -151,9 +151,9 @@ export default function LoginPage() {
             </button>
             <button
               onClick={() => setRole('particulier')}
-              className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${role === 'particulier'
-                  ? 'bg-white text-emerald-700 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+              className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all ${role === 'particulier'
+                ? 'bg-white text-emerald-700 shadow-md border border-gray-100'
+                : 'text-gray-500 hover:text-gray-700'
                 }`}
             >
               <User className="w-4 h-4" />
@@ -178,7 +178,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#001F3F] focus:border-transparent transition-all"
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20 focus:border-[#001F3F] transition-all"
                   placeholder="exemple@email.com"
                 />
               </div>
@@ -201,7 +201,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full pl-11 pr-10 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#001F3F] focus:border-transparent transition-all"
+                  className="w-full pl-11 pr-10 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#001F3F]/20 focus:border-[#001F3F] transition-all"
                   placeholder="••••••••"
                 />
                 <button
@@ -217,9 +217,9 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full flex items-center justify-center gap-2 px-6 py-3.5 text-white rounded-xl transition-all font-semibold shadow-lg disabled:opacity-70 disabled:cursor-not-allowed transform active:scale-[0.98] ${role === 'entreprise'
-                  ? 'bg-[#001F3F] hover:bg-[#003366] shadow-blue-900/20'
-                  : 'bg-emerald-700 hover:bg-emerald-800 shadow-emerald-900/20'
+              className={`w-full flex items-center justify-center gap-2 px-6 py-3.5 text-white rounded-xl transition-all font-bold shadow-lg disabled:opacity-70 disabled:cursor-not-allowed transform active:scale-[0.98] ${role === 'entreprise'
+                ? 'bg-[#001F3F] hover:bg-[#003366] shadow-[#001F3F]/20'
+                : 'bg-emerald-700 hover:bg-emerald-800 shadow-emerald-900/20'
                 }`}
             >
               {isLoading ? (
@@ -238,14 +238,14 @@ export default function LoginPage() {
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-[#F4F6F9] text-gray-500 font-medium">Ou continuer avec</span>
+              <span className="px-4 bg-white text-gray-500 font-medium">Ou continuer avec</span>
             </div>
           </div>
 
           <button
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-3 px-6 py-3.5 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all font-medium text-gray-700 shadow-sm"
+            className="w-full flex items-center justify-center gap-3 px-6 py-3.5 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all font-bold text-gray-700 shadow-sm"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
@@ -271,7 +271,7 @@ export default function LoginPage() {
           <div className="mt-6 text-center text-sm text-gray-600">
             <p>
               Pas encore de compte ?{' '}
-              <Link href="/signup" className={`font-semibold hover:underline ${role === 'entreprise' ? 'text-[#001F3F]' : 'text-emerald-700'}`}>
+              <Link href="/signup" className={`font-bold hover:underline ${role === 'entreprise' ? 'text-[#001F3F]' : 'text-emerald-700'}`}>
                 Créer un compte
               </Link>
             </p>

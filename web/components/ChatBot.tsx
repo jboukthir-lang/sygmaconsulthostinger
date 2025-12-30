@@ -1,16 +1,21 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { MessageSquare, X, Send, Bot } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function ChatBot() {
     const { t } = useLanguage();
+    const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<{ role: 'user' | 'assistant', content: string }[]>([
         { role: 'assistant', content: t.chatbot.greeting }
     ]);
     const [input, setInput] = useState('');
+
+    // Only show on Landing Page
+    if (pathname !== '/') return null;
 
     const handleSend = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -40,17 +45,17 @@ export default function ChatBot() {
 
     return (
         <>
-            {/* Trigger Button */}
+            {/* Trigger Button - Lifted on mobile to avoid overlapping Bottom Nav */}
             <button
                 onClick={() => setIsOpen(true)}
-                className={`fixed bottom-6 right-6 z-50 p-4 rounded-full bg-[#D4AF37] text-white shadow-lg shadow-[#D4AF37]/40 hover:scale-110 transition-transform ${isOpen ? 'hidden' : 'flex'}`}
+                className={`fixed bottom-24 md:bottom-6 right-6 z-50 p-4 rounded-full bg-[#D4AF37] text-white shadow-lg shadow-[#D4AF37]/40 hover:scale-110 transition-transform ${isOpen ? 'hidden' : 'flex'}`}
             >
                 <MessageSquare className="h-6 w-6" />
             </button>
 
-            {/* Chat Window */}
+            {/* Chat Window - Lifted on mobile */}
             {isOpen && (
-                <div className="fixed bottom-6 right-6 z-50 w-[350px] max-w-[calc(100vw-48px)] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-300">
+                <div className="fixed bottom-24 md:bottom-6 right-6 z-50 w-[350px] max-w-[calc(100vw-48px)] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-300">
 
                     {/* Header */}
                     <div className="bg-[#001F3F] p-4 flex items-center justify-between text-white">

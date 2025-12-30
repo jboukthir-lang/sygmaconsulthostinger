@@ -102,10 +102,14 @@ export async function generateMetadata(): Promise<Metadata> {
 
 import Footer from "@/components/Footer";
 import ChatBot from "@/components/ChatBot";
+import PublicMobileBottomNav from "@/components/ui/PublicMobileBottomNav";
+import PublicMobileTopBar from "@/components/ui/PublicMobileTopBar";
 import StructuredData from "@/components/StructuredData";
 
 import { LanguageProvider } from "@/context/LanguageContext";
 import { AuthProvider } from "@/context/AuthContext";
+
+import { ToastProvider } from "@/context/ToastContext";
 
 export default function RootLayout({
   children,
@@ -123,9 +127,13 @@ export default function RootLayout({
       >
         <AuthProvider>
           <LanguageProvider>
-            {children}
-            <Footer />
-            <ChatBot />
+            <ToastProvider>
+              <PublicMobileTopBar />
+              {children}
+              <PublicMobileBottomNav />
+              <Footer />
+              <ChatBot />
+            </ToastProvider>
           </LanguageProvider>
         </AuthProvider>
       </body>

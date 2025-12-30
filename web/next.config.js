@@ -25,6 +25,14 @@ const nextConfig = {
   // output: 'standalone',
 
   trailingSlash: true,
+  experimental: {
+    serverComponentsExternalPackages: ['@react-pdf/renderer'],
+    esmExternals: 'loose',
+  },
+  webpack: (config) => {
+    config.resolve.alias.canvas = false;
+    return config;
+  },
 };
 
 module.exports = nextConfig;

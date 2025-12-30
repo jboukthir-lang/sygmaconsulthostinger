@@ -6,6 +6,7 @@ import { ArrowLeft, Save, Loader2, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
 
 export default function NewInvoicePage() {
     const router = useRouter();
@@ -40,21 +41,26 @@ export default function NewInvoicePage() {
 
     const calculateTotals = () => {
         const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
-        const tax = subtotal * 0.20; // 20%
+        const tax = items.reduce((sum, item) => {
+            const lineTotal = item.quantity * item.price;
+            const rate = item.tax_rate !== undefined ? item.tax_rate : 20;
+            return sum + (lineTotal * (rate / 100));
+        }, 0);
         return { subtotal, tax, total: subtotal + tax };
     };
 
+    const { showToast } = useToast();
     const totals = calculateTotals();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!clientId) {
-            alert('Veuillez sélectionner un client');
+            showToast('Veuillez sélectionner un client', 'error');
             return;
         }
 
         if (!user || !user.uid) {
-            alert("Erreur: Utilisateur non connecté.");
+            showToast("Erreur: Utilisateur non connecté.", "error");
             return;
         }
 
@@ -82,16 +88,17 @@ export default function NewInvoicePage() {
             if (res.ok) {
                 const data = await res.json();
                 console.log("Invoice created:", data);
+                showToast('Facture créée avec succès !', 'success');
                 router.push('/dashboard/entreprise/invoices');
                 router.refresh();
             } else {
                 const errData = await res.json();
                 console.error("API Error Invoice:", errData);
-                alert(`Erreur lors de la création de la facture: ${errData.error || res.statusText}`);
+                showToast(`Erreur lors de la création de la facture: ${errData.error || res.statusText}`, "error");
             }
         } catch (error: any) {
             console.error("Fetch Error:", error);
-            alert(`Une erreur est survenue: ${error.message}`);
+            showToast(`Une erreur est survenue: ${error.message}`, "error");
         } finally {
             setLoading(false);
         }
@@ -176,88 +183,109 @@ export default function NewInvoicePage() {
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                     <h2 className="text-lg font-semibold text-gray-900 mb-4">Articles</h2>
                     <div className="space-y-4">
-                        <div className="grid grid-cols-12 gap-4 text-sm font-medium text-gray-500 uppercase px-2">
-                            <div className="col-span-6">Description</div>
-                            <div className="col-span-2 text-right">Qté</div>
-                            <div className="col-span-2 text-right">Prix Unit.</div>
-                            <div className="col-span-1 text-right">Total</div>
-                            <div className="col-span-1"></div>
-                        </div>
-
-                        {items.map((item, index) => (
-                            <div key={index} className="grid grid-cols-12 gap-4 items-center bg-gray-50 p-3 rounded-lg border border-gray-200">
-                                <div className="col-span-6">
-                                    <input
-                                        type="text"
-                                        placeholder="Description du produit ou service"
-                                        required
-                                        value={item.description}
-                                        onChange={e => updateItem(index, 'description', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        required
-                                        value={item.quantity}
-                                        onChange={e => updateItem(index, 'quantity', parseFloat(e.target.value))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right bg-white"
-                                    />
-                                </div>
-                                <div className="col-span-2">
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        required
-                                        value={item.price}
-                                        onChange={e => updateItem(index, 'price', parseFloat(e.target.value))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right bg-white"
-                                    />
-                                </div>
-                                <div className="col-span-1 text-right font-medium text-gray-900">
-                                    {(item.quantity * item.price).toFixed(2)}€
-                                </div>
-                                <div className="col-span-1 text-center">
-                                    {items.length > 1 && (
-                                        <button
-                                            type="button"
-                                            onClick={() => removeItem(index)}
-                                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-
-                        <button
-                            type="button"
-                            onClick={addItem}
-                            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium mt-2"
-                        >
-                            <Plus className="h-4 w-4" />
-                            Ajouter une ligne
-                        </button>
+                        <div className="col-span-1 text-right">Total</div>
+                        <div className="col-span-1"></div>
                     </div>
 
-                    <div className="border-t border-gray-100 mt-6 pt-6 flex justify-end">
-                        <div className="w-64 space-y-3">
-                            <div className="flex justify-between text-gray-600">
-                                <span>Sous-total</span>
-                                <span>{totals.subtotal.toFixed(2)} €</span>
+                    {items.map((item, index) => (
+                        <div key={index} className="grid grid-cols-12 gap-2 items-center bg-gray-50 p-2 rounded-lg border border-gray-200">
+                            <div className="col-span-5">
+                                <input
+                                    type="text"
+                                    placeholder="Description..."
+                                    required
+                                    value={item.description}
+                                    onChange={e => updateItem(index, 'description', e.target.value)}
+                                    className="w-full px-2 py-1 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-sm"
+                                />
                             </div>
-                            <div className="flex justify-between text-gray-600">
-                                <span>TVA (20%)</span>
-                                <span>{totals.tax.toFixed(2)} €</span>
+                            <div className="col-span-2">
+                                <input
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    required
+                                    placeholder="0.00"
+                                    value={item.price}
+                                    onChange={e => updateItem(index, 'price', parseFloat(e.target.value))}
+                                    className="w-full px-2 py-1 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right bg-white text-sm"
+                                />
                             </div>
-                            <div className="flex justify-between text-lg font-bold text-gray-900 border-t pt-3">
-                                <span>Total TTC</span>
-                                <span>{totals.total.toFixed(2)} €</span>
+                            <div className="col-span-1">
+                                <input
+                                    type="number"
+                                    min="1"
+                                    required
+                                    value={item.quantity}
+                                    onChange={e => updateItem(index, 'quantity', parseFloat(e.target.value))}
+                                    className="w-full px-2 py-1 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right bg-white text-sm"
+                                />
                             </div>
+                            <div className="col-span-1">
+                                <select
+                                    value={item.unit || 'unit'}
+                                    onChange={e => updateItem(index, 'unit', e.target.value)}
+                                    className="w-full px-1 py-1 border border-gray-300 rounded-md text-xs bg-white text-right"
+                                >
+                                    <option value="unit">Pc</option>
+                                    <option value="hour">Hr</option>
+                                    <option value="day">Jr</option>
+                                    <option value="month">Mois</option>
+                                    <option value="service">Srv</option>
+                                </select>
+                            </div>
+                            <div className="col-span-1">
+                                <select
+                                    value={item.tax_rate ?? 20}
+                                    onChange={e => updateItem(index, 'tax_rate', parseFloat(e.target.value))}
+                                    className="w-full px-1 py-1 border border-gray-300 rounded-md text-xs bg-white text-right"
+                                >
+                                    <option value="0">0%</option>
+                                    <option value="5.5">5.5%</option>
+                                    <option value="10">10%</option>
+                                    <option value="20">20%</option>
+                                </select>
+                            </div>
+                            <div className="col-span-1 text-right font-medium text-gray-900 text-sm">
+                                {((item.quantity * item.price)).toFixed(2)}
+                            </div>
+                            <div className="col-span-1 text-center">
+                                {items.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => removeItem(index)}
+                                        className="p-1 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+
+                    <button
+                        type="button"
+                        onClick={addItem}
+                        className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium mt-2"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Ajouter une ligne
+                    </button>
+                </div>
+
+                <div className="border-t border-gray-100 mt-6 pt-6 flex justify-end">
+                    <div className="w-64 space-y-3">
+                        <div className="flex justify-between text-gray-600">
+                            <span>Sous-total</span>
+                            <span>{totals.subtotal.toFixed(2)} €</span>
+                        </div>
+                        <div className="flex justify-between text-gray-600">
+                            <span>TVA</span>
+                            <span>{totals.tax.toFixed(2)} €</span>
+                        </div>
+                        <div className="flex justify-between text-lg font-bold text-gray-900 border-t pt-3">
+                            <span>Total TTC</span>
+                            <span>{totals.total.toFixed(2)} €</span>
                         </div>
                     </div>
                 </div>
@@ -266,39 +294,18 @@ export default function NewInvoicePage() {
                 <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-10 md:pl-64">
                     <div className="max-w-5xl mx-auto flex justify-between items-center px-4">
                         <div className="flex items-center gap-4">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="status"
-                                    value="draft"
-                                    checked={status === 'draft'}
-                                    onChange={() => setStatus('draft')}
-                                    className="text-blue-600 focus:ring-blue-500"
-                                />
-                                <span className="text-sm text-gray-700">Brouillon</span>
-                            </label>
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="status"
-                                    value="sent"
-                                    checked={status === 'sent'}
-                                    onChange={() => setStatus('sent')}
-                                    className="text-blue-600 focus:ring-blue-500"
-                                />
-                                <span className="text-sm text-gray-700">Envoyée</span>
-                            </label>
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="status"
-                                    value="paid"
-                                    checked={status === 'paid'}
-                                    onChange={() => setStatus('paid')}
-                                    className="text-blue-600 focus:ring-blue-500"
-                                />
-                                <span className="text-sm text-gray-700">Payée</span>
-                            </label>
+                            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg border border-gray-200">
+                                <span className={`h-2.5 w-2.5 rounded-full ${status === 'draft' ? 'bg-yellow-400' : 'bg-green-500'}`}></span>
+                                <select
+                                    value={status}
+                                    onChange={(e) => setStatus(e.target.value)}
+                                    className="bg-transparent border-none text-sm font-medium text-gray-700 focus:ring-0 cursor-pointer"
+                                >
+                                    <option value="draft">Brouillon (Draft)</option>
+                                    <option value="sent">Envoyée (Final)</option>
+                                    <option value="paid">Payée</option>
+                                </select>
+                            </div>
                         </div>
                         <div className="flex gap-3">
                             <Link

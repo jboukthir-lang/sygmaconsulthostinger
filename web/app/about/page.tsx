@@ -46,19 +46,19 @@ export default function AboutPage() {
             <Header />
 
             {/* Hero Section */}
-            <section className="relative pt-32 pb-20 overflow-hidden bg-[#001F3F] text-white">
+            <section className="relative pt-32 pb-20 overflow-hidden bg-white text-[#001F3F] hidden md:block">
                 {/* Abstract Background */}
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-0 left-0 w-96 h-96 bg-[#D4AF37] rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-                    <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-500 rounded-full blur-3xl translate-x-1/3 translate-y-1/3"></div>
+                <div className="absolute inset-0 opacity-30 pointer-events-none">
+                    <div className="absolute top-0 left-0 w-96 h-96 bg-[#D4AF37] rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 opacity-20"></div>
+                    <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-100 rounded-full blur-3xl translate-x-1/3 translate-y-1/3 opacity-40"></div>
                 </div>
-                <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
+                <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-5"></div>
 
                 <div className="container relative z-10 mx-auto px-4 text-center">
                     <motion.span
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="inline-block py-1 px-3 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/30 text-[#D4AF37] text-sm font-semibold tracking-wider mb-6"
+                        className="inline-block py-1 px-3 rounded-full bg-[#f0f9ff] border border-[#001F3F]/10 text-[#001F3F] text-sm font-semibold tracking-wider mb-6"
                     >
                         SINCE 2014
                     </motion.span>
@@ -66,7 +66,7 @@ export default function AboutPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-5xl md:text-7xl font-bold font-serif mb-6 leading-tight"
+                        className="text-5xl md:text-7xl font-bold font-serif mb-6 leading-tight text-[#001F3F]"
                     >
                         {t.aboutPage?.hero_title || "Defining Excellence in Consulting"}
                     </motion.h1>
@@ -74,7 +74,7 @@ export default function AboutPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed"
+                        className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
                     >
                         {t.aboutPage?.hero_subtitle || "We are a premier consultancy firm dedicated to empowering businesses through strategic innovation and expert guidance."}
                     </motion.p>
@@ -82,7 +82,7 @@ export default function AboutPage() {
             </section>
 
             {/* Stats Section with Glassmorphism */}
-            <section className="relative -mt-16 z-20 pb-20">
+            <section className="relative mt-6 md:-mt-16 z-20 pb-20">
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {stats.map((stat, index) => (

@@ -8,6 +8,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile,
+  updatePassword as firebaseUpdatePassword,
   sendPasswordResetEmail,
   signOut as firebaseSignOut,
   onAuthStateChanged
@@ -24,6 +25,7 @@ interface AuthContextType {
   signUpWithEmail: (email: string, password: string, name: string) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
+  updatePassword: (password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -34,6 +36,7 @@ const AuthContext = createContext<AuthContextType>({
   signUpWithEmail: async () => { },
   resetPassword: async () => { },
   signOut: async () => { },
+  updatePassword: async () => { },
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -107,8 +110,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updatePassword = async (password: string) => {
+    if (!user) throw new Error('No user logged in');
+    try {
+      await firebaseUpdatePassword(user, password);
+    } catch (error) {
+      console.error('Error updating password:', error);
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword, signOut, updatePassword }}>
       {children}
     </AuthContext.Provider>
   );

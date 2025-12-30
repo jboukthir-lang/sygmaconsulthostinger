@@ -7,6 +7,10 @@ import Process from "@/components/Process";
 import Stats from "@/components/Stats";
 import Partners from "@/components/Partners";
 import GallerySection from "@/components/home/GallerySection";
+import SmartFeatures from "@/components/SmartFeatures";
+import Testimonials from "@/components/Testimonials";
+import FAQ from "@/components/FAQ";
+import Newsletter from "@/components/Newsletter";
 
 export default function Home() {
   return (
@@ -15,11 +19,15 @@ export default function Home() {
       <Hero />
       <Partners />
       <About />
-      <Stats />
+      <SmartFeatures />
       <Services />
       <WhyChooseUs />
+      <Stats />
+      <Testimonials />
+      <FAQ />
       <Process />
       <GallerySection />
+      <Newsletter />
     </main>
   );
 }

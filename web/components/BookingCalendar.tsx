@@ -417,10 +417,10 @@ export default function BookingCalendar() {
         <div className="w-full max-w-4xl mx-auto bg-white rounded-xl md:rounded-2xl shadow-xl overflow-hidden border border-gray-100 flex flex-col md:flex-row">
 
             {/* Sidebar Info */}
-            <div className="bg-[#001F3F] p-4 sm:p-6 md:p-8 text-white md:w-1/3 flex flex-col justify-between">
+            <div className="bg-[#001F3F] p-4 sm:p-6 md:p-8 text-white md:w-1/3 flex flex-col justify-between order-2 md:order-1">
                 <div>
-                    <h3 className="text-xl font-serif font-bold mb-2">{t.booking.sidebar.title}</h3>
-                    <p className="text-blue-200 text-sm mb-6">{t.booking.sidebar.subtitle}</p>
+                    <h3 className="text-xl font-serif font-bold mb-2 hidden md:block">{t.booking.sidebar.title}</h3>
+                    <p className="text-blue-200 text-sm mb-6 hidden md:block">{t.booking.sidebar.subtitle}</p>
                     <div className="space-y-4">
                         <div className="flex items-center gap-3 text-sm">
                             <CalendarIcon className="h-4 w-4 text-[#D4AF37]" />
@@ -445,7 +445,7 @@ export default function BookingCalendar() {
             </div>
 
             {/* Main Content */}
-            <div className="p-4 sm:p-6 md:p-8 md:w-2/3">
+            <div className="p-4 sm:p-6 md:p-8 md:w-2/3 order-1 md:order-2">
 
 
                 {/* Step 0: Service Selection */}
@@ -591,7 +591,7 @@ export default function BookingCalendar() {
                                                 key={time}
                                                 onClick={() => !isBooked && setSelectedTime(time)}
                                                 disabled={isBooked}
-                                                className={`py-2 px-3 sm:px-4 rounded-full text-sm border transition-all ${selectedTime === time
+                                                className={`py-3 px-4 rounded-full text-sm border transition-all ${selectedTime === time
                                                     ? 'border-[#D4AF37] bg-[#D4AF37] text-white'
                                                     : isBooked
                                                         ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed line-through'

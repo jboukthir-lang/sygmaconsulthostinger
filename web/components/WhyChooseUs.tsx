@@ -45,17 +45,17 @@ export default function WhyChooseUs() {
     ];
 
     return (
-        <section className="py-24 bg-[#001F3F] text-white relative overflow-hidden">
+        <section className="py-24 bg-[#F8F9FA] text-[#001F3F] relative overflow-hidden">
             {/* Decorative Background */}
             <div className="absolute top-0 right-0 w-96 h-96 bg-[#D4AF37]/10 rounded-full blur-3xl -mr-48 -mt-48 pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -ml-48 -mb-48 pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl -ml-48 -mb-48 pointer-events-none"></div>
 
             <div className="container mx-auto px-4 md:px-6 relative z-10">
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-5xl font-bold font-serif mb-6">
+                    <h2 className="text-3xl md:text-5xl font-bold font-serif mb-6 text-[#001F3F]">
                         {language === 'ar' ? 'لماذا تختار سيجما كونسلت؟' : language === 'fr' ? 'Pourquoi choisir Sygma Consult ?' : 'Why Choose Sygma Consult?'}
                     </h2>
-                    <p className="text-blue-100 max-w-2xl mx-auto text-lg">
+                    <p className="text-gray-600 max-w-2xl mx-auto text-lg">
                         {language === 'ar'
                             ? 'نحن نقدم حلولاً مبتكرة ومخصصة تلبي احتياجاتك بدقة واحترافية.'
                             : language === 'fr'
@@ -66,14 +66,14 @@ export default function WhyChooseUs() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {features.map((feature, idx) => (
-                        <div key={idx} className="bg-white/5 backdrop-blur-lg rounded-xl p-8 border border-white/10 hover:bg-white/10 transition-colors group">
-                            <div className="w-14 h-14 bg-[#D4AF37] rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <div key={idx} className="bg-white rounded-xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group">
+                            <div className="w-14 h-14 bg-[#D4AF37] rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-[#D4AF37]/20">
                                 <feature.icon className="h-7 w-7 text-white" />
                             </div>
-                            <h3 className="text-xl font-bold mb-3 font-serif">
+                            <h3 className="text-xl font-bold mb-3 font-serif text-[#001F3F]">
                                 {language === 'ar' ? feature.title_ar : language === 'fr' ? feature.title_fr : feature.title_en}
                             </h3>
-                            <p className="text-blue-100 text-sm leading-relaxed">
+                            <p className="text-gray-600 text-sm leading-relaxed">
                                 {language === 'ar' ? feature.desc_ar : language === 'fr' ? feature.desc_fr : feature.desc_en}
                             </p>
                         </div>

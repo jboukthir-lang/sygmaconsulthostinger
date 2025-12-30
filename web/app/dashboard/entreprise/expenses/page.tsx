@@ -98,55 +98,95 @@ export default function ExpensesPage() {
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden min-h-[400px]">
-                {loading ? (
-                    <div className="flex justify-center items-center h-64">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                    </div>
-                ) : filteredExpenses.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-                        <CreditCard className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                        <h3 className="text-lg font-medium text-gray-900">Aucune dépense trouvée</h3>
-                        <p>Commencez par ajouter votre première dépense.</p>
-                    </div>
-                ) : (
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-gray-50 border-b border-gray-100 text-xs uppercase text-gray-500 font-semibold">
-                                <th className="px-6 py-4">Description</th>
-                                <th className="px-6 py-4">Catégorie</th>
-                                <th className="px-6 py-4">Date</th>
-                                <th className="px-6 py-4 text-right">Montant</th>
-                                <th className="px-6 py-4 text-center">Statut</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {filteredExpenses.map((expense) => (
-                                <tr key={expense.id} className="hover:bg-gray-50/50 transition-colors">
-                                    <td className="px-6 py-4 font-medium text-gray-900">{expense.description}</td>
-                                    <td className="px-6 py-4 text-gray-600">
-                                        <span className="px-2 py-1 bg-gray-100 rounded-full text-xs">
+            <>
+                {/* Desktop View: Table */}
+                <div className="hidden md:block bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden min-h-[400px]">
+                    {loading ? (
+                        <div className="flex justify-center items-center h-64">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        </div>
+                    ) : filteredExpenses.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+                            <CreditCard className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                            <h3 className="text-lg font-medium text-gray-900">Aucune dépense trouvée</h3>
+                            <p>Commencez par ajouter votre première dépense.</p>
+                        </div>
+                    ) : (
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-gray-50 border-b border-gray-100 text-xs uppercase text-gray-500 font-semibold">
+                                    <th className="px-6 py-4">Description</th>
+                                    <th className="px-6 py-4">Catégorie</th>
+                                    <th className="px-6 py-4">Date</th>
+                                    <th className="px-6 py-4 text-right">Montant</th>
+                                    <th className="px-6 py-4 text-center">Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {filteredExpenses.map((expense) => (
+                                    <tr key={expense.id} className="hover:bg-gray-50/50 transition-colors">
+                                        <td className="px-6 py-4 font-medium text-gray-900">{expense.description}</td>
+                                        <td className="px-6 py-4 text-gray-600">
+                                            <span className="px-2 py-1 bg-gray-100 rounded-full text-xs">
+                                                {expense.category || 'Général'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-600">
+                                            {new Date(expense.date).toLocaleDateString('fr-FR')}
+                                        </td>
+                                        <td className="px-6 py-4 text-right font-semibold text-gray-900">
+                                            {Number(expense.amount).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+                                        </td>
+                                        <td className="px-6 py-4 text-center">
+                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${expense.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                                                }`}>
+                                                {expense.status === 'paid' ? 'Payé' : 'En attente'}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
+
+                {/* Mobile View: Cards */}
+                <div className="grid grid-cols-1 gap-4 md:hidden">
+                    {loading ? (
+                        <div className="flex justify-center py-12">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        </div>
+                    ) : filteredExpenses.length === 0 ? (
+                        <div className="bg-white p-8 rounded-xl text-center text-gray-500 border border-gray-200">
+                            <CreditCard className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                            <h3 className="text-lg font-medium text-gray-900">Aucune dépense</h3>
+                        </div>
+                    ) : (
+                        filteredExpenses.map((expense) => (
+                            <div key={expense.id} className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-3">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <h3 className="font-semibold text-gray-900">{expense.description}</h3>
+                                        <span className="inline-block mt-1 px-2 py-0.5 bg-gray-100 rounded-full text-xs text-gray-600">
                                             {expense.category || 'Général'}
                                         </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-600">
-                                        {new Date(expense.date).toLocaleDateString('fr-FR')}
-                                    </td>
-                                    <td className="px-6 py-4 text-right font-semibold text-gray-900">
+                                    </div>
+                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${expense.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                                        }`}>
+                                        {expense.status === 'paid' ? 'Payé' : 'Attente'}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center pt-2 border-t border-gray-50">
+                                    <span className="text-sm text-gray-500">{new Date(expense.date).toLocaleDateString('fr-FR')}</span>
+                                    <span className="text-lg font-bold text-[#001F3F]">
                                         {Number(expense.amount).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
-                                    </td>
-                                    <td className="px-6 py-4 text-center">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${expense.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                                            }`}>
-                                            {expense.status === 'paid' ? 'Payé' : 'En attente'}
-                                        </span>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                )}
-            </div>
+                                    </span>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+            </>
         </div>
     );
 }

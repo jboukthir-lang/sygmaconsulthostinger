@@ -5,6 +5,7 @@ import { Facebook, Linkedin, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import { useLanguage } from '@/context/LanguageContext';
 import { useState, useEffect } from "react";
+import { usePathname } from 'next/navigation';
 
 
 interface SiteSettings {
@@ -70,10 +71,10 @@ export default function Footer() {
     return (
         <footer className="bg-[#001F3F] text-white pt-16 pb-8">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-8 md:mb-12">
 
-                    {/* Brand Column */}
-                    <div className="space-y-4">
+                    {/* Brand Column - Always Visible */}
+                    <div className="space-y-4 text-center md:text-left flex flex-col items-center md:items-start">
                         <Link className="flex items-center gap-2 font-serif text-2xl font-bold text-white" href="/">
                             {imgSrc ? (
                                 <Image
@@ -87,32 +88,32 @@ export default function Footer() {
                             ) : null}
                             SYGMA<span className="text-[#D4AF37]">CONSULT</span>
                         </Link>
-                        <p className="text-gray-300 text-sm leading-relaxed">
+                        <p className="text-white text-sm leading-relaxed max-w-xs mx-auto md:mx-0">
                             {getDescription()}
                         </p>
-                        <div className="flex gap-4">
+                        <div className="flex gap-4 justify-center md:justify-start">
                             {settings?.linkedin_url && (
-                                <Link href={settings.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#D4AF37] transition-colors">
+                                <Link href={settings.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#D4AF37] transition-colors">
                                     <Linkedin className="h-5 w-5" />
                                 </Link>
                             )}
                             {settings?.twitter_url && (
-                                <Link href={settings.twitter_url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#D4AF37] transition-colors">
+                                <Link href={settings.twitter_url} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#D4AF37] transition-colors">
                                     <Twitter className="h-5 w-5" />
                                 </Link>
                             )}
                             {settings?.facebook_url && (
-                                <Link href={settings.facebook_url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#D4AF37] transition-colors">
+                                <Link href={settings.facebook_url} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-[#D4AF37] transition-colors">
                                     <Facebook className="h-5 w-5" />
                                 </Link>
                             )}
                         </div>
                     </div>
 
-                    {/* Quick Links */}
-                    <div className="space-y-4">
+                    {/* Quick Links - Hidden on Mobile */}
+                    <div className="space-y-4 hidden md:block">
                         <h3 className="text-lg font-bold text-[#D4AF37]">{t.footer.quick_links}</h3>
-                        <ul className="space-y-2 text-sm text-gray-300">
+                        <ul className="space-y-2 text-sm text-gray-200">
                             <li><Link href="/about" className="hover:text-white transition-colors">{t.nav.about}</Link></li>
                             <li><Link href="/services" className="hover:text-white transition-colors">{t.nav.services}</Link></li>
                             <li><Link href="/insights" className="hover:text-white transition-colors">{t.nav.insights}</Link></li>
@@ -121,10 +122,10 @@ export default function Footer() {
                         </ul>
                     </div>
 
-                    {/* Services */}
-                    <div className="space-y-4">
+                    {/* Services - Hidden on Mobile */}
+                    <div className="space-y-4 hidden md:block">
                         <h3 className="text-lg font-bold text-[#D4AF37]">{t.footer.expertise}</h3>
-                        <ul className="space-y-2 text-sm text-gray-300">
+                        <ul className="space-y-2 text-sm text-gray-200">
                             <li><Link href="/services/strategic" className="hover:text-white transition-colors">{t.services.items.strategic.title}</Link></li>
                             <li><Link href="/services/financial-legal" className="hover:text-white transition-colors">{t.services.items.financial.title}</Link></li>
                             <li><Link href="/services/visa" className="hover:text-white transition-colors">{t.services.items.visa.title}</Link></li>
@@ -133,22 +134,22 @@ export default function Footer() {
                         </ul>
                     </div>
 
-                    {/* Contact */}
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-bold text-[#D4AF37]">{t.footer.contact}</h3>
-                        <ul className="space-y-4 text-sm text-gray-300">
-                            <li className="flex items-start gap-3">
+                    {/* Contact - Always Visible but Compact */}
+                    <div className="space-y-4 text-center md:text-left">
+                        <h3 className="text-lg font-bold text-[#D4AF37] md:block hidden">{t.footer.contact}</h3>
+                        <ul className="space-y-4 text-sm text-gray-200 inline-block text-left md:block">
+                            <li className="flex items-start gap-3 justify-center md:justify-start">
                                 <MapPin className="h-5 w-5 text-[#D4AF37] shrink-0" />
                                 <span>
                                     <strong>{t.footer.address_paris}:</strong> {getAddress('paris')}<br />
                                     <strong>{t.footer.address_tunis}:</strong> {getAddress('tunis')}
                                 </span>
                             </li>
-                            <li className="flex items-center gap-3">
+                            <li className="flex items-center gap-3 justify-center md:justify-start">
                                 <Phone className="h-5 w-5 text-[#D4AF37] shrink-0" />
                                 <span>{settings?.phone_primary || '+33 7 52 03 47 86'}</span>
                             </li>
-                            <li className="flex items-center gap-3">
+                            <li className="flex items-center gap-3 justify-center md:justify-start">
                                 <Mail className="h-5 w-5 text-[#D4AF37] shrink-0" />
                                 <span>{settings?.email_primary || 'contact@sygma-consult.com'}</span>
                             </li>
@@ -156,11 +157,11 @@ export default function Footer() {
                     </div>
                 </div>
 
-                <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-xs text-gray-500">
+                <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center">
+                    <p className="text-xs text-gray-400">
                         © {new Date().getFullYear()} Sygma Consult. {t.footer.rights}
                     </p>
-                    <div className="flex gap-8 text-sm text-gray-500">
+                    <div className="flex gap-8 text-sm text-gray-400">
                         <Link href="/terms" className="hover:text-white py-2">{t.footer.terms}</Link>
                         <Link href="/legal" className="hover:text-white py-2">{t.footer.legal}</Link>
                     </div>
