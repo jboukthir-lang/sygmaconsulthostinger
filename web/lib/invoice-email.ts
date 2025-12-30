@@ -17,13 +17,16 @@ export async function sendInvoiceEmail(
 
         if (!settings) throw new Error('Site settings not found');
 
+        // Use entreprise@sygmaconsult.com specifically for invoices
+        const invoiceSenderEmail = 'entreprise@sygmaconsult.com';
+
         const transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST || settings.smtp_host,
-            port: parseInt(process.env.SMTP_PORT || settings.smtp_port || '587'),
-            secure: false,
+            host: process.env.SMTP_HOST || settings.smtp_host || 'smtp.hostinger.com',
+            port: 465, // Force SSL for Hostinger
+            secure: true,
             auth: {
-                user: process.env.SMTP_USER || settings.smtp_user,
-                pass: process.env.SMTP_PASSWORD || settings.smtp_password,
+                user: invoiceSenderEmail,
+                pass: process.env.SMTP_PASSWORD || settings.smtp_password, // Uses the common password provided
             },
         });
 
@@ -37,7 +40,7 @@ export async function sendInvoiceEmail(
         const companyName = settings.company_name || 'SYGMA CONSULT';
 
         const mailOptions = {
-            from: `${companyName} <${process.env.SMTP_USER || settings.smtp_user}>`,
+            from: `${companyName} <${invoiceSenderEmail}>`,
             to: recipientEmail,
             subject: `${label} ${invoiceNumber} - ${companyName}`,
             html: `
