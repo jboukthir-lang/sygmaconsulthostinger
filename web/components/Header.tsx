@@ -206,6 +206,7 @@ export default function Header() {
 
                             <Link className="hover:text-[#D4AF37] transition-colors" href="/about">{t.nav.about}</Link>
                             <Link className="hover:text-[#D4AF37] transition-colors" href="/insights">{t.nav.insights}</Link>
+                            <Link className="hover:text-[#D4AF37] transition-colors" href="/pricing">{language === 'fr' ? 'Tarifs' : language === 'ar' ? 'الأسعار' : 'Pricing'}</Link>
                             <Link className="hover:text-[#D4AF37] transition-colors" href="/contact">{t.nav.contact}</Link>
                         </nav>
                     </div>
