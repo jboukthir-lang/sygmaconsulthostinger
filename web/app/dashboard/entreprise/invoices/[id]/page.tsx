@@ -14,11 +14,37 @@ export default function InvoiceViewPage({ params }: { params: Promise<{ id: stri
     const [company, setCompany] = useState<any | null>(null);
     const [loading, setLoading] = useState(true);
     const componentRef = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
 
     const handlePrint = useReactToPrint({
-        content: () => componentRef.current,
+        contentRef: componentRef, // Updated API for newer versions of react-to-print
         documentTitle: `Facture-${invoice?.number || 'Draft'}`,
     });
+
+    const handleDownloadPDF = async () => {
+        // Fallback to print if manual PDF generation is not ready,
+        // or trigger the backend route if available
+        try {
+            const res = await fetch(`/api/invoices/${id}/generate/pdf`, { // Assuming we will create this
+                headers: { 'x-user-id': user!.uid }
+            });
+            if (res.ok) {
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Facture-${invoice?.number}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } else {
+                // If backend generation fails, fallback to browser print
+                handlePrint();
+            }
+        } catch (e) {
+            handlePrint();
+        }
+    };
 
     const handleEmail = async () => {
         if (!confirm('Voulez-vous envoyer cette facture par email au client ?')) return;
@@ -104,6 +130,13 @@ export default function InvoiceViewPage({ params }: { params: Promise<{ id: stri
                     >
                         <Printer className="h-5 w-5" />
                         Imprimer
+                    </button>
+                    <button
+                        onClick={() => handleDownloadPDF()}
+                        className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 font-medium transition-colors shadow-sm"
+                    >
+                        <Download className="h-5 w-5" />
+                        Télécharger PDF
                     </button>
                     <button
                         onClick={handleEmail}
