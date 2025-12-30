@@ -33,10 +33,11 @@ export async function POST(request: Request) {
         // Generate Invoice Number if not provided
         let invoiceNumber = invoiceData.number;
         if (!invoiceNumber) {
+            // Check GLOBAL last invoice to avoid unique constraint violations
             const { data: lastInvoice } = await supabaseAdmin
                 .from('invoices')
                 .select('number')
-                .eq('user_id', userId)
+                // .eq('user_id', userId) // REMOVED: Number must be unique globally
                 .order('created_at', { ascending: false })
                 .limit(1)
                 .single();
