@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
-import { FileText, Users, Package, Settings, LayoutDashboard, LogOut } from 'lucide-react';
+import { FileText, Users, Package, Settings, LayoutDashboard, LogOut, CreditCard, Briefcase, Users2 } from 'lucide-react';
 
 export default function EntrepriseLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -28,8 +28,11 @@ export default function EntrepriseLayout({ children }: { children: React.ReactNo
         { icon: LayoutDashboard, label: 'Tableau de bord', href: '/dashboard/entreprise' },
         { icon: Users, label: 'Clients', href: '/dashboard/entreprise/clients' },
         { icon: FileText, label: 'Factures', href: '/dashboard/entreprise/invoices' },
-        { icon: Package, label: 'Produits', href: '/dashboard/entreprise/products' },
+        { icon: CreditCard, label: 'Dépenses', href: '/dashboard/entreprise/expenses' },
+        { icon: Briefcase, label: 'Projets', href: '/dashboard/entreprise/projects' },
         { icon: Settings, label: 'Paramètres', href: '/dashboard/entreprise/settings' },
+        { icon: Users2, label: 'Équipe', href: '/dashboard/entreprise/team' },
+        { icon: Package, label: 'Produits', href: '/dashboard/entreprise/products' },
     ];
 
     return (

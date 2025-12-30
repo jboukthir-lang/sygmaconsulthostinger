@@ -17,7 +17,8 @@ import {
   BarChart3,
   Calendar,
   Bell,
-  Receipt
+  Receipt,
+  Building
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -67,6 +68,7 @@ export default function AdminSidebar() {
     {
       category: t.common.status || 'Configuration', // Using status as placeholder or create proper category key
       items: [
+        { name: 'Entreprise', href: '/admin/company', icon: Building },
         { name: t.admin.homePage || 'Home Page', href: '/admin/settings/homepage', icon: ImageIcon },
         { name: t.admin.siteSettings || 'Site Settings', href: '/admin/settings/site', icon: Settings },
         { name: t.admin.branding || 'Branding', href: '/admin/settings/site?tab=branding', icon: Palette },

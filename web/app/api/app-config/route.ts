@@ -33,19 +33,41 @@ export async function GET() {
             });
         }
 
-        return NextResponse.json({
-            logo_url: config.logo_url,
-            favicon_url: config.favicon_url,
-            site_name: config.site_name,
-            site_description: config.site_description,
-            contact_email: config.contact_email,
-            contact_phone: config.contact_phone,
-            address: config.address
-        });
+        return NextResponse.json(config);
     } catch (error: any) {
         console.error('Error fetching app config:', error);
         return NextResponse.json(
             { error: 'Failed to fetch app config', details: error.message },
+            { status: 500 }
+        );
+    }
+}
+
+export async function PUT(request: Request) {
+    try {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY; // OR use service role if needed for stricter RLS
+
+        if (!supabaseUrl || !supabaseKey) {
+            throw new Error('Missing Supabase credentials');
+        }
+
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        const json = await request.json();
+
+        // Remove ID or protected fields if necessary, though app_config usually just has 'key'
+        const { error } = await supabase
+            .from('app_config')
+            .update(json)
+            .eq('key', 'main');
+
+        if (error) throw error;
+
+        return NextResponse.json({ success: true });
+    } catch (error: any) {
+        console.error('Error updating app config:', error);
+        return NextResponse.json(
+            { error: 'Failed to update app config', details: error.message },
             { status: 500 }
         );
     }

@@ -223,9 +223,14 @@ export default function Header() {
                             <button onClick={() => setLanguage('ar')} className={`text-xs font-semibold ${language === 'ar' ? 'text-[#D4AF37]' : 'text-gray-500 hover:text-[#D4AF37]'} transition-colors`}>AR</button>
                         </div>
 
-                        {/* Auth */}
                         {user ? (
                             <div className="flex items-center gap-3">
+                                <Link
+                                    href="/dashboard/entreprise"
+                                    className="hidden lg:inline-flex items-center gap-2 px-4 py-2 bg-[#001F3F] text-white rounded-lg hover:bg-[#003366] transition-colors font-medium shadow-sm"
+                                >
+                                    Tableau de bord
+                                </Link>
                                 <NotificationBell />
                                 <Link href="/profile" className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                                     {user.photoURL ? (
