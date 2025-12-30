@@ -25,10 +25,6 @@ const nextConfig = {
   // output: 'standalone',
 
   trailingSlash: true,
-  // Add generateBuildId to help with cache busting if needed
-  generateBuildId: async () => {
-    return 'sygma-premium-v1';
-  },
 };
 
 module.exports = nextConfig;
