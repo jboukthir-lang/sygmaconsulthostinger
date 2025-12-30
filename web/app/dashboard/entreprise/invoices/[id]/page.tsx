@@ -17,8 +17,10 @@ export default function InvoiceViewPage({ params }: { params: Promise<{ id: stri
     const contentRef = useRef<HTMLDivElement>(null);
 
     const handlePrint = useReactToPrint({
-        contentRef: componentRef, // Updated API for newer versions of react-to-print
+        content: () => componentRef.current, // Reverted to standard API for better compatibility
         documentTitle: `Facture-${invoice?.number || 'Draft'}`,
+        onAfterPrint: () => console.log('Print finished'),
+        onPrintError: (error) => console.error('Print error:', error),
     });
 
     const handleDownloadPDF = async () => {

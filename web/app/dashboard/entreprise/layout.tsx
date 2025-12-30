@@ -33,6 +33,7 @@ export default function EntrepriseLayout({ children }: { children: React.ReactNo
         { icon: Settings, label: 'Paramètres', href: '/dashboard/entreprise/settings' },
         { icon: Users2, label: 'Équipe', href: '/dashboard/entreprise/team' },
         { icon: Package, label: 'Produits', href: '/dashboard/entreprise/products' },
+        { icon: Users, label: 'Mon Profil', href: '/dashboard/entreprise/profile' }, // Added
     ];
 
     return (
