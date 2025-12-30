@@ -13,6 +13,7 @@ export default function SignUpPage() {
   const { user, loading, signUpWithEmail, signInWithGoogle } = useAuth();
   const router = useRouter();
 
+  const [accountType, setAccountType] = useState<'personal' | 'company'>('personal');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -190,6 +191,41 @@ export default function SignUpPage() {
 
             {/* Sign Up Form */}
             <form onSubmit={handleSignUp} className="space-y-4 mb-6">
+              {/* Account Type Selection */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  {language === 'fr' ? 'Type de compte' : language === 'ar' ? 'نوع الحساب' : 'Account Type'}
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setAccountType('personal')}
+                    className={`p-4 rounded-xl border-2 transition-all ${accountType === 'personal'
+                        ? 'border-[#001F3F] bg-[#001F3F]/5'
+                        : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                  >
+                    <div className="text-2xl mb-2">👤</div>
+                    <div className="font-semibold text-sm">
+                      {language === 'fr' ? 'Personnel' : language === 'ar' ? 'شخصي' : 'Personal'}
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAccountType('company')}
+                    className={`p-4 rounded-xl border-2 transition-all ${accountType === 'company'
+                        ? 'border-[#001F3F] bg-[#001F3F]/5'
+                        : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                  >
+                    <div className="text-2xl mb-2">🏢</div>
+                    <div className="font-semibold text-sm">
+                      {language === 'fr' ? 'Entreprise' : language === 'ar' ? 'شركة' : 'Company'}
+                    </div>
+                  </button>
+                </div>
+              </div>
+
               {/* Full Name Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
