@@ -1,0 +1,27 @@
+# ----------------------------------------------------------------------
+# 🚀 Hostinger Node.js Configuration (DO NOT REMOVE)
+# ----------------------------------------------------------------------
+PassengerAppRoot /home/u611120010/domains/sygmaconsult.com/public_html
+PassengerAppType node
+PassengerNodejs /opt/alt/alt-nodejs20/root/bin/node
+PassengerStartupFile server.js
+PassengerBaseURI /
+
+# ----------------------------------------------------------------------
+# 🔧 Fixes & Optimizations
+# ----------------------------------------------------------------------
+Options -MultiViews
+RewriteEngine On
+
+# 🔒 Force HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# 📂 Fix for Next.js Static Assets (_next folder)
+# This ensures that requests to _next/static are correctly handled
+RewriteRule ^_next/static/(.*)$ .next/static/$1 [L]
+
+# 🌐 Handle Routing (Pass everything else to Node.js)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ server.js [QSA,L]
