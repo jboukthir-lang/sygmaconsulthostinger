@@ -16,7 +16,7 @@ export default function InvoiceViewPage({ params }: { params: Promise<{ id: stri
     const componentRef = useRef<HTMLDivElement>(null);
 
     const handlePrint = useReactToPrint({
-        contentRef: componentRef,
+        content: () => componentRef.current,
         documentTitle: `Facture-${invoice?.number || 'Draft'}`,
     });
 
