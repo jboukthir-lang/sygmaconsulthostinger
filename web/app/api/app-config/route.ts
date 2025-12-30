@@ -37,17 +37,9 @@ export async function GET() {
 
 export async function PUT(request: Request) {
     try {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY; // OR use service role if needed for stricter RLS
-
-        if (!supabaseUrl || !supabaseKey) {
-            throw new Error('Missing Supabase credentials');
-        }
-
-        const supabase = createClient(supabaseUrl, supabaseKey);
         const json = await request.json();
 
-        // Remove ID or protected fields if necessary, though app_config usually just has 'key'
+        // Use shared client
         const { error } = await supabase
             .from('app_config')
             .update(json)

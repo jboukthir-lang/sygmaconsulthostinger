@@ -1,22 +1,14 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 
 export async function GET(
     request: Request,
     { params }: { params: { slug: string } }
 ) {
     try {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-        if (!supabaseUrl || !supabaseKey) {
-            throw new Error('Missing Supabase credentials');
-        }
-
-        const supabase = createClient(supabaseUrl, supabaseKey);
+        // Use shared client
         const slug = params.slug;
 
-        // Fetch service by href
         const { data: service, error } = await supabase
             .from('services')
             .select('*')
