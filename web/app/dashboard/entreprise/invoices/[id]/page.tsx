@@ -13,15 +13,10 @@ export default function InvoiceViewPage({ params }: { params: Promise<{ id: stri
     const [invoice, setInvoice] = useState<any | null>(null);
     const [company, setCompany] = useState<any | null>(null);
     const [loading, setLoading] = useState(true);
-    const componentRef = useRef<HTMLDivElement>(null);
-    const contentRef = useRef<HTMLDivElement>(null);
-
-    const handlePrint = useReactToPrint({
-        content: () => componentRef.current, // Reverted to standard API for better compatibility
-        documentTitle: `Facture-${invoice?.number || 'Draft'}`,
-        onAfterPrint: () => console.log('Print finished'),
-        onPrintError: (error) => console.error('Print error:', error),
-    });
+    // Simplified print handler using native browser print and CSS media queries
+    const handlePrint = () => {
+        window.print();
+    };
 
     const handleDownloadPDF = async () => {
         // Fallback to print if manual PDF generation is not ready,
@@ -151,7 +146,7 @@ export default function InvoiceViewPage({ params }: { params: Promise<{ id: stri
             </div>
 
             {/* Invoice Preview */}
-            <div id="invoice-content" className="bg-white shadow-lg rounded-xl overflow-hidden print:shadow-none print:overflow-visible" ref={componentRef}>
+            <div id="invoice-content" className="bg-white shadow-lg rounded-xl overflow-hidden print:shadow-none print:overflow-visible">
                 <div className="p-12 space-y-12">
                     {/* Header: Company & Invoice Info */}
                     <div className="flex justify-between items-start">
